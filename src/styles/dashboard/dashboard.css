@@ -1,0 +1,351 @@
+/* /Users/anishkumarsah/Desktop/B-TECh/src/styles/dashboard/dashboard.css */
+.dashboard-container {
+  background-color: var(--bg-main, #f4f6f8);
+  min-height: 100%;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.dashboard-header h1 {
+  font-size: 24px;
+  color: var(--text-dark, #1f2937);
+  margin: 0;
+}
+
+.dashboard-header p {
+  color: var(--text-muted, #6b7280);
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-light, #e5e7eb);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: var(--stat-color, #3b82f6);
+}
+
+.stat-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-right: 16px;
+  background-color: var(--stat-bg, #eff6ff);
+  color: var(--stat-color, #3b82f6);
+}
+
+.stat-card-content {
+  flex: 1;
+}
+
+.stat-card-label {
+  font-size: 14px;
+  color: var(--text-muted, #6b7280);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.stat-card-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-dark, #1f2937);
+  margin-bottom: 4px;
+}
+
+.stat-card-trend {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.trend-up {
+  color: #10b981;
+}
+
+.trend-down {
+  color: #ef4444;
+}
+
+.trend-neutral {
+  color: #6b7280;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light, #e5e7eb);
+}
+
+.chart-card h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: var(--text-dark, #1f2937);
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 300px;
+}
+
+.ai-card {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  color: white;
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5);
+}
+
+.ai-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.ai-card-header svg {
+  margin-right: 12px;
+  font-size: 24px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.ai-recommendation-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.ai-recommendation-item {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ai-recommendation-item .icon {
+  margin-right: 12px;
+  font-size: 20px;
+  color: #fbbf24;
+}
+
+.ai-recommendation-item .content {
+  flex: 1;
+}
+
+.ai-recommendation-item p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ai-recommendation-item button {
+  background: white;
+  color: #1e3a8a;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ai-recommendation-item button:hover {
+  background: #f3f4f6;
+}
+
+.activity-section {
+  padding: 0 16px;
+}
+
+.activity-item {
+  display: flex;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.activity-item:last-child {
+  margin-bottom: 0;
+}
+
+.activity-item::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: -24px;
+  width: 2px;
+  background: #e5e7eb;
+}
+
+.activity-item:last-child::before {
+  display: none;
+}
+
+.activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 1;
+  color: #6b7280;
+  border: 2px solid white;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.activity-meta {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  gap: 12px;
+}
+
+.table-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light, #e5e7eb);
+  overflow-x: auto;
+}
+
+.table-card h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: var(--text-dark, #1f2937);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-card th, .table-card td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.table-card th {
+  font-weight: 600;
+  color: #6b7280;
+  background: #f9fafb;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-critical, .badge-red {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.badge-warning, .badge-orange {
+  background: #fff7ed;
+  color: #f97316;
+}
+
+.badge-low, .badge-yellow {
+  background: #fefce8;
+  color: #eab308;
+}
+
+.badge-good, .badge-green {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.btn-action {
+  background: #eff6ff;
+  color: #3b82f6;
+  border: 1px solid #bfdbfe;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-action:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
