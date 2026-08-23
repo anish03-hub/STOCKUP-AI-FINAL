@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.lang.NonNull;
 
 import com.stockup.backend.dto.ItemDTO;
 import com.stockup.backend.dto.ItemImportResult;
@@ -22,7 +23,7 @@ public class ItemController {
     private ItemService itemService;
 
     @PostMapping
-    public ResponseEntity<ItemDTO> createItem(@Valid @RequestBody ItemDTO itemDTO) {
+    public ResponseEntity<ItemDTO> createItem(@Valid @RequestBody @NonNull ItemDTO itemDTO) {
         ItemDTO createdItem = itemService.createItem(itemDTO);
         return new ResponseEntity<>(createdItem, HttpStatus.CREATED);
     }
@@ -34,7 +35,7 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ItemDTO> getItemById(@PathVariable String id) {
+    public ResponseEntity<ItemDTO> getItemById(@PathVariable @NonNull String id) {
         ItemDTO item = itemService.getItemById(id);
         return new ResponseEntity<>(item, HttpStatus.OK);
     }
@@ -46,13 +47,13 @@ public class ItemController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ItemDTO> updateItem(@PathVariable String id, @Valid @RequestBody ItemDTO itemDTO) {
+    public ResponseEntity<ItemDTO> updateItem(@PathVariable @NonNull String id, @Valid @RequestBody @NonNull ItemDTO itemDTO) {
         ItemDTO updatedItem = itemService.updateItem(id, itemDTO);
         return new ResponseEntity<>(updatedItem, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable String id) {
+    public ResponseEntity<Void> deleteItem(@PathVariable @NonNull String id) {
         itemService.deleteItem(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

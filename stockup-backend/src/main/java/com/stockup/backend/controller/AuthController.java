@@ -35,6 +35,9 @@ public class AuthController {
     public ResponseEntity<UserResponse> profile(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7); // Remove "Bearer "
         String email = jwtService.extractUsername(token);
+        if (email == null) {
+            throw new IllegalArgumentException("Invalid token");
+        }
         UserResponse user = userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }

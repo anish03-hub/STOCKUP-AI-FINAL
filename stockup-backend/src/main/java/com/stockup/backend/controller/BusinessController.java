@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 
@@ -31,19 +32,19 @@ public class BusinessController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BusinessResponse> getBusinessById(@PathVariable String id) {
+    public ResponseEntity<BusinessResponse> getBusinessById(@PathVariable @NonNull String id) {
         BusinessResponse response = businessService.getBusinessById(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BusinessResponse> updateBusiness(@PathVariable String id, @Valid @RequestBody BusinessRequest request) {
+    public ResponseEntity<BusinessResponse> updateBusiness(@PathVariable @NonNull String id, @Valid @RequestBody BusinessRequest request) {
         BusinessResponse response = businessService.updateBusiness(id, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBusiness(@PathVariable String id) {
+    public ResponseEntity<Void> deleteBusiness(@PathVariable @NonNull String id) {
         businessService.deleteBusiness(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

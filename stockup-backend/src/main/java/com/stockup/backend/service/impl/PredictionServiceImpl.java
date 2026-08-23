@@ -87,6 +87,7 @@ public class PredictionServiceImpl implements PredictionService {
      * 
      * @return true if API is healthy, false otherwise
      */
+    @SuppressWarnings("null")
     private boolean isPythonApiHealthy() {
         try {
             String url = mlApiUrl + HEALTH_ENDPOINT;

@@ -106,6 +106,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @SuppressWarnings("null")
     public void deleteItem(@NonNull String id) {
         Item item = itemRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
