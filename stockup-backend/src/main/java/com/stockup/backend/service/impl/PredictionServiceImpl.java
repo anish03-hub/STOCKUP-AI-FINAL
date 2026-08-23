@@ -90,7 +90,7 @@ public class PredictionServiceImpl implements PredictionService {
     private boolean isPythonApiHealthy() {
         try {
             String url = mlApiUrl + HEALTH_ENDPOINT;
-            @NonNull HttpMethod method = HttpMethod.GET;
+            HttpMethod method = HttpMethod.GET;
             ResponseEntity<String> response = restTemplate.exchange(
                 url,
                 method,

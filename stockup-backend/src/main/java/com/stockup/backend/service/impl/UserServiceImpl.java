@@ -5,12 +5,12 @@ import com.stockup.backend.dto.LoginResponse;
 import com.stockup.backend.dto.RegisterRequest;
 import com.stockup.backend.dto.UserResponse;
 import com.stockup.backend.model.User;
-import com.stockup.backend.repository.BusinessRepository;
 import com.stockup.backend.repository.UserRepository;
 import com.stockup.backend.security.JwtService;
 import com.stockup.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,23 +22,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final BusinessRepository businessRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-                           BusinessRepository businessRepository,
                            JwtService jwtService,
                            @Lazy AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
-        this.businessRepository = businessRepository;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
     }
@@ -113,7 +109,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserResponse getProfile(String userId) {
+    public UserResponse getProfile(@NonNull String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
         return mapToUserResponse(user);
@@ -132,7 +128,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserResponse getUserByEmail(String email) {
+    public UserResponse getUserByEmail(@NonNull String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found with email: " + email));
         return mapToUserResponse(user);
@@ -140,7 +136,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     // Implement UserDetailsService method
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
         return org.springframework.security.core.userdetails.User.builder()
