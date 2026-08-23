@@ -136,7 +136,12 @@ const Navbar = ({ collapsed, setCollapsed }) => {
                   <RiSettings4Line /> Settings
                 </button>
                 <div style={{ height: '1px', backgroundColor: '#e5e7eb', margin: '4px 0' }}></div>
-                <button className="profile-dropdown-item" onClick={() => { navigate('/login'); setShowProfileMenu(false); }}>
+                <button className="profile-dropdown-item" onClick={() => { 
+                  localStorage.removeItem('stockup_user');
+                  localStorage.removeItem('stockup_token');
+                  navigate('/login', { replace: true }); 
+                  setShowProfileMenu(false); 
+                }}>
                   <RiLogoutBoxRLine /> Logout
                 </button>
               </div>

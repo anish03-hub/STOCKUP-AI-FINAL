@@ -1,0 +1,81 @@
+Medicine_Name,Category,Manufacturer,Medicine_Price,Expiry_Date,Quantity
+Atorvastatin,"HMG-CoA reductase inhibitors, or statins.",Pfizer Inc.,60,2025-1-15,100
+Amoxicillin,antibiotics,GlaxoSmithKline plc,62,2024-12-01,100
+Lisinopril,blood pressure ,AstraZeneca plc,40,2025-06-30,100
+Metformin, Diabetes," Merck & Co., Inc.",31,2025-04-10,100
+Omeprazole,gastroesophageal ,Novartis AG,75,2024-09-20,100
+Amlodipine, blood pressure,Pfizer Inc.,20,2025-08-15,100
+Zolpidem,Insomnia ,Sanofi S.A.,70,2024-11-30,100
+Clonazepam,depression ,F. Hoffmann-La Roche AG,350,2025-05-10,100
+Montelukast,allergy ,"Merck & Co., Inc.",150,2024-12-05,100
+Gabapentin,anticonvulsants,Pfizer Inc.,131,2025-07-25,100
+Albuterol,Inhaler,Teva Pharmaceutical Industries Ltd.,34,2024-10-10,100
+Loratadine, Antihistamine,Bayer AG,62,2025-03-01,100
+Ibuprofen, inflammatory, Johnson & Johnson,70,2025-09-15,100
+Warfarin,blood pressure,Bristol-Myers Squibb Company,71,2025-02-28,100
+Cetirizine,Antihistamine,UCB S.A.,26, 2025-05-15,100
+Sertraline,depression, Pfizer Inc.,260,2025-06-10,100
+Tramadol,Pain Killer , Janssen Pharmaceuticals,17,2025-08-20,100
+Tamsulosin, Gynaecology, Boehringer Ingelheim GmbH,85,2025-04-05,100
+Oxycodone,Pain Killer, Purdue Pharma L.P.,230,2025-07-30,100
+Prednisone,corticosteroid, Mylan N.V.,12,2025-09-01,100
+Fluoxetine, depression,Eli Lilly and Company,442,2025-10-10,100
+Metoprolol, blood pressure, AstraZeneca plc,48,2025-02-15,100
+Furosemide, oop diuretics, Sanofi S.A.,14,2025-05-25,100
+Duloxetine,depression ,Eli Lilly and Company,100,2025-11-05,100
+Simvastatin,cholesterol ," Merck & Co., Inc.",100,2025-08-10,100
+Losartan,blood pressure , Bayer AG,38,2025-01-25,100
+Clopidogrel,antiplatelet, Sanofi S.A,54,2025-03-20,100
+Hydrocodone,Pain killer , AbbVie Inc.,259,2025-07-05,100
+Trazodone, Depression, Teva Pharmaceutical Industries Ltd.,185,2025-06-15,100
+Ranitidine, H2 blockers, GlaxoSmithKline plc,30,2024-12-20,100
+Tazarotene,Dermatology,,420,2025-02-02,100
+Isotretinoin ,Dermatology,,299,2025-12-23,100
+Minocycline,Dermatology,,300,2025-02-02,100
+Calamine Lotion,Dermatology,,240,2025-12-23,100
+Dimethicone,Dermatology,,220,2024-12-20,100
+Sucralfate,Dermatology,,190,2025-02-02,100
+Adapalene,Dermatology,,320,2025-12-23,100
+Nadifloxacin,Dermatology,,285,2025-02-02,100
+Oxytetracycline,Dermatology,,225,2025-02-02,100
+Nadifloxacin,Dermatology,,200,2024-12-20,100
+Alogliptin,Diabetes,,405,2025-12-23,100
+Alogliptin and Metformin,Diabetes,,500,2025-12-23,100
+Alogliptin and Pioglitazone,Diabetes,,450,2025-12-23,100
+Canagliflozin,Diabetes,,298,2025-12-23,100
+Diabinese,Diabetes,,345,2025-12-23,100
+Colesevelam HCL,Diabetes,,400,2025-12-23,100
+Steglatro,Diabetes,,500,2025-12-23,100
+Byetta,Diabetes,,395,2025-12-23,100
+Glibenclamide,Diabetes,,456,2025-12-23,100
+Ademetionine,Depression,,345,2025-12-23,100
+Alprazolam,Depression,,765,2025-12-23,100
+Amitriptyline,Depression,,987,2025-12-23,100
+Chlorhexidine,Dental,,300,2025-12-23,100
+Feracrylum,Dental,,620,2025-12-23,100
+Gensparin,Dental,,854,2025-12-23,100
+Multivitamin,Dental,,790,2025-12-23,100
+Abaloparatide,Fracture,,350,2025-12-23,100
+Aspirin and Oxycodone ,Fracture,,705,2025-12-23,100
+Metamizole,Fracture,,432,2025-12-23,100
+Progesterone,Women Care,,285,2025-12-23,100
+Dehydroepiandrosterone,Women Care,,420,2025-12-23,100
+Estrogen,Women Care, Bayer AG,320,2025-12-23,100
+Skin Rejuvenation Cream,women care,BeautyCo,407,2025-05-20,100
+Whisper Choice Ultra-Thin Pads,women care,Whisper,49,2025-06-30,100
+Sofy Bodyfit Overnight Pads,women care,ComfortPlus,78,2025-12-31,100
+Preganews,women care,Mankind Pharma,60,2025-12-31,100
+V Wash,women care,CleanCare,114,2024-11-15,100
+Herbal Hair Oil,personal care,Nature's Essence,999,2024-12-15,100
+Vaseline Sun Protection SPF 30 Body Lotion,personal care,EcoBeauty,298,2025-12-31,100
+Sunscreen SPF 50,personal care,SunGuard,400,2023-09-30,100
+head and shoulders Shampoo,personal care,head and shoulders,265,,100
+Dove Anti-Dandruff Shampoo,personal care,Dove,299,,100
+Citaphil Baby Shampoo,Baby Care,GentleCare,584,2024-12-31,100
+Johnson's Coconut Oil Baby Body Lotion,Baby Care,SoftSkin,499,2025-04-15,100
+Jphnson's Baby Wipes,Baby Care,CleanBaby,199,2025-08-10,100
+Pappers All round Protection,Baby Care,HappyTeeth,279,2024-09-20,100
+Manypoko Standard,Baby Care,SunSafe,449,2025-05-30,100
+Himalaya baby Massage Oil,Baby Care,BathTime,250,2024-11-25,100
+Johnson's Non-Sticky Oil ,Baby Care,TenderTouch,430,2026-03-15,100
+Vapor Rub,Baby Care,BreatheEasy,50,2025-12-20,100

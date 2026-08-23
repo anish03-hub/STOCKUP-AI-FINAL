@@ -1,19 +1,43 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiBox, FiCheckCircle, FiClock, FiDollarSign, FiEdit2, FiShoppingCart, FiSearch, FiFilter } from 'react-icons/fi';
 import LowStockAlert from '../../components/inventory/LowStockAlert';
 import DataTable from '../../components/common/DataTable';
 import '../../styles/inventory/inventory.css';
-import { medicines } from '../../data/mockData';
+import { itemsApi } from '../../services/api';
 
 const Inventory = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [dbMedicines, setDbMedicines] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadInventory = async () => {
+      try {
+        const data = await itemsApi.getAll();
+        setDbMedicines(data);
+      } catch (err) {
+        console.error("Failed to load inventory data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadInventory();
+  }, []);
   
-  // Safe default in case medicines is not defined in mockData
-  const mockMedicines = medicines || [
-    { id: 1, name: 'Paracetamol 500mg', code: 'MED-001', category: 'Analgesic', available: 1500, reserved: 200, minStock: 500, maxStock: 3000, unit: 'tabs', value: 150.00, location: 'A-1-2' },
-    { id: 2, name: 'Amoxicillin 250mg', code: 'MED-002', category: 'Antibiotic', available: 200, reserved: 50, minStock: 400, maxStock: 2000, unit: 'caps', value: 45.00, location: 'B-2-1' }
-  ];
+  // Safe default in case medicines is not defined, mapped to required UI properties
+  const mockMedicines = useMemo(() => {
+    const raw = dbMedicines || [];
+    return raw.map(m => ({
+      ...m,
+      available: m.available !== undefined ? m.available : (m.quantity || 0),
+      reserved: m.reserved !== undefined ? m.reserved : Math.floor((m.quantity || 0) * 0.05),
+      value: m.value !== undefined ? m.value : ((m.price || m.purchasePrice || 0) * (m.quantity || 0)),
+      unit: m.unit || 'units',
+      minStock: m.minStock || 0,
+      location: m.location || m.storageLocation || 'N/A'
+    }));
+  }, [dbMedicines]);
 
   const lowStockItems = mockMedicines.filter(m => m.available < m.minStock);
 
@@ -79,7 +103,7 @@ const Inventory = () => {
           <div className="stat-icon success"><FiDollarSign /></div>
           <div className="stat-content">
             <h3>Total Value</h3>
-            <p>${mockMedicines.reduce((acc, curr) => acc + curr.value, 0).toLocaleString()}</p>
+            <p>₹{mockMedicines.reduce((acc, curr) => acc + curr.value, 0).toLocaleString()}</p>
           </div>
         </div>
       </div>

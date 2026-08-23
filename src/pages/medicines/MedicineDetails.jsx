@@ -109,7 +109,7 @@ const MedicineDetails = () => {
             </div>
             <div className="detail-item">
               <span className="detail-label">Price</span>
-              <span className="detail-value">${medicine.price.toFixed(2)}</span>
+              <span className="detail-value">₹{medicine.price.toFixed(2)}</span>
             </div>
           </div>
 

@@ -5,9 +5,8 @@ import { BsStars } from 'react-icons/bs';
 import ChatMessage from '../../components/ai/ChatMessage';
 import TypingIndicator from '../../components/ai/TypingIndicator';
 import SuggestedQuestions from '../../components/ai/SuggestedQuestions';
+import { aiApi } from '../../services/api';
 import '../../styles/ai/ai.css';
-
-const BACKEND_URL = 'http://localhost:8000';
 
 const AIAssistant = () => {
   const [messages, setMessages] = useState([]);
@@ -26,23 +25,8 @@ const AIAssistant = () => {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/health`, { signal: AbortSignal.timeout(3000) });
-        if (res.ok) {
-          const data = await res.json();
-          setIsConnected(true);
-          // Warn if token isn't set
-          if (!data.token_valid) {
-            setMessages([{
-              id: 1,
-              role: 'ai',
-              content: '⚠️ **HF Token not set.** Please add your Hugging Face token to `backend/.env` and restart the Python server.',
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              isError: true,
-            }]);
-          }
-        } else {
-          setIsConnected(false);
-        }
+        const healthy = await aiApi.health();
+        setIsConnected(healthy);
       } catch {
         setIsConnected(false);
       }
@@ -60,13 +44,13 @@ const AIAssistant = () => {
 
   useEffect(() => {
     if (messages.length === 0) return;
-    
+
     setConversations(prev => {
       const existingIdx = prev.findIndex(c => c.id === currentChatId);
       const firstUserMsg = messages.find(m => m.role === 'user');
       const fallbackTitle = firstUserMsg ? (firstUserMsg.content.length > 30 ? firstUserMsg.content.substring(0, 30) + '...' : firstUserMsg.content) : 'New Chat';
       const title = prev[existingIdx]?.title || fallbackTitle;
-      
+
       const updatedChat = {
         id: currentChatId,
         title: title,
@@ -81,7 +65,7 @@ const AIAssistant = () => {
       } else {
         newConversations = [updatedChat, ...prev];
       }
-      
+
       localStorage.setItem('stockup_ai_chats', JSON.stringify(newConversations));
       return newConversations;
     });
@@ -117,41 +101,23 @@ const AIAssistant = () => {
     setIsTyping(true);
 
     try {
-      const res = await fetch(`${BACKEND_URL}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: messageText,
-          history: buildHistory(messages), // send conversation history
-        }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || 'Backend error');
-      }
-
-      const data = await res.json();
+      const data = await aiApi.chat(messageText);
 
       setMessages(prev => [
         ...prev,
         {
           id: Date.now() + 1,
           role: 'ai',
-          content: data.reply,
+          content: data.answer,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          model: data.model,
+          model: data.intent ? `StockUp ${data.intent} Engine` : "StockUp AI Data Engine",
         },
       ]);
     } catch (err) {
       let errorMsg = `❌ **Error:** ${err.message}`;
 
       if (isConnected === false) {
-        errorMsg = '⚠️ **Backend not running.** Open your VS Code terminal and run this exact command:\n```bash\ncd /Users/anishkumarsah/Desktop/B-TECh && ./run-backend.sh\n```';
-      } else if (err.message.toLowerCase().includes('401') || err.message.toLowerCase().includes('unauthorized') || err.message.toLowerCase().includes('invalid')) {
-        errorMsg = '🔑 **Token Error — Your HF token is invalid or missing the right permissions.**\n\n**Fix it in 1 minute:**\n1. Go to 👉 https://huggingface.co/settings/tokens\n2. Click **"New token"** → set Type = **"Read"**\n3. Enable ✅ **"Make calls to the serverless Inference API"**\n4. Copy the token → paste into `backend/.env` as `HF_TOKEN=hf_xxx...`\n5. Restart the Python server';
-      } else if (err.message.toLowerCase().includes('500')) {
-        errorMsg = '⚠️ **All models failed.** Your token may not have Inference API permissions.\n\nPlease create a new token at https://huggingface.co/settings/tokens with **"Inference API"** access enabled.';
+        errorMsg = '⚠️ **StockUp Backend is not running.** Please ensure your Spring Boot server is started on port 8080.';
       }
 
       setMessages(prev => [
@@ -188,8 +154,8 @@ const AIAssistant = () => {
           </div>
           {conversations.length === 0 && <div style={{ fontSize: '13px', color: '#94a3b8', padding: '8px' }}>No recent chats.</div>}
           {conversations.map(conv => (
-            <div 
-              key={conv.id} 
+            <div
+              key={conv.id}
               className={`history-item ${conv.id === currentChatId ? 'active' : ''}`}
               onClick={() => {
                 setCurrentChatId(conv.id);
@@ -215,7 +181,7 @@ const AIAssistant = () => {
             {/* Connection status badge */}
             {isConnected === true && (
               <span style={{ fontSize: '12px', background: '#dcfce7', color: '#16a34a', padding: '4px 10px', borderRadius: '20px', fontWeight: 600 }}>
-                ● Live
+                ● Connected to StockUp Data
               </span>
             )}
             {isConnected === false && (
@@ -225,9 +191,6 @@ const AIAssistant = () => {
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div className="model-badge">
-              <BsStars /> Qwen 2.5-72B via Hugging Face
-            </div>
             {messages.length > 0 && (
               <button
                 onClick={startNewChat}
@@ -242,9 +205,9 @@ const AIAssistant = () => {
 
         {isConnected === false && (
           <div style={{ margin: '0 20px 12px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '12px', padding: '14px 18px', fontSize: '14px', color: '#92400e' }}>
-            <strong>⚠️ Python backend is not running.</strong> You must start it manually in your VS Code terminal:
+            <strong>⚠️ Spring Boot backend is not running on port 8080.</strong> Please ensure the server is started:
             <code style={{ display: 'block', marginTop: '6px', background: '#1f2937', color: '#f9fafb', padding: '8px 12px', borderRadius: '8px' }}>
-              cd /Users/anishkumarsah/Desktop/B-TECh && ./run-backend.sh
+              mvn spring-boot:run
             </code>
           </div>
         )}

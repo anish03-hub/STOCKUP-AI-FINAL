@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, NavLink } from 'react-router-dom';
 import { 
   RiDashboardLine, 
   RiMedicineBottleLine, 
@@ -12,7 +12,10 @@ import {
   RiUserLine,
   RiSettings4Line,
   RiLogoutBoxRLine,
-  RiHospitalLine
+  RiHospitalLine,
+  RiBarChartBoxLine,
+  RiAlertLine,
+  RiAlarmWarningLine
 } from 'react-icons/ri';
 import '../../styles/layout/layout.css';
 
@@ -38,6 +41,11 @@ const Sidebar = ({ collapsed }) => {
       title: 'Analytics',
       items: [
         { label: 'Forecast', path: '/forecast', icon: <RiLineChartLine /> },
+        { label: 'Demand Prediction', path: '/prediction', icon: <RiBarChartBoxLine />, exact: true },
+        { label: 'Medicine Demand Prediction', path: '/prediction/medicine-demand', icon: <RiMedicineBottleLine /> },
+        { label: 'Stock-out Prediction', path: '/stockout', icon: <RiAlertLine /> },
+        { label: 'Reorder Optimization', path: '/reorder', icon: <RiShoppingCartLine /> },
+        { label: 'Expiry Alerts', path: '/expiry', icon: <RiAlarmWarningLine /> },
         { label: 'Reports', path: '/reports', icon: <RiFileTextLine /> }
       ]
     },
@@ -63,10 +71,6 @@ const Sidebar = ({ collapsed }) => {
     }
   ];
 
-  const handleNavigate = (path) => {
-    navigate(path);
-  };
-
   return (
     <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-logo">
@@ -84,15 +88,16 @@ const Sidebar = ({ collapsed }) => {
           <div key={index}>
             {!collapsed && <div className="nav-section-title">{group.title}</div>}
             {group.items.map((item, itemIndex) => (
-              <div
+              <NavLink
                 key={itemIndex}
-                className={`nav-item ${location.pathname.startsWith(item.path) ? 'active' : ''}`}
-                onClick={() => handleNavigate(item.path)}
+                to={item.path}
+                end={item.exact}
+                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                 title={collapsed ? item.label : ''}
               >
                 <span className="nav-item-icon">{item.icon}</span>
                 {!collapsed && <span>{item.label}</span>}
-              </div>
+              </NavLink>
             ))}
           </div>
         ))}
@@ -109,8 +114,8 @@ const Sidebar = ({ collapsed }) => {
         {!collapsed && (
           <button className="logout-btn" onClick={() => {
             localStorage.removeItem('stockup_user');
+            localStorage.removeItem('stockup_token');
             navigate('/login', { replace: true });
-            if (window.innerWidth <= 768) setCollapsed(true);
           }} title="Logout">
             <RiLogoutBoxRLine size={20} />
           </button>

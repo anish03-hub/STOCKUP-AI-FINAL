@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiUser, FiLock } from 'react-icons/fi';
 import { RiHospitalLine } from 'react-icons/ri';
 import AuthInput from '../../components/auth/AuthInput';
+import { authApi } from '../../services/api';
 import '../../styles/auth/auth.css';
 
 const Login = () => {
@@ -13,6 +14,7 @@ const Login = () => {
     rememberMe: false
   });
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
@@ -24,11 +26,12 @@ const Login = () => {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
+    if (serverError) setServerError('');
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.username.trim()) newErrors.username = 'Username is required';
+    if (!formData.username.trim()) newErrors.username = 'Email is required';
     if (!formData.password) newErrors.password = 'Password is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -36,18 +39,35 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
-      setIsSubmitting(true);
-      // Simulate API call
-      setTimeout(() => {
-        setIsSubmitting(false);
-        // Store user session so ProtectedRoute allows access
-        localStorage.setItem(
-          'stockup_user',
-          JSON.stringify({ name: 'Dr. Admin', role: 'Administrator', username: formData.username })
+    if (!validate()) return;
+
+    setIsSubmitting(true);
+    setServerError('');
+
+    try {
+      // Try real Spring Boot auth
+      const data = await authApi.login(formData.username, formData.password);
+      // authApi.login already stores token + user in localStorage
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      // If backend is completely unreachable, offer offline/demo mode
+      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+        setServerError(
+          'Backend server is not running. Starting in demo mode...'
         );
-        navigate('/dashboard', { replace: true });
-      }, 1000);
+        // Fallback: demo mode (store mock user so routes work)
+        setTimeout(() => {
+          localStorage.setItem(
+            'stockup_user',
+            JSON.stringify({ fullName: 'Dr. Admin (Demo)', role: 'Administrator', email: formData.username })
+          );
+          navigate('/dashboard', { replace: true });
+        }, 1500);
+      } else {
+        setServerError(err.message || 'Login failed. Please check your credentials.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -78,6 +98,20 @@ const Login = () => {
           <h2 className="auth-title">Welcome Back</h2>
           <p className="auth-subtitle">Intelligent Medicine Forecasting</p>
           
+          {serverError && (
+            <div style={{
+              padding: '10px 14px',
+              marginBottom: '16px',
+              borderRadius: '8px',
+              fontSize: '13px',
+              background: serverError.includes('demo mode') ? '#fef3cd' : '#fde8e8',
+              color: serverError.includes('demo mode') ? '#856404' : '#c53030',
+              border: `1px solid ${serverError.includes('demo mode') ? '#ffc107' : '#fc8181'}`,
+            }}>
+              {serverError}
+            </div>
+          )}
+
           <form className="auth-form" onSubmit={handleSubmit}>
             <AuthInput
               label="Username or Email"
@@ -131,7 +165,10 @@ const Login = () => {
           </form>
           
           <div className="auth-footer">
-            Need help? <a href="#" className="auth-link">Contact IT Support</a>
+            Don't have an account? <Link to="/register" className="auth-link">Create Account</Link>
+          </div>
+          <div className="auth-footer auth-support-footer">
+            Need help? <Link to="/support" className="auth-link">Contact IT Support</Link>
           </div>
         </div>
       </div>

@@ -1,0 +1,9 @@
+name,code,category,description,manufacturer,price,sellingPrice,quantity,expiryDate,status
+Diclofenac,M01AB,Analgesic,Diclofenac Sodium 50mg,Test Pharma,8.50,12.00,50,2026-10-10,In Stock
+Ibuprofen,M01AE,Analgesic,Ibuprofen 400mg,Global Meds,4.20,6.50,200,2027-08-20,In Stock
+Aspirin,N02BA,Analgesic,Aspirin 325mg,Test Pharma,2.50,4.00,8,2026-09-05,Low Stock
+Paracetamol,N02BE,Analgesic,Paracetamol 500mg,Global Meds,1.50,3.00,150,2027-08-20,In Stock
+Diazepam,N05B,Psycholeptics,Diazepam 5mg,Neuro Labs,12.00,18.00,15,2026-10-10,Low Stock
+Zolpidem,N05C,Psycholeptics,Zolpidem 10mg,Neuro Labs,15.00,22.50,300,2027-08-20,In Stock
+Salbutamol,R03,Respiratory,Salbutamol Inhaler,Aero Pharma,25.00,35.00,25,2026-09-05,In Stock
+Cetirizine,R06,Antihistamine,Cetirizine 10mg,Aero Pharma,3.00,5.00,12,2027-08-20,Low Stock

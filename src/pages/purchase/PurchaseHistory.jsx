@@ -43,7 +43,7 @@ const PurchaseHistory = () => {
               <tr key={order.id}>
                 <td><strong>{order.id}</strong></td>
                 <td>{order.supplier}</td>
-                <td>${order.total.toFixed(2)}</td>
+                <td>₹{order.total.toFixed(2)}</td>
                 <td>{order.orderDate}</td>
                 <td>{order.receivedDate}</td>
                 <td>

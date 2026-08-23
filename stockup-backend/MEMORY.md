@@ -1,0 +1,1 @@
+- [StockUp AI Backend - Production Ready Setup](backend-setup.md) — Backend configured with Spring Boot 3.5.4, Java 21, MongoDB Atlas, clean architecture, REST APIs, validation, exception handling, Lombok, and CORS. Requires MongoDB Atlas IP whitelisting for connection.

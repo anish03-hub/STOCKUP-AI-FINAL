@@ -1,0 +1,62 @@
+# Created by .ignore support plugin (hsz.mozzalatb)
+
+### Maven targets
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+### Spring Boot
+*.log
+
+### IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code
+.vscode/
+
+### OS
+.DS_Store
+Thumbs.db
+
+### Machine Learning Artifacts
+ml/models/*.joblib
+ml/data/raw/*.csv
+ml/data/processed/*
+
+### Python
+__pycache__
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.pyc
+*.pyw
+*.tmp
+*.bak
+*.swp
+
+### Environment variables
+.env
+.env.*.local
+
+# Logs
+logs
+*.log
+

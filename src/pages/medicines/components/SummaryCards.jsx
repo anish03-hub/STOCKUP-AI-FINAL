@@ -1,6 +1,11 @@
 import React from 'react';
 
-const SummaryCards = () => {
+const SummaryCards = ({ medicines = [] }) => {
+  const totalMedicines = medicines.length;
+  const totalStock = medicines.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  const lowStockCount = medicines.filter(item => (item.quantity || 0) <= 20).length;
+  const expiredCount = medicines.filter(item => item.status?.toLowerCase() === 'expired').length;
+
   return (
     <div className="summary-cards-container">
       <div className="summary-card glass-panel">
@@ -10,10 +15,10 @@ const SummaryCards = () => {
             💊
           </div>
         </div>
-        <div className="card-value">1,245</div>
+        <div className="card-value">{totalMedicines.toLocaleString()}</div>
         <div className="card-trend trend-up">
-          <span>↑ 12%</span>
-          <span style={{color: 'var(--color-text-muted)'}}>vs last month</span>
+          <span>Active</span>
+          <span style={{color: 'var(--color-text-muted)'}}>catalog items</span>
         </div>
       </div>
       <div className="summary-card glass-panel">
@@ -23,10 +28,10 @@ const SummaryCards = () => {
             📦
           </div>
         </div>
-        <div className="card-value">15,420</div>
+        <div className="card-value">{totalStock.toLocaleString()}</div>
         <div className="card-trend trend-up">
-          <span>↑ 5%</span>
-          <span style={{color: 'var(--color-text-muted)'}}>vs last month</span>
+          <span>Units</span>
+          <span style={{color: 'var(--color-text-muted)'}}>in warehouse</span>
         </div>
       </div>
       <div className="summary-card glass-panel">
@@ -36,10 +41,10 @@ const SummaryCards = () => {
             ⚠️
           </div>
         </div>
-        <div className="card-value">34</div>
+        <div className="card-value">{lowStockCount.toLocaleString()}</div>
         <div className="card-trend trend-down">
-          <span>↓ 2%</span>
-          <span style={{color: 'var(--color-text-muted)'}}>vs last month</span>
+          <span>&lt;= 20 units</span>
+          <span style={{color: 'var(--color-text-muted)'}}>threshold</span>
         </div>
       </div>
       <div className="summary-card glass-panel">
@@ -49,10 +54,10 @@ const SummaryCards = () => {
             ❌
           </div>
         </div>
-        <div className="card-value">12</div>
+        <div className="card-value">{expiredCount.toLocaleString()}</div>
         <div className="card-trend trend-down">
-          <span>↑ 1%</span>
-          <span style={{color: 'var(--color-text-muted)'}}>vs last month</span>
+          <span>Requires</span>
+          <span style={{color: 'var(--color-text-muted)'}}>disposal</span>
         </div>
       </div>
     </div>

@@ -328,6 +328,10 @@
   font-size: 0.875rem;
 }
 
+.auth-support-footer {
+  margin-top: 0.75rem;
+}
+
 .success-message {
   display: flex;
   flex-direction: column;

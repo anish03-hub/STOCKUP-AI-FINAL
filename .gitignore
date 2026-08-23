@@ -23,3 +23,26 @@ dist-ssr
 *.sln
 *.sw?
 backend/.env
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Claude local settings
+.claude/
+**/.claude/
+
+# Java / Maven
+target/
+.mvn/timing.properties
+
+# OS
+.DS_Store

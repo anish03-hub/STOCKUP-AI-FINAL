@@ -23,7 +23,7 @@ const resolveText = (row, column) => {
   const value = getValue(row, column.accessor || column.key);
 
   if (column.type === 'currency') {
-    return typeof value === 'number' ? `$${value.toFixed(2)}` : value;
+    return typeof value === 'number' ? `₹${value.toFixed(2)}` : value;
   }
 
   if (column.type === 'date') {
@@ -76,8 +76,14 @@ const DataTable = ({
   const [openMenu, setOpenMenu] = useState(null);
 
   useEffect(() => {
-    setActiveFilters(Object.fromEntries(filters.map((filter) => [filter.key, filter.defaultValue ?? 'all'])));
-    setCurrentPage(1);
+    const nextFilters = Object.fromEntries(filters.map((filter) => [filter.key, filter.defaultValue ?? 'all']));
+    setActiveFilters((prev) => {
+      if (JSON.stringify(prev) !== JSON.stringify(nextFilters)) {
+        setCurrentPage(1);
+        return nextFilters;
+      }
+      return prev;
+    });
   }, [filters]);
 
   useEffect(() => {

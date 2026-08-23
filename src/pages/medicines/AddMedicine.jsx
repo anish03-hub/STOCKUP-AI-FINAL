@@ -1,16 +1,34 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import MedicineForm from '../../components/forms/MedicineForm';
+import { itemsApi } from '../../services/api';
 import '../../styles/medicines/medicines.css';
 
 const AddMedicine = () => {
   const navigate = useNavigate();
 
-  const handleSubmit = (data) => {
-    // In a real app, this would be an API call
-    console.log('Submitting new medicine:', data);
-    alert('Medicine added successfully!');
-    navigate('/medicines');
+  const handleSubmit = async (data) => {
+    try {
+      // Map MedicineForm fields → ItemDTO fields expected by Spring Boot
+      const payload = {
+        name: data.name,
+        code: data.code,
+        category: data.category,
+        manufacturer: data.manufacturer,
+        description: data.description || '',
+        price: parseFloat(data.price) || 0,
+        sellingPrice: parseFloat(data.price) || 0,
+        quantity: parseInt(data.quantity, 10) || 0,
+        expiryDate: data.expiryDate || null,
+        status: data.status || 'Active',
+      };
+      await itemsApi.create(payload);
+      alert('Medicine added successfully!');
+      navigate('/medicines');
+    } catch (error) {
+      console.error('Failed to add medicine:', error);
+      alert('Failed to add medicine: ' + error.message);
+    }
   };
 
   const handleCancel = () => {

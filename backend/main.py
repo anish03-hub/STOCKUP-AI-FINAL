@@ -42,10 +42,11 @@ HF_TOKEN = os.getenv("HF_TOKEN", "").strip()
 client = InferenceClient(token=HF_TOKEN) if HF_TOKEN else None
 
 MODELS = [
+    "Qwen/Qwen2.5-72B-Instruct",
+    "meta-llama/Llama-3.3-70B-Instruct",
+    "meta-llama/Llama-3.2-3B-Instruct",
     "Qwen/Qwen2.5-7B-Instruct",
-    "HuggingFaceH4/zephyr-7b-beta",
-    "mistralai/Mistral-7B-Instruct-v0.2",
-    "microsoft/Phi-3-mini-4k-instruct"
+    "HuggingFaceH4/zephyr-7b-beta"
 ]
 
 # ─── System Prompt ────────────────────────────────────────────────────────────

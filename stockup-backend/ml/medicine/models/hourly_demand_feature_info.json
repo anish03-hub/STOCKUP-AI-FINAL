@@ -1,0 +1,64 @@
+{
+  "source_file": "saleshourly.csv",
+  "records_read": 50532,
+  "usable_supervised_records": 50363,
+  "train_records": 40290,
+  "test_records": 10073,
+  "train_period": [
+    "2014-01-09 08:00:00",
+    "2018-08-15 01:00:00"
+  ],
+  "test_period": [
+    "2018-08-15 02:00:00",
+    "2019-10-08 18:00:00"
+  ],
+  "feature_columns": [
+    "Year",
+    "Month",
+    "Hour",
+    "weekday",
+    "day_of_year",
+    "elapsed_hours",
+    "M01AB_lag_1",
+    "M01AB_lag_24",
+    "M01AB_lag_168",
+    "M01AE_lag_1",
+    "M01AE_lag_24",
+    "M01AE_lag_168",
+    "N02BA_lag_1",
+    "N02BA_lag_24",
+    "N02BA_lag_168",
+    "N02BE_lag_1",
+    "N02BE_lag_24",
+    "N02BE_lag_168",
+    "N05B_lag_1",
+    "N05B_lag_24",
+    "N05B_lag_168",
+    "N05C_lag_1",
+    "N05C_lag_24",
+    "N05C_lag_168",
+    "R03_lag_1",
+    "R03_lag_24",
+    "R03_lag_168",
+    "R06_lag_1",
+    "R06_lag_24",
+    "R06_lag_168"
+  ],
+  "target_columns": [
+    "M01AB",
+    "M01AE",
+    "N02BA",
+    "N02BE",
+    "N05B",
+    "N05C",
+    "R03",
+    "R06"
+  ],
+  "lags": [
+    1,
+    24,
+    168
+  ],
+  "split_strategy": "chronological_80_20",
+  "prediction_horizon": "next observed hour"
+}
