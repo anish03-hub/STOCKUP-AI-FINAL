@@ -1,77 +1,86 @@
 import React from 'react';
-import { FiTrendingUp, FiTrendingDown, FiAlertCircle } from 'react-icons/fi';
 import { TbRobot } from 'react-icons/tb';
+import { FiClock, FiCpu, FiInfo } from 'react-icons/fi';
 import '../../styles/forecast/forecast.css';
 
-const ConfidenceRing = ({ score }) => {
-  const radius = 20;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (score / 100) * circumference;
-
-  return (
-    <svg className="confidence-ring" viewBox="0 0 50 50">
-      <circle
-        className="confidence-ring-bg"
-        cx="25"
-        cy="25"
-        r={radius}
-      />
-      <circle
-        className="confidence-ring-fill"
-        cx="25"
-        cy="25"
-        r={radius}
-        style={{
-          strokeDasharray: circumference,
-          strokeDashoffset: strokeDashoffset
-        }}
-      />
-      <text className="confidence-text" x="25" y="25">
-        {score}%
-      </text>
-    </svg>
-  );
+const formatTimestamp = (ts) => {
+  if (!ts) return '—';
+  try {
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return ts;
+    return d.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return ts;
+  }
 };
 
-const PredictionCard = ({ 
-  medicineName = "Paracetamol 500mg", 
-  predictedDemand = 1250, 
-  confidenceScore = 92, 
-  reorderSuggestion = "Reorder 500 units by next Tuesday to maintain optimal safety stock.",
-  trend = "up",
-  trendValue = "+12%"
+const formatDemandValue = (val) => {
+  if (val == null || val === '') return '—';
+  if (typeof val === 'number') {
+    if (isNaN(val)) return '—';
+    return val.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 4,
+    });
+  }
+  return String(val);
+};
+
+const PredictionCard = ({
+  medicineName = '—',
+  predictedDemand = null,
+  forecastDate = null,
+  model = '—',
 }) => {
+  const formattedDemand = formatDemandValue(predictedDemand);
+  const formattedTargetDate = formatTimestamp(forecastDate);
+
   return (
     <div className="prediction-card">
       <div className="prediction-header">
         <h2>{medicineName}</h2>
-        <div className="ai-icon-wrapper">
+        <div className="ai-icon-wrapper" aria-hidden="true">
           <TbRobot />
         </div>
       </div>
 
       <div className="prediction-body">
-        <span className="prediction-label">7-Day Forecast Demand</span>
-        <div className="prediction-value">{predictedDemand} <span style={{fontSize:'16px', color:'#64748b'}}>units</span></div>
-        <div className={`prediction-trend ${trend}`}>
-          {trend === 'up' ? <FiTrendingUp /> : <FiTrendingDown />}
-          <span>{trendValue} vs last week</span>
+        <span className="prediction-label">Predicted Next-Hour Demand</span>
+        <div className="prediction-value">
+          {formattedDemand} {formattedDemand !== '—' && <span style={{ fontSize: '16px', color: '#64748b' }}>units</span>}
         </div>
       </div>
 
       <div className="confidence-section">
-        <div className="confidence-info">
-          <span>AI Model Confidence</span>
-          <strong>High Reliability</strong>
+        <div className="confidence-info" style={{ width: '100%' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <FiClock style={{ color: '#2563eb' }} /> Forecast Target
+            </span>
+            <strong style={{ fontSize: '14px' }}>{formattedTargetDate}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <FiCpu style={{ color: '#8b5cf6' }} /> Model
+            </span>
+            <strong style={{ fontSize: '14px' }}>{model || '—'}</strong>
+          </div>
         </div>
-        <ConfidenceRing score={confidenceScore} />
       </div>
 
-      <div className="reorder-suggestion">
-        <FiAlertCircle className="reorder-icon" />
+      <div className="reorder-suggestion" style={{ background: '#f8fafc', borderColor: '#e2e8f0' }}>
+        <FiInfo className="reorder-icon" style={{ color: '#2563eb' }} />
         <div className="reorder-text">
-          <h4>Action Required</h4>
-          <p>{reorderSuggestion}</p>
+          <h4 style={{ color: '#1e293b' }}>Forecast Horizon</h4>
+          <p style={{ color: '#64748b' }}>
+            Generated next-hour prediction from {model && model !== '—' ? model : 'the demand forecasting pipeline'}.
+          </p>
         </div>
       </div>
     </div>

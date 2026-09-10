@@ -11,7 +11,7 @@ import {
   FiBarChart2,
   FiRefreshCw,
 } from 'react-icons/fi';
-import { predictionApi } from '../../services/api';
+import { predictionApi, forecastApi } from '../../services/api';
 import '../../styles/prediction/medicineDemand.css';
 
 // ── Real product codes from saleshourly.csv dataset ───────────────────────────
@@ -70,12 +70,26 @@ const formatTimestamp = (ts) => {
   }
 };
 
+// ── Calculate target forecastDate (+1 hour from latestTimestamp) ──────────────
+const calculateNextHourTimestamp = (latestTimestamp) => {
+  try {
+    const baseDate = latestTimestamp ? new Date(latestTimestamp) : new Date();
+    if (isNaN(baseDate.getTime())) {
+      return new Date(Date.now() + 3600 * 1000).toISOString();
+    }
+    return new Date(baseDate.getTime() + 3600 * 1000).toISOString();
+  } catch {
+    return new Date(Date.now() + 3600 * 1000).toISOString();
+  }
+};
+
 // ═══════════════════════════════════════════════════════════════════════════════
 const MedicineDemandPrediction = () => {
   const [selectedCode, setSelectedCode] = useState('N02BE');
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [saveWarning, setSaveWarning] = useState('');
 
   const predictedDisplay = useMemo(
     () => formatUnits(prediction?.predictedNextHourDemand, 4),
@@ -93,6 +107,7 @@ const MedicineDemandPrediction = () => {
   const handleReset = () => {
     setPrediction(null);
     setError('');
+    setSaveWarning('');
   };
 
   const handleSubmit = async (event) => {
@@ -100,10 +115,29 @@ const MedicineDemandPrediction = () => {
     if (loading) return;
     setLoading(true);
     setError('');
+    setSaveWarning('');
     setPrediction(null);
     try {
       const response = await predictionApi.medicineDemand(selectedCode);
       setPrediction(response);
+
+      // Persist forecast to Spring Boot history
+      try {
+        const productInfo = PRODUCTS.find((p) => p.code === (response.productCode || selectedCode));
+        const productName = productInfo?.name || selectedCode;
+        const forecastDate = calculateNextHourTimestamp(response.latestTimestamp);
+
+        await forecastApi.save({
+          productCode: response.productCode || selectedCode,
+          productName,
+          forecastDate,
+          predictedDemand: response.predictedNextHourDemand,
+          model: 'RandomForest v2',
+          confidence: null,
+        });
+      } catch {
+        setSaveWarning('Prediction succeeded, but could not be saved to forecast history.');
+      }
     } catch (err) {
       setError(getFriendlyError(err));
     } finally {
@@ -148,6 +182,26 @@ const MedicineDemandPrediction = () => {
         </div>
       )}
 
+      {saveWarning && (
+        <div
+          className="md-alert"
+          role="alert"
+          aria-live="polite"
+          style={{ background: '#fffbeb', borderColor: '#fde68a', color: '#92400e' }}
+        >
+          <FiAlertCircle className="md-alert-icon" style={{ color: '#d97706' }} />
+          <span>{saveWarning}</span>
+          <button
+            className="md-alert-dismiss"
+            onClick={() => setSaveWarning('')}
+            aria-label="Dismiss warning"
+            style={{ color: '#92400e' }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       <div className="md-grid">
         <form className="md-panel md-form-panel" onSubmit={handleSubmit} noValidate>
           <div className="md-panel-header">
@@ -170,6 +224,7 @@ const MedicineDemandPrediction = () => {
                 onChange={(e) => {
                   setSelectedCode(e.target.value);
                   setError('');
+                  setSaveWarning('');
                   handleReset();
                 }}
                 disabled={loading}
@@ -215,6 +270,7 @@ const MedicineDemandPrediction = () => {
                 onClick={() => {
                   setSelectedCode(code);
                   setError('');
+                  setSaveWarning('');
                   handleReset();
                 }}
                 disabled={loading}
