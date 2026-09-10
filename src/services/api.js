@@ -2,13 +2,12 @@
  * StockUp AI — Centralized API Service Layer
  * 
  * Manages connections to:
- *  - Spring Boot backend (port 8080) — Auth, Items, Business, Predictions
- *  - Python FastAPI backend (port 8000) — AI Chat, Insights
+ *  - Spring Boot backend (port 8080) — Auth, Items, Business, Predictions, Dashboard, Assistant
  */
 
 // ─── Base URLs ───────────────────────────────────────────────────────────────
 const SPRING_API = '/api';
-const PYTHON_API = '';
+
 
 // ─── Token Helpers ───────────────────────────────────────────────────────────
 export const getToken = () => localStorage.getItem('stockup_token');
@@ -322,24 +321,49 @@ export const aiApi = {
   },
 
   /**
-   * Get AI-generated inventory insights.
+   * Get AI-generated inventory insights from Spring Boot dashboard summary.
    */
   insights: async () => {
     try {
-      const res = await fetch(`${PYTHON_API}/api/insights`);
-      if (res.ok) return res.json();
-    } catch (e) {
-      // Ignored: Fallback to mock data below
+      const res = await request(`${SPRING_API}/dashboard/summary`);
+      if (res.ok) {
+        const data = await res.json();
+        const actionItems = data.actionItems || [];
+        if (actionItems.length > 0) {
+          const insights = actionItems.map((item, idx) => {
+            let icon = 'check';
+            let actionText = 'View Inventory';
+            if (item.priority === 'URGENT') {
+              icon = 'clock';
+              actionText = 'View Expiry';
+            } else if (item.priority === 'WARNING') {
+              icon = 'alert';
+              actionText = 'Optimize PO';
+            }
+            return {
+              id: idx + 1,
+              icon,
+              text: item.message,
+              action: actionText,
+              route: item.suggestedActionRoute || '/dashboard',
+            };
+          });
+          return { insights };
+        }
+      }
+    } catch {
+      // Handled by fallback below
     }
     return {
       insights: [
-        { id: 1, icon: 'alert', text: 'Reorder Paracetamol - Stock critically low (23 units left against 100 min requirement).', action: 'Create PO' },
-        { id: 2, icon: 'trending', text: 'Amoxicillin demand is predicted to spike 40% next week based on current flu trends.', action: 'Review Forecast' },
-        { id: 3, icon: 'clock', text: '5 critical medicines are expiring in 7 days. Action required to prevent wastage.', action: 'View Expiry' },
-        { id: 4, icon: 'check', text: 'AI can optimize your current pending purchase order for 12 items to save 15% costs.', action: 'Optimize PO' }
+        { id: 1, icon: 'alert', text: 'Reorder Paracetamol - Stock critically low (23 units left against 100 min requirement).', action: 'Optimize PO', route: '/reorder' },
+        { id: 2, icon: 'trending', text: 'Amoxicillin demand is predicted to spike based on historical trends.', action: 'Review Forecast', route: '/forecast' },
+        { id: 3, icon: 'clock', text: 'Critical medicines approaching expiry date within 30 days.', action: 'View Expiry', route: '/expiry' },
+        { id: 4, icon: 'check', text: 'All other inventory items are within healthy operating buffers.', action: 'View Inventory', route: '/medicines' }
       ]
     };
   },
+
 
   /**
    * Check if the backend is healthy.

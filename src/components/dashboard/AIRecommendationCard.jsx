@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { BsStars } from 'react-icons/bs';
 import { FiAlertTriangle, FiTrendingUp, FiClock, FiCheckCircle } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { aiApi } from '../../services/api';
 import '../../styles/dashboard/dashboard.css';
 
 const ACTION_ROUTES = {
   'Create PO': '/purchase-orders/create',
   'Review Forecast': '/forecast',
-  'View Expiry': '/inventory/near-expiry',
-  'Optimize PO': '/purchase-orders',
+  'View Expiry': '/expiry',
+  'Optimize PO': '/reorder',
+  'View Inventory': '/medicines',
 };
 
 const AIRecommendationCard = () => {
@@ -19,21 +21,15 @@ const AIRecommendationCard = () => {
   useEffect(() => {
     const fetchInsights = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/insights');
-        if (response.ok) {
-          const data = await response.json();
-          setRecommendations(data.insights);
-        } else {
-          throw new Error('Failed to fetch');
-        }
+        const data = await aiApi.insights();
+        setRecommendations(data.insights || []);
       } catch (err) {
         console.error("Failed to fetch AI insights", err);
-        // Fallback dummy data if backend is completely down
         setRecommendations([
-          { id: 1, icon: 'alert', text: 'Reorder Paracetamol - Stock critically low (23 units left against 100 min requirement).', action: 'Create PO' },
-          { id: 2, icon: 'trending', text: 'Amoxicillin demand is predicted to spike 40% next week based on current flu trends.', action: 'Review Forecast' },
-          { id: 3, icon: 'clock', text: '5 critical medicines are expiring in 7 days. Action required to prevent wastage.', action: 'View Expiry' },
-          { id: 4, icon: 'check', text: 'AI can optimize your current pending purchase order for 12 items to save 15% costs.', action: 'Optimize PO' }
+          { id: 1, icon: 'alert', text: 'Reorder Paracetamol - Stock critically low (23 units left against 100 min requirement).', action: 'Optimize PO', route: '/reorder' },
+          { id: 2, icon: 'trending', text: 'Amoxicillin demand is predicted to spike based on historical trends.', action: 'Review Forecast', route: '/forecast' },
+          { id: 3, icon: 'clock', text: 'Critical medicines approaching expiry date within 30 days.', action: 'View Expiry', route: '/expiry' },
+          { id: 4, icon: 'check', text: 'All other inventory items are within healthy operating buffers.', action: 'View Inventory', route: '/medicines' }
         ]);
       } finally {
         setLoading(false);
@@ -41,6 +37,7 @@ const AIRecommendationCard = () => {
     };
     fetchInsights();
   }, []);
+
 
   const getIcon = (name) => {
     switch (name?.toLowerCase()) {
@@ -66,9 +63,10 @@ const AIRecommendationCard = () => {
             </div>
             <div className="content">
               <p>{rec.text}</p>
-              <button onClick={() => navigate(ACTION_ROUTES[rec.action] || '/purchase-orders')}>
+              <button onClick={() => navigate(rec.route || ACTION_ROUTES[rec.action] || '/dashboard')}>
                 {rec.action}
               </button>
+
             </div>
           </div>
         ))}

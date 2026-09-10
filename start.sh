@@ -43,25 +43,7 @@ else
   echo "⚠️  Please make sure PostgreSQL is running on port 5432."
 fi
 
-# 2. Check & Start Python Assistant Service (Port 8000)
-echo -n "Checking Python Assistant Service (Port 8000)... "
-check_service_health 8000 "/health"
-PY_STATUS=$?
-
-if [ $PY_STATUS -eq 0 ]; then
-  echo "🟢 ALREADY RUNNING & HEALTHY"
-elif [ $PY_STATUS -eq 2 ]; then
-  echo "🟡 PORT OCCUPIED (Unhealthy/Starting)"
-else
-  echo "🚀 Starting Python Assistant Service (Hugging Face)..."
-  cd "${PROJECT_ROOT}/backend"
-  nohup python3 -m uvicorn main:app --port 8000 > "${LOG_DIR}/python-assistant.log" 2>&1 &
-  PY_PID=$!
-  echo "   ↳ Started in background (PID: $PY_PID). Logs: logs/python-assistant.log"
-  cd "${PROJECT_ROOT}"
-fi
-
-# 3. Check & Start FastAPI ML Service (Port 8001)
+# 2. Check & Start FastAPI ML Service (Port 8001)
 echo -n "Checking FastAPI ML Service (Port 8001)... "
 check_service_health 8001 "/health"
 ML_STATUS=$?
@@ -79,7 +61,7 @@ else
   cd "${PROJECT_ROOT}"
 fi
 
-# 4. Check & Start Spring Boot Backend (Port 8080)
+# 3. Check & Start Spring Boot Backend (Port 8080)
 echo -n "Checking Spring Boot Backend (Port 8080)... "
 check_service_health 8080 "/actuator/health"
 BOOT_STATUS=$?
@@ -97,7 +79,7 @@ else
   cd "${PROJECT_ROOT}"
 fi
 
-# 5. Check & Start React Frontend (Port 5173)
+# 4. Check & Start React Frontend (Port 5173)
 echo -n "Checking React Frontend (Port 5173)... "
 check_service_health 5173 "/"
 FE_STATUS=$?
@@ -123,12 +105,6 @@ echo "🎉 StockUp AI local services status:"
 echo "--------------------------------------------------"
 echo "  PostgreSQL: 5432"
 
-if check_service_health 8000 "/health"; then
-  echo "  Python Assistant: 8000 (🟢 HEALTHY)"
-else
-  echo "  Python Assistant: 8000 (🔴 NOT READY YET)"
-fi
-
 if check_service_health 8080 "/actuator/health"; then
   echo "  Spring Boot: 8080 (🟢 HEALTHY)"
 else
@@ -151,7 +127,6 @@ echo "=================================================="
 echo "🔗 Service Access URLs:"
 echo "--------------------------------------------------"
 echo "  Frontend:         http://localhost:5173"
-echo "  Python Assistant: http://localhost:8000"
 echo "  Spring Boot:      http://localhost:8080"
 echo "  FastAPI ML:       http://localhost:8001"
 echo "=================================================="
@@ -161,7 +136,8 @@ echo "Streaming logs (Press Ctrl+C to stop viewing)..."
 echo ""
 
 # Touch log files to ensure they exist for tail
-touch "${LOG_DIR}/spring-boot.log" "${LOG_DIR}/fastapi.log" "${LOG_DIR}/frontend.log" "${LOG_DIR}/python-assistant.log"
+touch "${LOG_DIR}/spring-boot.log" "${LOG_DIR}/fastapi.log" "${LOG_DIR}/frontend.log"
 
 # Tail logs to keep terminal active
-tail -f "${LOG_DIR}/spring-boot.log" "${LOG_DIR}/fastapi.log" "${LOG_DIR}/frontend.log" "${LOG_DIR}/python-assistant.log"
+tail -f "${LOG_DIR}/spring-boot.log" "${LOG_DIR}/fastapi.log" "${LOG_DIR}/frontend.log"
+

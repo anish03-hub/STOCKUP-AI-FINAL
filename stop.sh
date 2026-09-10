@@ -32,8 +32,8 @@ kill_port_service() {
 
 kill_port_service 8080 "Spring Boot Backend"
 kill_port_service 8001 "FastAPI ML Service"
-kill_port_service 8000 "Python Assistant Service"
 kill_port_service 5173 "React Frontend"
+
 
 echo "=================================================="
 echo "✅ All application services stopped."
