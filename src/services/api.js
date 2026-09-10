@@ -84,15 +84,15 @@ export const authApi = {
   },
 
   /**
-   * Register a new user.
+   * Register a new user and business.
    * Returns { token, user }. Registration deliberately does not create a
    * browser session; users must sign in after creating their account.
    */
-  register: async ({ fullName, email, phone, password, businessId }) => {
+  register: async (registrationData) => {
     const res = await fetch(`${SPRING_API}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName, email, phone, password, businessId }),
+      body: JSON.stringify(registrationData),
     });
 
     if (!res.ok) {

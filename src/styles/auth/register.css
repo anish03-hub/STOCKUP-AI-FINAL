@@ -1,16 +1,44 @@
 .register-right {
   overflow-y: auto;
+  max-height: 100vh;
 }
 
 .register-card {
   margin: 24px 0;
+  max-width: 520px;
 }
 
 .register-help {
-  margin: -0.5rem 0 0;
+  margin: -0.25rem 0 0.25rem;
   color: #697386;
   font-size: 0.75rem;
   line-height: 1.4;
+}
+
+.auth-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #0b5fb5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.auth-section-divider::before,
+.auth-section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.auth-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 .register-footer {
@@ -30,5 +58,10 @@
 @media (max-width: 900px) {
   .register-card {
     margin: 0;
+    max-width: 100%;
+  }
+
+  .auth-grid-2col {
+    grid-template-columns: 1fr;
   }
 }

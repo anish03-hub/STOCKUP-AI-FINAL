@@ -4,7 +4,9 @@ import com.stockup.backend.dto.LoginRequest;
 import com.stockup.backend.dto.LoginResponse;
 import com.stockup.backend.dto.RegisterRequest;
 import com.stockup.backend.dto.UserResponse;
+import com.stockup.backend.model.Business;
 import com.stockup.backend.model.User;
+import com.stockup.backend.repository.BusinessRepository;
 import com.stockup.backend.repository.UserRepository;
 import com.stockup.backend.security.JwtService;
 import com.stockup.backend.service.UserService;
@@ -19,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -26,44 +29,84 @@ import java.time.LocalDateTime;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final BusinessRepository businessRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
+                           BusinessRepository businessRepository,
                            JwtService jwtService,
                            @Lazy AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
+        this.businessRepository = businessRepository;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
     }
 
+    @Transactional
     @Override
     public LoginResponse register(RegisterRequest request) {
-        // Check if email already exists
+        // 1. Check if user email already exists
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalStateException("Email already in use");
         }
-        // Check if phone already exists
+        // 2. Check if user phone already exists
         if (userRepository.findByPhone(request.getPhone()).isPresent()) {
             throw new IllegalStateException("Phone number already in use");
         }
 
-        // Determine role: ADMIN if first user for this business, else STAFF
-        long userCountForBusiness = userRepository.countByBusinessId(request.getBusinessId());
-        String role = (userCountForBusiness == 0) ? "ADMIN" : "STAFF";
+        String businessId;
+        String role;
+
+        // 3. Create Business if business details provided
+        if (request.getBusinessName() != null && !request.getBusinessName().trim().isEmpty()) {
+            if (businessRepository.findByEmail(request.getEmail()).isPresent()) {
+                throw new IllegalStateException("Business with this email already exists");
+            }
+            if (businessRepository.findByPhone(request.getPhone()).isPresent()) {
+                throw new IllegalStateException("Business with this phone number already exists");
+            }
+
+            String owner = (request.getOwnerName() != null && !request.getOwnerName().trim().isEmpty())
+                    ? request.getOwnerName().trim()
+                    : request.getFullName().trim();
+
+            Business business = new Business();
+            business.setBusinessName(request.getBusinessName().trim());
+            business.setOwnerName(owner);
+            business.setEmail(request.getEmail().trim());
+            business.setPhone(request.getPhone().trim());
+            business.setBusinessType(request.getBusinessType() != null ? request.getBusinessType().trim() : "Pharmacy");
+            business.setAddress(request.getAddress() != null ? request.getAddress().trim() : "");
+            business.setCity(request.getCity() != null ? request.getCity().trim() : "");
+            business.setState(request.getState() != null ? request.getState().trim() : "");
+            business.setCountry(request.getCountry() != null ? request.getCountry().trim() : "");
+            business.setPincode(request.getPincode() != null ? request.getPincode().trim() : "");
+            business.setCreatedAt(LocalDateTime.now());
+
+            Business savedBusiness = businessRepository.save(business);
+            businessId = savedBusiness.getId();
+            role = "ADMIN"; // First registered user for the newly created business is always ADMIN
+        } else if (request.getBusinessId() != null && !request.getBusinessId().trim().isEmpty()) {
+            businessId = request.getBusinessId().trim();
+            long userCountForBusiness = userRepository.countByBusinessId(businessId);
+            role = (userCountForBusiness == 0) ? "ADMIN" : "STAFF";
+        } else {
+            throw new IllegalArgumentException("Business information is required");
+        }
 
         // Encrypt password
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         User user = new User();
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
+        user.setFullName(request.getFullName().trim());
+        user.setEmail(request.getEmail().trim());
+        user.setPhone(request.getPhone().trim());
         user.setPassword(encodedPassword);
         user.setRole(role);
-        user.setBusinessId(request.getBusinessId());
+        user.setBusinessId(businessId);
         user.setCreatedAt(LocalDateTime.now());
 
         User savedUser = userRepository.save(user);
