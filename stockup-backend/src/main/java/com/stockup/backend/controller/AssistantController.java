@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
  * Authentication:
  *   Requires valid JWT (same as all other /api/* endpoints).
  *
- * This controller does NOT call any external LLM API.
  * All responses are computed from StockUp internal services and PostgreSQL.
  */
 @RestController

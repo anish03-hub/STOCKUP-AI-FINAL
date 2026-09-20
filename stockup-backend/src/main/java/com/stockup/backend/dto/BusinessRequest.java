@@ -53,4 +53,6 @@ public class BusinessRequest {
     @Pattern(regexp = "^\\d{6}$", message = "Pincode must be exactly 6 digits")
     private String pincode;
 
+    private String currency;
+
 }

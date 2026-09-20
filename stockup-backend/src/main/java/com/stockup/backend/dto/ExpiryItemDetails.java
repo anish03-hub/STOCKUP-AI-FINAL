@@ -1,6 +1,8 @@
 package com.stockup.backend.dto;
 
 public class ExpiryItemDetails {
+    private String itemId;
+    private String code;
     private String medicineName;
     private String category;
     private String manufacturer;
@@ -27,6 +29,10 @@ public class ExpiryItemDetails {
     }
 
     // Getters and Setters
+    public String getItemId() { return itemId; }
+    public void setItemId(String itemId) { this.itemId = itemId; }
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
     public String getMedicineName() { return medicineName; }
     public void setMedicineName(String medicineName) { this.medicineName = medicineName; }
     public String getCategory() { return category; }

@@ -21,7 +21,7 @@ const PredictionHistory = () => {
     <div className="forecast-page">
       <div className="forecast-header">
         <h1>Prediction History & Accuracy</h1>
-        <p style={{ color: '#64748b', margin: 0 }}>Review past AI predictions vs actual consumption</p>
+        <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Review past AI predictions vs actual consumption</p>
       </div>
 
       <div className="prediction-history-card">
@@ -40,11 +40,11 @@ const PredictionHistory = () => {
             {predictionData.map((row) => (
               <tr key={row.id}>
                 <td>{row.date}</td>
-                <td style={{ fontWeight: 500, color: '#0f172a' }}>{row.medicine}</td>
+                <td style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{row.medicine}</td>
                 <td>{row.predicted}</td>
                 <td>{row.actual}</td>
                 <td>{getAccuracyBadge(row.accuracy)}</td>
-                <td style={{ color: '#64748b', fontSize: '12px' }}>{row.model}</td>
+                <td style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>{row.model}</td>
               </tr>
             ))}
           </tbody>

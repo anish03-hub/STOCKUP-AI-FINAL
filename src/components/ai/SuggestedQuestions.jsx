@@ -2,11 +2,12 @@ import React from 'react';
 import '../../styles/ai/ai.css';
 
 const questions = [
-  'Why is Paracetamol demand increasing?',
-  'Which medicines should I reorder?',
-  'Generate inventory summary',
-  'Show medicines expiring this week',
-  'What is the demand forecast for Amoxicillin?'
+  'Do we have Humulin in stock?',
+  'Who can supply Insulin?',
+  'Which medicines are expiring soon?',
+  'What items need immediate reorder?',
+  'Give me an executive inventory summary',
+  'What is the stock of NDC 0002-0213?'
 ];
 
 const SuggestedQuestions = ({ onSelect }) => {

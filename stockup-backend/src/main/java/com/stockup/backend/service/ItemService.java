@@ -1,6 +1,7 @@
 package com.stockup.backend.service;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 import com.stockup.backend.dto.ItemDTO;
 import com.stockup.backend.dto.ItemImportResult;
@@ -14,6 +15,8 @@ public interface ItemService {
     ItemDTO getItemById(@NonNull String id);
 
     List<ItemDTO> getAllItems();
+
+    Page<ItemDTO> getItems(int page, int size, String search);
 
     ItemDTO updateItem(@NonNull String id, @NonNull ItemDTO itemDTO);
 

@@ -5,6 +5,7 @@ import com.stockup.backend.dto.ReorderRequest;
 import com.stockup.backend.dto.ReorderResponse;
 import com.stockup.backend.model.Item;
 import com.stockup.backend.repository.ItemRepository;
+import com.stockup.backend.security.CurrentUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,12 +80,15 @@ public class ReorderOptimizationService {
 
     private final ItemRepository itemRepository;
     private final DemandStatisticsService demandStatisticsService;
+    private final CurrentUserService currentUserService;
 
     @Autowired
     public ReorderOptimizationService(ItemRepository itemRepository,
-                                      DemandStatisticsService demandStatisticsService) {
+                                      DemandStatisticsService demandStatisticsService,
+                                      CurrentUserService currentUserService) {
         this.itemRepository = itemRepository;
         this.demandStatisticsService = demandStatisticsService;
+        this.currentUserService = currentUserService;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -109,8 +113,27 @@ public class ReorderOptimizationService {
         double zScore = resolveZScore(serviceLevel);
         int predictedDemand = request.getPredictedDemand();
 
-        // 2. Look up medicine in PostgreSQL
-        Optional<Item> optionalItem = itemRepository.findByNameIgnoreCase(request.getMedicineName());
+        // 2. Look up medicine in PostgreSQL scoped to current company
+        Optional<String> bOpt = currentUserService.getCurrentUserBusinessIdOptional();
+        Optional<Item> optionalItem = Optional.empty();
+        if (request.getProductCode() != null && !request.getProductCode().isBlank()) {
+            String code = request.getProductCode().trim();
+            optionalItem = bOpt.isPresent()
+                    ? itemRepository.findByCodeIgnoreCaseAndBusinessId(code, bOpt.get())
+                    : itemRepository.findByCodeIgnoreCase(code);
+        }
+        if (optionalItem.isEmpty() && request.getMedicineName() != null) {
+            String medName = request.getMedicineName().trim();
+            if (bOpt.isPresent()) {
+                optionalItem = itemRepository.findFirstByNameIgnoreCaseAndBusinessId(medName, bOpt.get())
+                        .or(() -> itemRepository.findByNameIgnoreCaseAndBusinessId(medName, bOpt.get()))
+                        .or(() -> itemRepository.findByCodeIgnoreCaseAndBusinessId(medName, bOpt.get()));
+            } else {
+                optionalItem = itemRepository.findFirstByNameIgnoreCase(medName)
+                        .or(() -> itemRepository.findByNameIgnoreCase(medName))
+                        .or(() -> itemRepository.findByCodeIgnoreCase(medName));
+            }
+        }
 
         // 3. Resolve historical demand statistics from saleshourly.csv
         //    (try to match Item.code to a supported product code)

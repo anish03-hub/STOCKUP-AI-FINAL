@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { FiChevronLeft, FiChevronRight, FiLoader, FiMoreVertical, FiSearch, FiInbox } from 'react-icons/fi';
+import { useCurrency } from '../../context/useCurrency';
 import '../../styles/common/data-table.css';
 
 const getValue = (row, accessor) => {
@@ -15,15 +16,18 @@ const getValue = (row, accessor) => {
   return value ?? '';
 };
 
-const resolveText = (row, column) => {
-  if (column.render) {
-    return column.render(row);
-  }
-
+const resolveText = (row, column, formatCurrency) => {
   const value = getValue(row, column.accessor || column.key);
 
+  if (column.render) {
+    return column.render(value, row);
+  }
+
   if (column.type === 'currency') {
-    return typeof value === 'number' ? `₹${value.toFixed(2)}` : value;
+    if (typeof formatCurrency === 'function') {
+      return formatCurrency(value);
+    }
+    return typeof value === 'number' ? `$${value.toFixed(2)}` : value;
   }
 
   if (column.type === 'date') {
@@ -69,6 +73,7 @@ const DataTable = ({
   toolbarContent,
   showToolbar = true,
 }) => {
+  const { formatCurrency } = useCurrency();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState(null);
   const [activeFilters, setActiveFilters] = useState(() => Object.fromEntries(filters.map((filter) => [filter.key, filter.defaultValue ?? 'all'])));
@@ -97,7 +102,7 @@ const DataTable = ({
       const term = searchTerm.toLowerCase();
       result = result.filter((row) =>
         columns.some((column) => {
-          const value = resolveText(row, column);
+          const value = resolveText(row, column, formatCurrency);
           return String(value).toLowerCase().includes(term);
         })
       );
@@ -200,7 +205,7 @@ const DataTable = ({
       );
     }
 
-    return <span className="data-table-cell-text">{resolveText(row, column)}</span>;
+    return <span className="data-table-cell-text">{resolveText(row, column, formatCurrency)}</span>;
   };
 
   const renderEmptyState = () => (

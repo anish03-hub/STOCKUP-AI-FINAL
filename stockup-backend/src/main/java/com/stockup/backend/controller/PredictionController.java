@@ -6,11 +6,14 @@ import com.stockup.backend.dto.PredictionRequest;
 import com.stockup.backend.dto.PredictionResponse;
 import com.stockup.backend.service.MedicineDemandPredictionService;
 import com.stockup.backend.service.PredictionService;
+import com.stockup.backend.service.ExplainabilityService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * REST controller for demand prediction endpoints.
@@ -22,12 +25,15 @@ public class PredictionController {
 
     private final PredictionService predictionService;
     private final MedicineDemandPredictionService medicineDemandPredictionService;
+    private final ExplainabilityService explainabilityService;
 
     @Autowired
     public PredictionController(PredictionService predictionService,
-                                MedicineDemandPredictionService medicineDemandPredictionService) {
+                                MedicineDemandPredictionService medicineDemandPredictionService,
+                                ExplainabilityService explainabilityService) {
         this.predictionService = predictionService;
         this.medicineDemandPredictionService = medicineDemandPredictionService;
+        this.explainabilityService = explainabilityService;
     }
 
     /**
@@ -79,8 +85,34 @@ public class PredictionController {
     }
 
     /**
+     * Explainable AI — global feature importance for the demand model.
+     */
+    @GetMapping("/explain")
+    public ResponseEntity<?> explainGlobal() {
+        try {
+            return ResponseEntity.ok(explainabilityService.explainGlobal());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body(Map.of("error", "Explainability service unavailable: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Explainable AI — per-feature contribution for a single prediction.
+     */
+    @PostMapping("/explain")
+    public ResponseEntity<?> explainPrediction(@RequestBody Map<String, Object> features) {
+        try {
+            return ResponseEntity.ok(explainabilityService.explainPrediction(features));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body(Map.of("error", "Explainability service unavailable: " + e.getMessage()));
+        }
+    }
+
+    /**
      * Create a test request for health checking.
-     * 
+     *
      * @return Sample prediction request
      */
     private PredictionRequest createTestRequest() {

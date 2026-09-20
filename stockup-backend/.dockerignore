@@ -1,0 +1,7 @@
+target/
+*.log
+.git
+.gitignore
+.vscode/
+.DS_Store
+ndctext/

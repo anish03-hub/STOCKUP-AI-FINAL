@@ -3,7 +3,7 @@
    Hospital Blue & White Premium Theme
    ============================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* Google Fonts loaded via index.html instead of CSS @import to avoid build connection timeouts */
 
 /* ---- CSS Variables (Design Tokens) ---- */
 :root {
@@ -87,21 +87,111 @@
   --font-size-3xl: 1.875rem;
   --font-size-4xl: 2.25rem;
 
-  /* Background */
-  --bg-app: #f0f4f8;
+  /* Spacing */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+
+  /* Utility & Compatibility */
+  --white: #ffffff;
+  --blue-50: #eff6ff;
+  --blue-200: #bfdbfe;
+  --blue-700: #1d4ed8;
+
+  /* Unified Design Tokens */
+  --app-bg: #f8fafc;
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-muted: #f1f5f9;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --border: #e2e8f0;
+  --border-color: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+
+  --table-header: #f8fafc;
+  --table-row: #ffffff;
+  --table-row-hover: #f1f5f9;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+
+  --danger: #dc2626;
+  --warning: #d97706;
+  --success: #16a34a;
+
+  --shadow-color: rgba(15, 23, 42, 0.08);
+
+  /* Background aliases */
+  --bg-app: #f8fafc;
   --bg-card: #ffffff;
+  --bg-main: #f8fafc;
+  --bg-light: #f8fafc;
+  --text-dark: #0f172a;
   --bg-sidebar: #1e3a8a;
   --bg-sidebar-dark: #172a6b;
-  --border-color: #e2e8f0;
 }
 
-/* ---- Dark Mode ---- */
+/* ---- Dark Mode Variables ---- */
 [data-theme="dark"] {
+  --white: #1e293b;
+  --blue-50: rgba(37, 99, 235, 0.15);
+  --blue-200: rgba(59, 130, 246, 0.3);
+  --blue-700: #60a5fa;
+
+  --app-bg: #0f172a;
+  --bg-primary: #0f172a;
+  --bg-secondary: #111827;
+  --surface: #1e293b;
+  --surface-raised: #1e293b;
+  --surface-muted: #0f172a;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+
+  --border: #334155;
+  --border-color: #334155;
+  --border-strong: #475569;
+
+  --input-bg: #0f172a;
+  --input-border: #475569;
+
+  --table-header: #1e293b;
+  --table-row: #0f172a;
+  --table-row-hover: #334155;
+
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-light: rgba(59, 130, 246, 0.15);
+
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --success: #4ade80;
+
+  --shadow-color: rgba(0, 0, 0, 0.35);
+
   --bg-app: #0f172a;
   --bg-card: #1e293b;
+  --bg-main: #0f172a;
+  --bg-light: #0f172a;
+  --text-dark: #f8fafc;
   --bg-sidebar: #0d1f4a;
   --bg-sidebar-dark: #091535;
-  --border-color: #334155;
+
   --gray-50: #1e293b;
   --gray-100: #0f172a;
   --gray-200: #1e293b;
@@ -110,8 +200,18 @@
   --gray-500: #64748b;
   --gray-600: #94a3b8;
   --gray-700: #cbd5e1;
-  --gray-800: #e2e8f0;
-  --gray-900: #f1f5f9;
+  --gray-800: #f1f5f9;
+  --gray-900: #ffffff;
+}
+
+[data-theme="dark"] select option {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #64748b;
 }
 
 /* ---- Reset ---- */
@@ -124,12 +224,14 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  background: var(--bg-app);
+  color: var(--text-primary);
 }
 
 body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
-  color: var(--gray-800);
+  color: var(--text-primary);
   background: var(--bg-app);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -281,13 +383,13 @@ img {
 }
 
 .btn-secondary {
-  background: white;
+  background: var(--surface);
   color: var(--primary-600);
-  border: 1.5px solid var(--primary-200);
+  border: 1.5px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-  background: var(--primary-50);
+  background: var(--primary-light);
   border-color: var(--primary-400);
 }
 
@@ -303,13 +405,13 @@ img {
 
 .btn-ghost {
   background: transparent;
-  color: var(--gray-600);
+  color: var(--text-secondary);
   padding: 8px 16px;
 }
 
 .btn-ghost:hover {
-  background: var(--gray-100);
-  color: var(--gray-800);
+  background: var(--surface-muted);
+  color: var(--text-primary);
 }
 
 .btn-sm { padding: 6px 14px; font-size: var(--font-size-xs); }
@@ -318,11 +420,12 @@ img {
 
 /* ---- Card Component ---- */
 .card {
-  background: var(--bg-card);
+  background: var(--surface);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
   padding: 24px;
+  color: var(--text-primary);
   transition: box-shadow var(--transition-base);
 }
 
@@ -340,17 +443,17 @@ img {
 .form-label {
   font-size: var(--font-size-sm);
   font-weight: 600;
-  color: var(--gray-700);
+  color: var(--text-secondary);
 }
 
 .form-input {
   width: 100%;
   padding: 10px 14px;
-  border: 1.5px solid var(--gray-200);
+  border: 1.5px solid var(--input-border);
   border-radius: var(--border-radius-sm);
   font-size: var(--font-size-sm);
-  color: var(--gray-800);
-  background: white;
+  color: var(--text-primary);
+  background: var(--input-bg);
   transition: all var(--transition-base);
 }
 
@@ -360,17 +463,17 @@ img {
 }
 
 .form-input::placeholder {
-  color: var(--gray-400);
+  color: var(--text-muted);
 }
 
 .form-select {
   width: 100%;
   padding: 10px 14px;
-  border: 1.5px solid var(--gray-200);
+  border: 1.5px solid var(--input-border);
   border-radius: var(--border-radius-sm);
   font-size: var(--font-size-sm);
-  color: var(--gray-800);
-  background: white;
+  color: var(--text-primary);
+  background: var(--input-bg);
   transition: all var(--transition-base);
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
@@ -393,7 +496,7 @@ img {
 }
 
 .data-table thead {
-  background: var(--gray-50);
+  background: var(--table-header);
 }
 
 .data-table th {
@@ -401,7 +504,7 @@ img {
   text-align: left;
   font-size: var(--font-size-xs);
   font-weight: 700;
-  color: var(--gray-500);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid var(--border-color);
@@ -410,17 +513,18 @@ img {
 
 .data-table td {
   padding: 14px 16px;
-  border-bottom: 1px solid var(--gray-100);
-  color: var(--gray-700);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
   vertical-align: middle;
 }
 
 .data-table tbody tr {
+  background: var(--table-row);
   transition: background var(--transition-fast);
 }
 
 .data-table tbody tr:hover {
-  background: var(--primary-50);
+  background: var(--table-row-hover);
 }
 
 .data-table tbody tr:last-child td {

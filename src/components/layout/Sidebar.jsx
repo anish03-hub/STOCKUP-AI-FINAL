@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { 
   RiDashboardLine, 
   RiMedicineBottleLine, 
@@ -15,13 +15,27 @@ import {
   RiHospitalLine,
   RiBarChartBoxLine,
   RiAlertLine,
-  RiAlarmWarningLine
+  RiAlarmWarningLine,
+  RiTeamLine
 } from 'react-icons/ri';
 import '../../styles/layout/layout.css';
 
 const Sidebar = ({ collapsed }) => {
-  const location = useLocation();
   const navigate = useNavigate();
+
+  const user = React.useMemo(() => {
+    try {
+      const saved = localStorage.getItem('stockup_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const businessName = user?.businessName || user?.business_name || 'StockUp Enterprise';
+  const userName = user?.fullName || user?.name || user?.email || 'Administrator';
+  const userRole = user?.role || 'ADMIN';
+  const initials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AD';
 
   const navGroups = [
     {
@@ -38,9 +52,17 @@ const Sidebar = ({ collapsed }) => {
       ]
     },
     {
-      title: 'Analytics',
+      title: 'Sales & POS',
       items: [
-        { label: 'Forecast', path: '/forecast', icon: <RiLineChartLine /> },
+        { label: 'POS Billing', path: '/billing', icon: <RiShoppingCartLine /> },
+        { label: 'Sales History', path: '/sales/history', icon: <RiFileTextLine /> },
+        { label: 'Sales Analytics', path: '/sales-analytics', icon: <RiLineChartLine /> },
+      ]
+    },
+    {
+      title: 'Analytics & AI',
+      items: [
+        { label: 'Forecast', path: '/forecast', icon: <RiBarChartBoxLine /> },
         { label: 'Demand Prediction', path: '/prediction', icon: <RiBarChartBoxLine />, exact: true },
         { label: 'Medicine Demand Prediction', path: '/prediction/medicine-demand', icon: <RiMedicineBottleLine /> },
         { label: 'Stock-out Prediction', path: '/stockout', icon: <RiAlertLine /> },
@@ -66,6 +88,7 @@ const Sidebar = ({ collapsed }) => {
       title: 'Account',
       items: [
         { label: 'Profile', path: '/profile', icon: <RiUserLine /> },
+        { label: 'Users', path: '/users', icon: <RiTeamLine /> },
         { label: 'Settings', path: '/settings', icon: <RiSettings4Line /> }
       ]
     }
@@ -78,7 +101,7 @@ const Sidebar = ({ collapsed }) => {
         {!collapsed && (
           <div className="sidebar-logo-text">
             <span>StockUp AI</span>
-            <span className="sidebar-logo-subtitle">Hospital ERP</span>
+            <span className="sidebar-logo-subtitle">{businessName}</span>
           </div>
         )}
       </div>
@@ -104,11 +127,13 @@ const Sidebar = ({ collapsed }) => {
       </div>
 
       <div className="sidebar-footer">
-        <div className="user-avatar">AD</div>
+        <div className="user-avatar">{initials}</div>
         {!collapsed && (
           <div className="user-info">
-            <span className="user-name">Admin User</span>
-            <span className="user-role">System Administrator</span>
+            <span className="user-name">{userName}</span>
+            <span className="user-role" style={{ fontSize: '0.75rem', opacity: 0.85, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {businessName} • {userRole}
+            </span>
           </div>
         )}
         {!collapsed && (

@@ -35,4 +35,5 @@ public class ItemDTO {
     
     private String expiryDate;
     private String status;
+    private String businessId;
 }

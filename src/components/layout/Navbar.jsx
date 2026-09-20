@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   RiMenuLine, 
-  RiSearchLine, 
-  RiNotification3Line, 
   RiUserLine, 
   RiSettings4Line, 
   RiLogoutBoxRLine 
@@ -12,20 +10,15 @@ import '../../styles/layout/layout.css';
 
 const Navbar = ({ collapsed, setCollapsed }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   
   const profileRef = useRef(null);
-  const notificationRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setShowProfileMenu(false);
-      }
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-        setShowNotifications(false);
       }
     };
 
@@ -45,12 +38,6 @@ const Navbar = ({ collapsed, setCollapsed }) => {
     return 'Dashboard';
   };
 
-  const sampleNotifications = [
-    { id: 1, title: 'Low inventory: Paracetamol', time: '10 mins ago' },
-    { id: 2, title: 'New PO #1024 created', time: '1 hour ago' },
-    { id: 3, title: 'System update scheduled', time: '2 hours ago' }
-  ];
-
   return (
     <div className={`navbar ${collapsed ? 'sidebar-collapsed' : ''}`}>
       <div className="navbar-left">
@@ -63,54 +50,12 @@ const Navbar = ({ collapsed, setCollapsed }) => {
         <h1 className="navbar-title">{getPageTitle()}</h1>
       </div>
 
-      <div className="navbar-search">
-        <RiSearchLine className="navbar-search-icon" />
-        <input 
-          type="text" 
-          className="navbar-search-input" 
-          placeholder="Search medicines, orders, or suppliers..." 
-        />
-      </div>
-
       <div className="navbar-actions">
-        <div style={{ position: 'relative' }} ref={notificationRef}>
-          <button 
-            className="navbar-action-btn"
-            onClick={() => {
-              setShowNotifications(!showNotifications);
-              setShowProfileMenu(false);
-            }}
-          >
-            <RiNotification3Line />
-            <span className="notification-badge">3</span>
-          </button>
-          
-          {showNotifications && (
-            <div className="notification-dropdown">
-              <div className="notification-header">
-                <span>Notifications</span>
-                <span style={{ fontSize: '0.75rem', color: '#3b82f6', cursor: 'pointer' }}>Mark all read</span>
-              </div>
-              <div className="notification-list">
-                {sampleNotifications.map(notif => (
-                  <div key={notif.id} className="notification-item">
-                    <span className="notification-item-title">{notif.title}</span>
-                    <span className="notification-item-time">{notif.time}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
         <div style={{ position: 'relative' }} ref={profileRef}>
           <button 
             className="navbar-action-btn"
             style={{ padding: '4px' }}
-            onClick={() => {
-              setShowProfileMenu(!showProfileMenu);
-              setShowNotifications(false);
-            }}
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
           >
             <div className="user-avatar" style={{ width: '32px', height: '32px', fontSize: '0.875rem' }}>
               AD

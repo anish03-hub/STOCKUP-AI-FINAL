@@ -144,7 +144,7 @@ const Reports = () => {
         );
       default:
         return (
-          <div className="chart-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px', color: '#64748b' }}>
+          <div className="chart-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px', color: 'var(--text-secondary)' }}>
             <p>Detailed data for {activeTab} report will be available in the next sync.</p>
           </div>
         );

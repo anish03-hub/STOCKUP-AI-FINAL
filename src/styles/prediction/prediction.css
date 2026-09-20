@@ -16,7 +16,7 @@
 .prediction-header h1 {
   font-size: 28px;
   font-weight: 600;
-  color: var(--hospital-blue, #0f172a);
+  color: var(--text-primary, #0f172a);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -24,17 +24,17 @@
 }
 
 .page-description {
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
   font-size: 16px;
   max-width: 600px;
 }
 
 .prediction-form {
-  background: white;
+  background: var(--surface, #ffffff);
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border, #e2e8f0);
 }
 
 .form-section {
@@ -44,10 +44,10 @@
 .form-section h2 {
   font-size: 20px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary, #0f172a);
   margin-bottom: 16px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border, #e2e8f0);
 }
 
 .form-grid {
@@ -69,18 +69,18 @@
 .form-group label {
   font-size: 14px;
   font-weight: 500;
-  color: #334155;
+  color: var(--text-secondary, #334155);
   margin-bottom: 6px;
 }
 
 .form-group input,
 .form-group select {
   padding: 10px 12px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--input-border, #cbd5e1);
   border-radius: 8px;
-  background-color: #f8fafc;
+  background-color: var(--input-bg, #f8fafc);
   font-size: 15px;
-  color: #0f172a;
+  color: var(--text-primary, #0f172a);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -105,7 +105,7 @@
 
 .form-help-text {
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-muted, #64748b);
   margin-top: 8px;
   display: block;
 }
@@ -145,14 +145,14 @@
 }
 
 .btn-outline {
-  background: white;
-  border: 1px solid #cbd5e1;
-  color: #334155;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #cbd5e1);
+  color: var(--text-primary, #334155);
 }
 
 .btn-outline:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
+  background: var(--surface-muted, #f8fafc);
+  border-color: var(--border-strong, #94a3b8);
 }
 
 .btn-large {
@@ -161,8 +161,8 @@
 }
 
 .prediction-result {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: var(--surface-muted, #f0fdf4);
+  border: 1px solid var(--border, #bbf7d0);
   border-radius: 16px;
   padding: 24px;
   margin-top: 24px;
@@ -177,7 +177,7 @@
 .result-header h2 {
   font-size: 20px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary, #0f172a);
   margin: 0;
   display: flex;
   align-items: center;
@@ -202,14 +202,14 @@
 
 .result-item span {
   font-size: 14px;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
   margin-bottom: 4px;
 }
 
 .result-value {
   font-size: 24px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary, #0f172a);
 }
 
 .alert {
@@ -223,9 +223,9 @@
 }
 
 .alert-error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
 }
 
 .alert-error .FiAlertTriangle {
@@ -252,4 +252,48 @@
     width: 100%;
     justify-content: center;
   }
+}
+/* ── Explainable AI: feature importance bars ─────────────────────── */
+.feature-importance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.feature-importance-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 64px;
+  align-items: center;
+  gap: 12px;
+}
+
+.feature-importance-row .feature-name {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary, #334155);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feature-bar-track {
+  height: 10px;
+  background: var(--surface-muted, #f1f5f9);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.feature-bar-fill {
+  height: 100%;
+  background: var(--primary-500, #3b82f6);
+  border-radius: var(--border-radius-sm);
+  transition: width var(--transition-base);
+}
+
+.feature-importance-row .feature-value {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary, #64748b);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }

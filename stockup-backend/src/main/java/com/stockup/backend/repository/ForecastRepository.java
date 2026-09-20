@@ -10,4 +10,9 @@ import java.util.List;
 public interface ForecastRepository extends JpaRepository<Forecast, String> {
     List<Forecast> findByProductCodeIgnoreCaseOrderByCreatedAtDesc(String productCode);
     List<Forecast> findTop50ByOrderByCreatedAtDesc();
+
+    // ── Multi-Tenant Company Queries ─────────────────────────────────────────
+    List<Forecast> findByBusinessIdAndProductCodeIgnoreCaseOrderByCreatedAtDesc(String businessId, String productCode);
+    List<Forecast> findTop50ByBusinessIdOrderByCreatedAtDesc(String businessId);
 }
+

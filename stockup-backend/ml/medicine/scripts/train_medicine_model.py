@@ -119,17 +119,17 @@ def main():
 
     # Handle missing values in features
     for col in X.columns:
-        if X[col].dtype == 'object':
-            X[col] = X[col].fillna('Unknown')
-        else:
+        if pd.api.types.is_numeric_dtype(X[col]):
             X[col] = X[col].fillna(X[col].median())
+        else:
+            X[col] = X[col].fillna('Unknown')
 
     # Encode categorical variables
     label_encoders = {}
     X_encoded = X.copy()
 
     for column in X_encoded.columns:
-        if X_encoded[column].dtype == 'object':
+        if not pd.api.types.is_numeric_dtype(X_encoded[column]):
             le = LabelEncoder()
             X_encoded[column] = le.fit_transform(X_encoded[column].astype(str))
             label_encoders[column] = le

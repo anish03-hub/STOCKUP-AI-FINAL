@@ -46,3 +46,9 @@ target/
 
 # OS
 .DS_Store
+
+# IDE
+.settings/
+
+# Scratch / temp
+scratch/

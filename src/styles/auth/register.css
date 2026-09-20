@@ -5,7 +5,7 @@
 
 .register-card {
   margin: 24px 0;
-  max-width: 520px;
+  max-width: 580px;
 }
 
 .register-help {
@@ -19,12 +19,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 0.75rem 0 0.25rem;
-  font-size: 0.825rem;
-  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
   color: #0b5fb5;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.75px;
 }
 
 .auth-section-divider::before,
@@ -46,22 +46,128 @@
 }
 
 .auth-server-error {
-  padding: 10px 14px;
+  padding: 12px 16px;
   margin-bottom: 16px;
   border: 1px solid #fc8181;
   border-radius: 8px;
-  background: #fde8e8;
+  background: #fff5f5;
   color: #c53030;
-  font-size: 13px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Domain Suffix Input & Preview Styling */
+.email-prefix-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.email-prefix-input {
+  padding-right: 140px !important;
+}
+
+.email-domain-badge {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ebf4ff;
+  color: #0b5fb5;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #c3dafe;
+  user-select: none;
+  letter-spacing: 0.2px;
+}
+
+.email-preview-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #4a5568;
+  margin-top: -2px;
+  background: #f7fafc;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px dashed #cbd5e0;
+}
+
+.email-preview-hint strong {
+  color: #0b5fb5;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Success Card */
+.success-message {
+  text-align: center;
+  padding: 32px 16px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: #ebf8f2;
+  color: #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  border: 2px solid #a7f3d0;
+}
+
+.success-message h3 {
+  color: #1a202c;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.success-message p {
+  color: #4a5568;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.success-details {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px;
+  margin: 16px 0 24px;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.success-details-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  color: #4a5568;
+}
+
+.success-details-row strong {
+  color: #1a202c;
 }
 
 @media (max-width: 900px) {
   .register-card {
     margin: 0;
     max-width: 100%;
+    padding: 28px 20px;
   }
 
   .auth-grid-2col {
     grid-template-columns: 1fr;
   }
 }
+

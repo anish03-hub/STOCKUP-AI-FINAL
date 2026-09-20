@@ -5,6 +5,10 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Request DTO for reorder optimization.
@@ -17,6 +21,10 @@ import jakarta.validation.constraints.NotNull;
  *   leadTimeHours  — hours from placing to receiving an order (default: 24h)
  *   serviceLevel   — desired service level: 0.90, 0.95, or 0.99 (default: 0.95)
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReorderRequest {
 
     @NotBlank(message = "Medicine name is required")
@@ -43,22 +51,11 @@ public class ReorderRequest {
     @DecimalMax(value = "0.999", message = "Service level must be at most 0.999")
     private Double serviceLevel;
 
-    public ReorderRequest() {}
+    private String productCode;
 
     public ReorderRequest(String medicineName, Integer predictedDemand) {
         this.medicineName = medicineName;
         this.predictedDemand = predictedDemand;
     }
-
-    public String getMedicineName() { return medicineName; }
-    public void setMedicineName(String medicineName) { this.medicineName = medicineName; }
-
-    public Integer getPredictedDemand() { return predictedDemand; }
-    public void setPredictedDemand(Integer predictedDemand) { this.predictedDemand = predictedDemand; }
-
-    public Integer getLeadTimeHours() { return leadTimeHours; }
-    public void setLeadTimeHours(Integer leadTimeHours) { this.leadTimeHours = leadTimeHours; }
-
-    public Double getServiceLevel() { return serviceLevel; }
-    public void setServiceLevel(Double serviceLevel) { this.serviceLevel = serviceLevel; }
 }
+

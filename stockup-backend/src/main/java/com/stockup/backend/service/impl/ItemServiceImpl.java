@@ -13,6 +13,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +25,7 @@ import com.stockup.backend.dto.ItemImportResult;
 import com.stockup.backend.exception.ResourceNotFoundException;
 import com.stockup.backend.model.Item;
 import com.stockup.backend.repository.ItemRepository;
+import com.stockup.backend.security.CurrentUserService;
 import com.stockup.backend.service.ItemService;
 import org.springframework.lang.NonNull;
 
@@ -29,6 +34,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private CurrentUserService currentUserService;
 
     @NonNull
     private Item mapToEntity(@NonNull ItemDTO dto) {
@@ -43,7 +51,8 @@ public class ItemServiceImpl implements ItemService {
             dto.getSellingPrice(),
             dto.getQuantity(),
             dto.getExpiryDate(),
-            dto.getStatus()
+            dto.getStatus(),
+            dto.getBusinessId()
         );
     }
 
@@ -59,36 +68,75 @@ public class ItemServiceImpl implements ItemService {
             item.getSellingPrice(),
             item.getQuantity(),
             item.getExpiryDate(),
-            item.getStatus()
+            item.getStatus(),
+            item.getBusinessId()
         );
     }
 
     @Override
     public ItemDTO createItem(@NonNull ItemDTO itemDTO) {
         Item item = mapToEntity(itemDTO);
+        if (item.getBusinessId() == null || item.getBusinessId().isBlank()) {
+            currentUserService.getCurrentUserBusinessIdOptional().ifPresent(item::setBusinessId);
+        }
         Item savedItem = itemRepository.save(item);
         return mapToDTO(savedItem);
     }
 
     @Override
     public ItemDTO getItemById(@NonNull String id) {
-        Item item = itemRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
+        Optional<String> bOpt = currentUserService.getCurrentUserBusinessIdOptional();
+        Item item = bOpt.isPresent()
+            ? itemRepository.findByIdAndBusinessId(id, bOpt.get())
+                .or(() -> itemRepository.findByCodeIgnoreCaseAndBusinessId(id, bOpt.get()))
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id))
+            : itemRepository.findById(id)
+                .or(() -> itemRepository.findByCodeIgnoreCase(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
         return mapToDTO(item);
     }
 
     @Override
     public List<ItemDTO> getAllItems() {
-        List<Item> items = itemRepository.findAll();
+        Optional<String> bOpt = currentUserService.getCurrentUserBusinessIdOptional();
+        List<Item> items = bOpt.isPresent()
+            ? itemRepository.findByBusinessId(bOpt.get())
+            : itemRepository.findAll();
         return items.stream()
             .map(this::mapToDTO)
             .collect(Collectors.toList());
     }
 
     @Override
+    public Page<ItemDTO> getItems(int page, int size, String search) {
+        Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size), Sort.by("name").ascending());
+        Page<Item> itemPage;
+        Optional<String> bOpt = currentUserService.getCurrentUserBusinessIdOptional();
+        if (bOpt.isPresent()) {
+            String bId = bOpt.get();
+            if (search != null && !search.trim().isEmpty()) {
+                itemPage = itemRepository.searchItemsByBusinessId(bId, search.trim(), pageable);
+            } else {
+                itemPage = itemRepository.findByBusinessId(bId, pageable);
+            }
+        } else {
+            if (search != null && !search.trim().isEmpty()) {
+                itemPage = itemRepository.searchItems(search.trim(), pageable);
+            } else {
+                itemPage = itemRepository.findAll(pageable);
+            }
+        }
+        return itemPage.map(this::mapToDTO);
+    }
+
+    @Override
     public ItemDTO updateItem(@NonNull String id, @NonNull ItemDTO itemDTO) {
-        Item existingItem = itemRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
+        Optional<String> bOpt = currentUserService.getCurrentUserBusinessIdOptional();
+        Item existingItem = bOpt.isPresent()
+            ? itemRepository.findByIdAndBusinessId(id, bOpt.get())
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id))
+            : itemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
 
         existingItem.setName(itemDTO.getName());
         existingItem.setCode(itemDTO.getCode());
@@ -106,10 +154,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @SuppressWarnings("null")
     public void deleteItem(@NonNull String id) {
-        Item item = itemRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
+        Optional<String> bOpt = currentUserService.getCurrentUserBusinessIdOptional();
+        Item item = bOpt.isPresent()
+            ? itemRepository.findByIdAndBusinessId(id, bOpt.get())
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id))
+            : itemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
         itemRepository.delete(item);
     }
 
@@ -244,8 +295,12 @@ public class ItemServiceImpl implements ItemService {
                     status = "In Stock";
                 }
 
-                // Check for duplicates / upsert
-                Optional<Item> existingItemOpt = itemRepository.findByCodeIgnoreCase(code);
+                // Check for duplicates / upsert per company
+                Optional<String> bOpt = currentUserService.getCurrentUserBusinessIdOptional();
+                String bId = bOpt.orElse(null);
+                Optional<Item> existingItemOpt = bOpt.isPresent()
+                        ? itemRepository.findByCodeIgnoreCaseAndBusinessId(code, bId)
+                        : itemRepository.findByCodeIgnoreCase(code);
                 if (existingItemOpt.isPresent()) {
                     Item existingItem = existingItemOpt.get();
                     existingItem.setName(name);
@@ -271,7 +326,8 @@ public class ItemServiceImpl implements ItemService {
                             sellingPrice,
                             quantity,
                             expiryDateStr,
-                            status
+                            status,
+                            bId
                     );
                     itemRepository.save(newItem);
                     result.setImported(result.getImported() + 1);

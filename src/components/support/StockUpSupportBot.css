@@ -1,0 +1,571 @@
+/* ==========================================================================
+   StockUp AI — Support Assistant Floating Chatbot Styling
+   ========================================================================== */
+
+/* ── 1. Floating Launcher Button ─────────────────────────────────────────── */
+.support-bot-launcher {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 9999;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.support-bot-launcher:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.55), 0 4px 10px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.support-bot-launcher:focus-visible {
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5), 0 8px 24px rgba(37, 99, 235, 0.4);
+}
+
+/* Online status green dot */
+.support-bot-status-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  background-color: #22c55e;
+  border: 2px solid #0f172a;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+}
+
+/* Hover Tooltip */
+.support-bot-tooltip {
+  position: absolute;
+  right: 68px;
+  white-space: nowrap;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(6px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.support-bot-launcher:hover .support-bot-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* ── 2. Chat Panel Container ────────────────────────────────────────────── */
+.support-bot-panel {
+  position: fixed;
+  bottom: 90px;
+  right: 24px;
+  width: 380px;
+  height: 560px;
+  max-height: calc(100vh - 110px);
+  max-width: calc(100vw - 32px);
+  background: #0f172a;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
+  animation: supportBotSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  color: #f8fafc;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@keyframes supportBotSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── 3. Chat Panel Header ────────────────────────────────────────────────── */
+.support-bot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.support-bot-header-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.support-bot-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  position: relative;
+}
+
+.support-bot-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.support-bot-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.support-bot-status {
+  font-size: 11.5px;
+  color: #22c55e;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.support-bot-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.support-bot-control-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.support-bot-control-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* ── 4. Chat Body & Messages ─────────────────────────────────────────────── */
+.support-bot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scroll-behavior: smooth;
+}
+
+.support-bot-messages::-webkit-scrollbar {
+  width: 5px;
+}
+
+.support-bot-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+/* Individual Message Row */
+.support-msg-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 90%;
+  animation: messageFadeIn 0.22s ease forwards;
+}
+
+.support-msg-row.bot {
+  align-self: flex-start;
+}
+
+.support-msg-row.user {
+  align-self: flex-end;
+}
+
+@keyframes messageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.support-msg-bubble {
+  padding: 12px 15px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.support-msg-row.bot .support-msg-bubble {
+  background: #1e293b;
+  color: #f1f5f9;
+  border-radius: 14px 14px 14px 3px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.support-msg-row.user .support-msg-bubble {
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 14px 14px 3px 14px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.support-msg-time {
+  font-size: 10.5px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.support-msg-row.user .support-msg-time {
+  align-self: flex-end;
+}
+
+/* ── 5. Quick Options Buttons ────────────────────────────────────────────── */
+.support-bot-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.support-option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 10px;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s ease;
+  box-sizing: border-box;
+}
+
+.support-option-btn:hover {
+  background: rgba(37, 99, 235, 0.25);
+  border-color: #3b82f6;
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+.support-option-arrow {
+  color: #3b82f6;
+  font-size: 14px;
+  transition: transform 0.18s ease;
+}
+
+.support-option-btn:hover .support-option-arrow {
+  transform: translateX(3px);
+}
+
+/* ── 6. Inline Interactive Forms (OTP / Password Reset) ──────────────────── */
+.support-inline-form {
+  background: #1e293b;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.support-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.support-form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+}
+
+.support-form-input {
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #ffffff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.18s ease;
+}
+
+.support-form-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.support-form-input.otp {
+  letter-spacing: 6px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.support-input-pwd-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.support-input-pwd-wrap .support-form-input {
+  padding-right: 36px;
+}
+
+.support-pwd-toggle {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  font-size: 15px;
+  transition: color 0.15s ease;
+}
+
+.support-pwd-toggle:hover {
+  color: #ffffff;
+}
+
+.support-form-error {
+  font-size: 12px;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 8px 10px;
+  border-radius: 6px;
+  line-height: 1.4;
+}
+
+.support-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.support-form-btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.18s ease;
+  box-sizing: border-box;
+}
+
+.support-form-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.support-form-btn.primary {
+  background: #2563eb;
+  color: #ffffff;
+  flex: 1;
+}
+
+.support-form-btn.primary:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.support-form-btn.secondary {
+  background: transparent;
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+.support-form-btn.secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border-color: #475569;
+}
+
+.support-back-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px dashed rgba(148, 163, 184, 0.35);
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  margin-top: 6px;
+  box-sizing: border-box;
+}
+
+.support-back-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #3b82f6;
+  color: #60a5fa;
+}
+
+/* Typing Indicator Dots */
+.support-bot-typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  background: #1e293b;
+  border-radius: 14px 14px 14px 3px;
+  width: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.support-typing-dot {
+  width: 6px;
+  height: 6px;
+  background: #94a3b8;
+  border-radius: 50%;
+  animation: typingPulse 1.2s infinite ease-in-out;
+}
+
+.support-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.support-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* ── 7. Chat Panel Footer Input ──────────────────────────────────────────── */
+.support-bot-footer {
+  padding: 12px 14px;
+  background: #1e293b;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.support-bot-input-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.support-bot-input {
+  flex: 1;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  color: #ffffff;
+  outline: none;
+  transition: border-color 0.18s ease;
+  font-family: inherit;
+}
+
+.support-bot-input::placeholder {
+  color: #64748b;
+}
+
+.support-bot-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.support-bot-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+.support-bot-send-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: scale(1.05);
+}
+
+.support-bot-send-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── 8. Responsive Media Queries ─────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .support-bot-launcher {
+    bottom: 16px;
+    right: 16px;
+    width: 50px;
+    height: 50px;
+    font-size: 22px;
+  }
+
+  .support-bot-panel {
+    right: 16px;
+    bottom: 78px;
+    width: calc(100vw - 32px);
+    height: calc(85vh - 78px);
+  }
+}

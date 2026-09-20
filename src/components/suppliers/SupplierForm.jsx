@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/suppliers/suppliers.css';
+import { supplierApi } from '../../services/api';
 
 const SupplierForm = ({ initialData, isEdit }) => {
   const navigate = useNavigate();
@@ -12,18 +13,36 @@ const SupplierForm = ({ initialData, isEdit }) => {
     address: '',
     city: '',
     state: '',
-    pin: '',
     status: 'Active',
-    paymentTerms: 'Net 30',
-    rating: 0,
-    suppliedMedicines: ''
+    unitCost: 15.00,
+    avgLeadTimeDays: 3.0,
+    leadTimeStdDevDays: 0.6,
+    performanceScore: 92.0,
+    fulfilledOrders: 100,
+    suppliedCategories: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (initialData) {
       setFormData({
-        ...initialData,
-        suppliedMedicines: initialData.suppliedMedicines ? initialData.suppliedMedicines.join(', ') : ''
+        name: initialData.name || '',
+        contactPerson: initialData.contactPerson || '',
+        phone: initialData.phone || '',
+        email: initialData.email || '',
+        address: initialData.address || '',
+        city: initialData.city || '',
+        state: initialData.state || '',
+        status: initialData.status || 'Active',
+        unitCost: initialData.unitCost != null ? initialData.unitCost : 15.00,
+        avgLeadTimeDays: initialData.avgLeadTimeDays != null ? initialData.avgLeadTimeDays : 3.0,
+        leadTimeStdDevDays: initialData.leadTimeStdDevDays != null ? initialData.leadTimeStdDevDays : 0.6,
+        performanceScore: initialData.performanceScore != null ? initialData.performanceScore : 92.0,
+        fulfilledOrders: initialData.fulfilledOrders != null ? initialData.fulfilledOrders : 100,
+        suppliedCategories: Array.isArray(initialData.suppliedCategories)
+          ? initialData.suppliedCategories.join(', ')
+          : (initialData.suppliedCategories || '')
       });
     }
   }, [initialData]);
@@ -36,19 +55,40 @@ const SupplierForm = ({ initialData, isEdit }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleNumberChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: parseFloat(value) || 0
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would dispatch an action or call an API
-    console.log('Saving supplier:', formData);
-    navigate('/suppliers');
+    setLoading(true);
+    setError('');
+
+    try {
+      if (isEdit && initialData?.id) {
+        await supplierApi.update(initialData.id, formData);
+      } else {
+        await supplierApi.create(formData);
+      }
+      navigate('/suppliers');
+    } catch (err) {
+      setError(err.message || 'Failed to save distributor');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="form-card">
+      {error && <div className="alert alert-error" role="alert" style={{ marginBottom: '16px' }}>{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Supplier Name*</label>
+            <label className="form-label">Distributor / Supplier Name*</label>
             <input 
               type="text" 
               className="form-control" 
@@ -56,7 +96,7 @@ const SupplierForm = ({ initialData, isEdit }) => {
               value={formData.name} 
               onChange={handleChange} 
               required 
-              placeholder="e.g. PharmaCorp Ltd."
+              placeholder="e.g. McKesson Health Distribution"
             />
           </div>
           
@@ -68,7 +108,7 @@ const SupplierForm = ({ initialData, isEdit }) => {
               name="contactPerson" 
               value={formData.contactPerson} 
               onChange={handleChange} 
-              placeholder="e.g. John Doe"
+              placeholder="e.g. Sarah Jenkins"
             />
           </div>
         </div>
@@ -83,7 +123,7 @@ const SupplierForm = ({ initialData, isEdit }) => {
               value={formData.phone} 
               onChange={handleChange} 
               required 
-              placeholder="e.g. +1 234 567 8900"
+              placeholder="e.g. +1-415-555-0192"
             />
           </div>
           
@@ -96,7 +136,7 @@ const SupplierForm = ({ initialData, isEdit }) => {
               value={formData.email} 
               onChange={handleChange} 
               required 
-              placeholder="e.g. contact@pharmacorp.com"
+              placeholder="e.g. orders@mckessonhealth.com"
             />
           </div>
         </div>
@@ -110,7 +150,7 @@ const SupplierForm = ({ initialData, isEdit }) => {
               name="address" 
               value={formData.address} 
               onChange={handleChange} 
-              placeholder="123 Health Ave, Suite 100"
+              placeholder="1 Post St, Suite 2800"
             />
           </div>
         </div>
@@ -124,33 +164,24 @@ const SupplierForm = ({ initialData, isEdit }) => {
               name="city" 
               value={formData.city} 
               onChange={handleChange} 
+              placeholder="San Francisco"
             />
           </div>
           
           <div className="form-group">
-            <label className="form-label">State/Province</label>
+            <label className="form-label">State</label>
             <input 
               type="text" 
               className="form-control" 
               name="state" 
               value={formData.state} 
               onChange={handleChange} 
+              placeholder="CA"
             />
           </div>
         </div>
 
         <div className="form-row">
-          <div className="form-group">
-            <label className="form-label">PIN/Zip Code</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              name="pin" 
-              value={formData.pin} 
-              onChange={handleChange} 
-            />
-          </div>
-          
           <div className="form-group">
             <label className="form-label">Status</label>
             <select 
@@ -163,50 +194,60 @@ const SupplierForm = ({ initialData, isEdit }) => {
               <option value="Inactive">Inactive</option>
             </select>
           </div>
+
+          <div className="form-group">
+            <label className="form-label">Performance Score (0–100)*</label>
+            <input 
+              type="number" 
+              className="form-control" 
+              name="performanceScore" 
+              value={formData.performanceScore} 
+              onChange={handleNumberChange} 
+              min="0" 
+              max="100" 
+              step="1"
+            />
+          </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Payment Terms</label>
-            <select 
-              className="form-control" 
-              name="paymentTerms" 
-              value={formData.paymentTerms} 
-              onChange={handleChange}
-            >
-              <option value="Net 15">Net 15</option>
-              <option value="Net 30">Net 30</option>
-              <option value="Net 45">Net 45</option>
-              <option value="Net 60">Net 60</option>
-              <option value="Cash on Delivery">Cash on Delivery</option>
-            </select>
-          </div>
-          
-          <div className="form-group">
-            <label className="form-label">Initial Rating (1-5)</label>
+            <label className="form-label">Avg Unit Cost ($)</label>
             <input 
               type="number" 
               className="form-control" 
-              name="rating" 
-              value={formData.rating} 
-              onChange={handleChange} 
+              name="unitCost" 
+              value={formData.unitCost} 
+              onChange={handleNumberChange} 
               min="0" 
-              max="5" 
-              step="0.5"
+              step="0.01"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label className="form-label">Avg Lead Time (Days)</label>
+            <input 
+              type="number" 
+              className="form-control" 
+              name="avgLeadTimeDays" 
+              value={formData.avgLeadTimeDays} 
+              onChange={handleNumberChange} 
+              min="0.5" 
+              step="0.1"
             />
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group full-width">
-            <label className="form-label">Supplied Medicines (Comma separated)</label>
+            <label className="form-label">Supplied Therapeutic Categories (Comma separated)</label>
             <input 
               type="text" 
               className="form-control" 
-              name="suppliedMedicines" 
-              value={formData.suppliedMedicines} 
+              name="suppliedCategories" 
+              value={formData.suppliedCategories} 
               onChange={handleChange} 
-              placeholder="e.g. Paracetamol, Amoxicillin, Ibuprofen"
+              placeholder="e.g. Insulin [CS], General Medicine, Anti-Inflammatory Agents, Antibacterial"
             />
           </div>
         </div>
@@ -215,8 +256,8 @@ const SupplierForm = ({ initialData, isEdit }) => {
           <button type="button" className="btn-secondary" onClick={() => navigate('/suppliers')} style={{ width: 'auto', padding: '10px 20px' }}>
             Cancel
           </button>
-          <button type="submit" className="btn-primary" style={{ padding: '10px 20px' }}>
-            {isEdit ? 'Update Supplier' : 'Save Supplier'}
+          <button type="submit" className="btn-primary" disabled={loading} style={{ padding: '10px 20px' }}>
+            {loading ? 'Saving…' : isEdit ? 'Update Distributor' : 'Save Distributor'}
           </button>
         </div>
       </form>

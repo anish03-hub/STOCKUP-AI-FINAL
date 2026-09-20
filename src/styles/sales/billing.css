@@ -1,0 +1,1653 @@
+/* ==========================================================================
+   StockUp AI — Professional Pharmacy POS Billing & Sales History Stylesheet
+   Design System: Clean Medical & Enterprise Pharmacy SaaS Theme
+   ========================================================================== */
+
+/* ── POS Page Container ─────────────────────────────────────────────────── */
+.pos-billing-page {
+  padding: 24px 32px;
+  max-width: 1480px;
+  margin: 0 auto;
+  color: var(--text-primary, #0f172a);
+  background: var(--bg-primary, #f8fafc);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  animation: posFadeIn 0.25s ease-out;
+}
+
+@keyframes posFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.pos-billing-page .pos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.pos-billing-page .pos-header-left {
+  flex: 1;
+  min-width: 280px;
+}
+
+.pos-billing-page .pos-header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.pos-billing-page .pos-header-icon {
+  color: var(--primary, #2563eb);
+  font-size: 28px;
+}
+
+.pos-billing-page .pos-header .page-description {
+  color: var(--text-muted, #64748b);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pos-billing-page .pos-header-badges {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pos-billing-page .tenant-badge {
+  background: var(--primary-light, #eff6ff);
+  border: 1px solid var(--border-color, #bfdbfe);
+  color: var(--primary, #1d4ed8);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.08);
+}
+
+/* ── Error Banner ─────────────────────────────────────────────────────── */
+.pos-billing-page .pos-error-banner {
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+  color: #991b1b;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  animation: slideDown 0.2s ease-out;
+}
+
+.pos-billing-page .pos-error-banner .error-text {
+  flex: 1;
+}
+
+.pos-billing-page .error-dismiss-btn {
+  background: transparent;
+  border: none;
+  color: #991b1b;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.pos-billing-page .error-dismiss-btn:hover {
+  background: #fee2e2;
+}
+
+/* ── Two-Column Desktop Grid Layout ────────────────────────────────────── */
+.pos-billing-page .pos-main-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .pos-billing-page .pos-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Generic POS Card ──────────────────────────────────────────────────── */
+.pos-billing-page .pos-card {
+  background: var(--surface, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  box-shadow: 0 4px 12px -2px var(--shadow-color, rgba(15, 23, 42, 0.06));
+  padding: 24px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  color: var(--text-primary, #0f172a);
+}
+
+.pos-billing-page .card-header-simple {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.pos-billing-page .card-header-simple h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pos-billing-page .badge-pill {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--surface-muted, #f1f5f9);
+  color: var(--text-secondary, #475569);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+/* ── Left Panel: Medicine Search & Presets ──────────────────────────────── */
+.pos-billing-page .search-input-wrapper {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.pos-billing-page .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted, #64748b);
+  font-size: 18px;
+  pointer-events: none;
+}
+
+.pos-billing-page .pos-search-input {
+  width: 100%;
+  padding: 13px 44px 13px 44px;
+  border: 2px solid var(--input-border, #cbd5e1);
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--text-primary, #0f172a);
+  background: var(--input-bg, #f8fafc);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.pos-billing-page .pos-search-input:focus {
+  outline: none;
+  border-color: var(--primary, #2563eb);
+  background: var(--input-bg, #ffffff);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.pos-billing-page .pos-search-input::placeholder {
+  color: var(--text-muted, #94a3b8);
+}
+
+.pos-billing-page .search-spinner {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2563eb;
+  font-size: 16px;
+}
+
+.pos-billing-page .search-clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surface-muted, #e2e8f0);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary, #475569);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pos-billing-page .search-clear-btn:hover {
+  background: var(--border-color, #cbd5e1);
+  color: var(--text-primary, #0f172a);
+}
+
+/* ── Presets Grid ──────────────────────────────────────────────────────── */
+.pos-billing-page .presets-section {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.pos-billing-page .presets-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pos-billing-page .presets-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pos-billing-page .preset-chip {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--surface-muted, #f1f5f9);
+  border: 1px solid var(--border-color, #e2e8f0);
+  color: var(--text-secondary, #334155);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.pos-billing-page .preset-chip:hover {
+  background: var(--border-color, #e2e8f0);
+  color: var(--text-primary, #0f172a);
+  border-color: var(--border-strong, #cbd5e1);
+  transform: translateY(-1px);
+}
+
+.pos-billing-page .preset-chip.active {
+  background: var(--primary, #2563eb);
+  border-color: var(--primary, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+/* ── Search Dropdown Results ───────────────────────────────────────────── */
+.pos-billing-page .search-results-dropdown {
+  margin-top: 14px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  overflow: hidden;
+  max-height: 380px;
+  overflow-y: auto;
+  background: var(--surface, #ffffff);
+  box-shadow: 0 8px 16px -4px var(--shadow-color, rgba(0, 0, 0, 0.08));
+}
+
+.pos-billing-page .search-result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--surface, #ffffff);
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+  cursor: pointer;
+  transition: background 0.15s;
+  gap: 16px;
+}
+
+.pos-billing-page .search-result-item:last-child {
+  border-bottom: none;
+}
+
+.pos-billing-page .search-result-item:hover {
+  background: var(--surface-muted, #f8fafc);
+}
+
+.pos-billing-page .search-result-item.out-of-stock-item {
+  background: rgba(239, 68, 68, 0.1);
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.pos-billing-page .result-info {
+  flex: 1;
+}
+
+.pos-billing-page .result-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin-bottom: 4px;
+}
+
+.pos-billing-page .result-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+  flex-wrap: wrap;
+}
+
+.pos-billing-page .result-code {
+  font-family: monospace;
+  background: var(--surface-muted, #f1f5f9);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  color: var(--primary, #2563eb);
+}
+
+.pos-billing-page .result-category {
+  color: var(--text-secondary, #475569);
+}
+
+.pos-billing-page .result-expiry {
+  color: var(--warning, #d97706);
+}
+
+.pos-billing-page .result-pricing-action {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: right;
+}
+
+.pos-billing-page .result-price {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+}
+
+.pos-billing-page .result-stock-tag {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.pos-billing-page .tag-in { background: rgba(34, 197, 94, 0.15); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); }
+.pos-billing-page .tag-low { background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.3); }
+.pos-billing-page .tag-out { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+.pos-billing-page .btn-add-item {
+  background: var(--primary, #2563eb);
+  color: white;
+  border: none;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pos-billing-page .btn-add-item:hover:not(:disabled) {
+  background: var(--primary-hover, #1d4ed8);
+  transform: translateY(-1px);
+}
+
+.pos-billing-page .btn-add-item:disabled {
+  background: var(--input-border, #cbd5e1);
+  color: var(--text-muted, #64748b);
+  cursor: not-allowed;
+}
+
+/* ── Selected Medicine Card ────────────────────────────────────────────── */
+.pos-billing-page .selected-medicine-card {
+  border-width: 2px;
+}
+
+.pos-billing-page .selected-medicine-card.card-healthy {
+  border-color: var(--primary, #3b82f6);
+  background: var(--surface, #ffffff);
+}
+
+.pos-billing-page .selected-medicine-card.card-low {
+  border-color: var(--warning, #f59e0b);
+  background: var(--surface, #ffffff);
+}
+
+.pos-billing-page .selected-medicine-card.card-out {
+  border-color: var(--danger, #ef4444);
+  background: var(--surface, #ffffff);
+}
+
+.pos-billing-page .selected-med-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.pos-billing-page .selected-indicator {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--primary, #2563eb);
+  margin-bottom: 4px;
+}
+
+.pos-billing-page .selected-med-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  margin: 0 0 6px 0;
+  letter-spacing: -0.3px;
+}
+
+.pos-billing-page .selected-med-codes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pos-billing-page .code-badge {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.pos-billing-page .category-badge {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e40af;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.pos-billing-page .btn-remove-selection {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.pos-billing-page .btn-remove-selection:hover {
+  background: #fecaca;
+}
+
+.pos-billing-page .stock-health-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pos-billing-page .metric-box {
+  background: var(--surface-muted, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 1px 2px var(--shadow-color, rgba(0, 0, 0, 0.04));
+}
+
+.pos-billing-page .metric-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.pos-billing-page .metric-val {
+  display: block;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+}
+
+.pos-billing-page .val-success { color: #16a34a; }
+.pos-billing-page .val-warning { color: #d97706; }
+.pos-billing-page .val-danger { color: #dc2626; }
+.pos-billing-page .val-price { color: var(--primary, #2563eb); }
+.pos-billing-page .val-neutral { color: var(--text-primary, #334155); }
+
+.pos-billing-page .status-alert-box {
+  padding: 12px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.pos-billing-page .status-alert-box.alert-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1.5px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.pos-billing-page .status-alert-box.alert-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1.5px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.pos-billing-page .alert-reorder-link {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--primary, #2563eb);
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pos-billing-page .empty-selection-card {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted, #64748b);
+}
+
+.pos-billing-page .empty-box-icon {
+  font-size: 48px;
+  color: var(--border-strong, #cbd5e1);
+  margin-bottom: 12px;
+}
+
+.pos-billing-page .empty-selection-card h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #334155);
+  margin: 0 0 6px 0;
+}
+
+.pos-billing-page .empty-selection-card p {
+  font-size: 13px;
+  margin: 0;
+  color: var(--text-muted, #94a3b8);
+}
+
+/* ── Right Panel: Current Bill / Cart ───────────────────────────────────── */
+.pos-billing-page .bill-summary-card {
+  background: var(--surface, #ffffff);
+  border-top: 4px solid var(--primary, #2563eb);
+}
+
+.pos-billing-page .badge-method {
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--primary-light, #eff6ff);
+  color: var(--primary, #2563eb);
+  border: 1px solid var(--border-color, #bfdbfe);
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+
+.pos-billing-page .cart-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-muted, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 14px 18px;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.pos-billing-page .cart-item-details {
+  flex: 1;
+}
+
+.pos-billing-page .cart-item-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin-bottom: 2px;
+}
+
+.pos-billing-page .cart-item-rate {
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+}
+
+.pos-billing-page .qty-stepper {
+  display: flex;
+  align-items: center;
+  background: var(--input-bg, white);
+  border: 1.5px solid var(--input-border, #cbd5e1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pos-billing-page .qty-btn {
+  background: var(--surface-muted, #f1f5f9);
+  border: none;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary, #334155);
+  transition: background 0.15s;
+}
+
+.pos-billing-page .qty-btn:hover:not(:disabled) {
+  background: var(--border-color, #e2e8f0);
+  color: var(--text-primary, #0f172a);
+}
+
+.pos-billing-page .qty-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pos-billing-page .qty-input {
+  width: 44px;
+  height: 32px;
+  border: none;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  background: var(--input-bg, white);
+  outline: none;
+}
+
+.pos-billing-page .cart-item-total {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  min-width: 70px;
+  text-align: right;
+}
+
+.pos-billing-page .cart-empty-line {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted, #94a3b8);
+  font-size: 14px;
+}
+
+.pos-billing-page hr.divider {
+  border: none;
+  border-top: 1px solid var(--border-color, #f1f5f9);
+  margin: 18px 0;
+}
+
+/* ── Customer Fields ───────────────────────────────────────────────────── */
+.pos-billing-page .customer-fields-section {
+  margin-bottom: 18px;
+}
+
+.pos-billing-page .section-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.pos-billing-page .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pos-billing-page .input-group-icon {
+  position: relative;
+}
+
+.pos-billing-page .input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted, #94a3b8);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.pos-billing-page .form-control {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border: 1.5px solid var(--input-border, #cbd5e1);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-primary, #0f172a);
+  background: var(--input-bg, #f8fafc);
+  box-sizing: border-box;
+}
+
+.pos-billing-page .form-control:focus {
+  outline: none;
+  border-color: var(--primary, #2563eb);
+  background: var(--input-bg, white);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ── Payment Options ───────────────────────────────────────────────────── */
+.pos-billing-page .payment-method-section {
+  margin-bottom: 20px;
+}
+
+.pos-billing-page .payment-options-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.pos-billing-page .payment-option-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+  background: var(--surface-muted, #f8fafc);
+  border: 1.5px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  color: var(--text-secondary, #475569);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pos-billing-page .payment-option-btn:hover:not(:disabled) {
+  border-color: var(--border-strong, #cbd5e1);
+  background: var(--surface-muted, #f1f5f9);
+}
+
+.pos-billing-page .payment-option-btn.selected {
+  background: var(--primary-light, #eff6ff);
+  border-color: var(--primary, #2563eb);
+  color: var(--primary, #1d4ed8);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15);
+}
+
+.pos-billing-page .payment-option-btn svg {
+  font-size: 18px;
+}
+
+/* ── Bill Breakdown ────────────────────────────────────────────────────── */
+.pos-billing-page .bill-breakdown {
+  background: var(--surface-muted, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.pos-billing-page .breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 8px;
+}
+
+.pos-billing-page .breakdown-row:last-child {
+  margin-bottom: 0;
+}
+
+.pos-billing-page .grand-total-row {
+  border-top: 2px solid var(--border-strong, #cbd5e1);
+  padding-top: 12px;
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+}
+
+.pos-billing-page .grand-total-val {
+  font-size: 22px;
+  color: var(--primary, #2563eb);
+  letter-spacing: -0.5px;
+}
+
+/* ── Checkout Button ───────────────────────────────────────────────────── */
+.pos-billing-page .btn-checkout {
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+  transition: all 0.2s ease;
+}
+
+.pos-billing-page .btn-checkout:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+.pos-billing-page .btn-checkout:disabled {
+  background: var(--input-border, #cbd5e1);
+  color: var(--text-muted, #94a3b8);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pos-billing-page .btn-checkout.submitting {
+  background: #3b82f6;
+}
+
+/* ── Success Modal & Stock Transition ─────────────────────────────────── */
+.pos-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.pos-modal-card {
+  background: var(--surface, white);
+  border-radius: 20px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  max-width: 540px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalPopIn 0.25s ease-out;
+}
+
+@keyframes modalPopIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header-success {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.success-badge-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px auto;
+}
+
+.modal-header-success h2 {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+}
+
+.invoice-num-tag {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 4px 14px;
+  border-radius: 9999px;
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-body-content {
+  padding: 24px;
+  color: var(--text-primary, #0f172a);
+}
+
+.sale-receipt-summary {
+  background: var(--surface-muted, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-secondary, #475569);
+  margin-bottom: 8px;
+}
+
+.receipt-row:last-child {
+  margin-bottom: 0;
+}
+
+.receipt-row.total-highlight {
+  border-top: 1px solid var(--border-color, #cbd5e1);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.total-amt {
+  font-size: 18px;
+  font-weight: 800;
+  color: #059669;
+}
+
+.inventory-transition-box {
+  background: var(--primary-light, #eff6ff);
+  border: 1.5px solid var(--border-color, #bfdbfe);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 18px;
+}
+
+.transition-title {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary, #1e40af);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.transition-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.t-step {
+  display: flex;
+  flex-direction: column;
+}
+
+.t-lbl {
+  font-size: 11px;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 2px;
+}
+
+.t-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+}
+
+.t-val.val-sold { color: #dc2626; }
+
+.t-arrow {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-muted, #94a3b8);
+}
+
+.modal-alert-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  margin-bottom: 18px;
+}
+
+.modal-alert-box.alert-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.modal-alert-box.alert-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.modal-footer-actions {
+  display: flex;
+  gap: 10px;
+  padding: 16px 24px;
+  background: var(--surface-muted, #f8fafc);
+  border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+.btn-modal-print {
+  flex: 1;
+  background: var(--primary, #2563eb);
+  color: white;
+  border: none;
+  padding: 11px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-modal-print:hover { background: var(--primary-hover, #1d4ed8); }
+
+.btn-modal-history {
+  background: var(--surface, white);
+  border: 1.5px solid var(--border-color, #cbd5e1);
+  color: var(--text-primary, #334155);
+  padding: 11px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-modal-history:hover { background: var(--surface-muted, #f1f5f9); color: var(--text-primary, #0f172a); }
+
+.btn-modal-new-sale {
+  background: #059669;
+  color: white;
+  border: none;
+  padding: 11px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-modal-new-sale:hover { background: #047857; }
+
+/* ── Printable Invoice Paper Modal ─────────────────────────────────────── */
+.invoice-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 20px;
+}
+
+.invoice-modal-content {
+  background: var(--surface, white);
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.invoice-paper {
+  padding: 36px;
+  color: var(--text-primary, #1e293b);
+  background: var(--surface, #ffffff);
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid var(--border-color, #e2e8f0);
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.invoice-logo-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  margin: 0 0 2px 0;
+}
+
+.invoice-logo-sub {
+  font-size: 11px;
+  color: var(--text-muted, #64748b);
+  margin: 0 0 4px 0;
+}
+
+.invoice-business-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary, #2563eb);
+  margin: 0;
+}
+
+.invoice-meta-right {
+  text-align: right;
+}
+
+.invoice-meta-num {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--primary, #2563eb);
+  font-family: monospace;
+}
+
+.invoice-meta-date {
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+  margin-top: 2px;
+}
+
+.invoice-meta-cashier {
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+  display: block;
+}
+
+.invoice-grid-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.invoice-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 18px;
+}
+
+.invoice-items-table th {
+  border-bottom: 2px solid var(--border-strong, #cbd5e1);
+  padding: 8px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary, #475569);
+}
+
+.invoice-items-table td {
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+  padding: 10px 6px;
+  font-size: 13px;
+  color: var(--text-primary, #0f172a);
+}
+
+.invoice-grand-total {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  border-top: 2px solid var(--border-strong, #cbd5e1);
+  padding-top: 12px;
+  margin-bottom: 18px;
+}
+
+.invoice-footer-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+  border-top: 1px solid var(--border-color, #f1f5f9);
+  padding-top: 14px;
+}
+
+.invoice-footer-note p {
+  margin: 0 0 4px 0;
+}
+
+.invoice-modal-footer {
+  background: var(--surface-muted, #f8fafc);
+  padding: 14px 24px;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-print {
+  background: var(--primary, #2563eb);
+  color: white;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-close-modal {
+  background: var(--surface-muted, #e2e8f0);
+  color: var(--text-primary, #334155);
+  border: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ── Sales History KPIs & Table ────────────────────────────────────────── */
+.sales-history-page {
+  padding: 24px 32px;
+  max-width: 1480px;
+  margin: 0 auto;
+  color: var(--text-primary, #0f172a);
+  background: var(--bg-primary, #f8fafc);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.sales-history-page .sales-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.sales-history-page .sales-kpi-card {
+  background: var(--surface, white);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 4px var(--shadow-color, rgba(0, 0, 0, 0.04));
+}
+
+.sales-history-page .kpi-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sales-history-page .icon-blue { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+.sales-history-page .icon-green { background: rgba(16, 185, 129, 0.12); color: #16a34a; }
+.sales-history-page .icon-purple { background: rgba(147, 51, 234, 0.12); color: #9333ea; }
+.sales-history-page .icon-orange { background: rgba(234, 88, 12, 0.12); color: #ea580c; }
+
+.sales-history-page .kpi-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.sales-history-page .kpi-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sales-history-page .kpi-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.sales-history-page .kpi-sub {
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+  margin-top: 2px;
+}
+
+.sales-history-page .sales-filter-card {
+  background: var(--surface, white);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.sales-history-page .search-box-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.sales-history-page .filter-search-input {
+  width: 100%;
+  padding: 10px 34px 10px 38px;
+  border: 1.5px solid var(--input-border, #cbd5e1);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-primary, #0f172a);
+  background: var(--input-bg, #f8fafc);
+  box-sizing: border-box;
+}
+
+.sales-history-page .filter-search-input:focus {
+  outline: none;
+  border-color: var(--primary, #2563eb);
+  background: var(--input-bg, white);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.sales-history-page .filter-dropdowns {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sales-history-page .dropdown-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-muted, #f8fafc);
+  border: 1.5px solid var(--input-border, #cbd5e1);
+  border-radius: 8px;
+  padding: 4px 10px;
+}
+
+.sales-history-page .filter-select {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #334155);
+  outline: none;
+  cursor: pointer;
+}
+
+.sales-history-page .sales-ledger-card {
+  background: var(--surface, white);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px var(--shadow-color, rgba(0, 0, 0, 0.04));
+}
+
+.sales-history-page .sales-ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sales-history-page .sales-ledger-table th {
+  background: var(--table-header, #f8fafc);
+  padding: 12px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted, #475569);
+  border-bottom: 2px solid var(--border-color, #e2e8f0);
+  text-align: left;
+}
+
+.sales-history-page .sales-ledger-table td {
+  padding: 14px;
+  font-size: 13px;
+  background: var(--table-row, white);
+  color: var(--text-primary, #0f172a);
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+  vertical-align: middle;
+}
+
+.sales-history-page .sales-ledger-table tr:hover td {
+  background: var(--table-row-hover, #f8fafc);
+}
+
+.sales-history-page .invoice-badge-code {
+  background: var(--surface-muted, #f1f5f9);
+  color: var(--primary, #2563eb);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.sales-history-page .table-med-name {
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+
+.sales-history-page .table-med-code {
+  font-size: 11px;
+  color: var(--text-muted, #64748b);
+  display: block;
+}
+
+.sales-history-page .payment-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.sales-history-page .tag-cash { background: rgba(34, 197, 94, 0.15); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); }
+.sales-history-page .tag-upi { background: rgba(37, 99, 235, 0.15); color: #2563eb; border: 1px solid rgba(37, 99, 235, 0.3); }
+.sales-history-page .tag-card { background: rgba(147, 51, 234, 0.15); color: #9333ea; border: 1px solid rgba(147, 51, 234, 0.3); }
+
+.sales-history-page .stock-status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.sales-history-page .pill-ok { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+.sales-history-page .pill-low { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+.sales-history-page .pill-out { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+
+.sales-history-page .btn-view-invoice {
+  background: var(--primary-light, #eff6ff);
+  color: var(--primary, #2563eb);
+  border: 1px solid var(--border-color, #bfdbfe);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s;
+}
+
+.sales-history-page .btn-view-invoice:hover {
+  background: var(--primary, #2563eb);
+  color: white;
+  border-color: var(--primary, #2563eb);
+}
+
+.sales-history-page .table-pagination-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--surface-muted, #f8fafc);
+  border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+/* ── Dark Theme Overrides for POS Billing & Sales History ─────────────── */
+[data-theme="dark"] .pos-billing-page,
+[data-theme="dark"] .sales-history-page {
+  color: var(--text-primary, #f8fafc);
+  background-color: var(--bg-primary, #0f172a);
+}
+
+[data-theme="dark"] .pos-card,
+[data-theme="dark"] .sales-kpi-card,
+[data-theme="dark"] .sales-history-card,
+[data-theme="dark"] .bill-summary-card,
+[data-theme="dark"] .selected-medicine-card,
+[data-theme="dark"] .cart-items-container,
+[data-theme="dark"] .pos-modal-card,
+[data-theme="dark"] .sales-ledger-card {
+  background: var(--surface, #1e293b);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #f8fafc);
+}
+
+[data-theme="dark"] .pos-search-input,
+[data-theme="dark"] .pos-input,
+[data-theme="dark"] .pos-select,
+[data-theme="dark"] .sales-filter-input,
+[data-theme="dark"] .sales-filter-select,
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .filter-search-input {
+  background: var(--input-bg, #0f172a);
+  color: var(--text-primary, #f8fafc);
+  border-color: var(--input-border, #475569);
+}
+
+[data-theme="dark"] .pos-search-dropdown,
+[data-theme="dark"] .search-results-dropdown {
+  background: var(--surface, #1e293b);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .search-result-item {
+  background: var(--surface, #1e293b);
+  border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .search-result-item:hover {
+  background: var(--surface-muted, #0f172a);
+}
+
+[data-theme="dark"] .preset-chip {
+  background: var(--surface-muted, #0f172a);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #f8fafc);
+}
+
+[data-theme="dark"] .preset-chip:hover {
+  background: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .cart-item-row,
+[data-theme="dark"] .metric-box {
+  background: var(--surface-muted, #0f172a);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .payment-option-btn {
+  background: var(--surface-muted, #0f172a);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #f8fafc);
+}
+
+[data-theme="dark"] .sales-ledger-table th {
+  background: var(--table-header, #0f172a);
+  color: var(--text-secondary, #cbd5e1);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .sales-ledger-table td {
+  background: var(--table-row, #1e293b);
+  color: var(--text-primary, #f8fafc);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .sales-ledger-table tr:hover td {
+  background: var(--table-row-hover, #0f172a);
+}
+
+[data-theme="dark"] .table-pagination-footer {
+  background: var(--surface-muted, #0f172a);
+  border-color: var(--border-color, #334155);
+}
+
+/* ── Print Media Styles ─────────────────────────────────────────────────── */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #printable-invoice,
+  #printable-invoice * {
+    visibility: visible;
+  }
+
+  #printable-invoice {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 24px;
+    background: white;
+    box-shadow: none;
+    border: none;
+  }
+
+  .no-print,
+  .invoice-modal-footer,
+  .sidebar,
+  .navbar,
+  .pos-header,
+  .pos-main-grid,
+  .pos-billing-page {
+    display: none !important;
+  }
+}

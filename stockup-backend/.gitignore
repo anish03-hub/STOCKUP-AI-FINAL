@@ -60,3 +60,11 @@ __pycache__
 logs
 *.log
 
+### IDE
+.settings/
+
+### Uploads (user data)
+uploads/
+
+### Scratch / temp
+scratch/

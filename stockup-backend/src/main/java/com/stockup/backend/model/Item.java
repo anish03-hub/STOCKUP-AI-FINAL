@@ -30,4 +30,7 @@ public class Item {
     private Integer quantity; // mapped from Quantity / currentStock
     private String expiryDate; // ISO date string YYYY-MM-DD
     private String status; // "In Stock", "Low Stock", "Out of Stock", "Expired"
+    
+    @Column(name = "business_id")
+    private String businessId;
 }

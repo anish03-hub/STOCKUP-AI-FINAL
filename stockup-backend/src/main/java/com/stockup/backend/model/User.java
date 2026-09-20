@@ -27,5 +27,15 @@ public class User {
     private String password;
     private String role;
     private String businessId;
+    
+    @Column(name = "google_subject")
+    private String googleSubject;
+    
+    @Column(name = "auth_provider")
+    private String authProvider = "LOCAL";
+    
+    @Column(name = "notification_email")
+    private String notificationEmail;
+
     private LocalDateTime createdAt;
 }

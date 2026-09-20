@@ -1,6 +1,7 @@
 package com.stockup.backend.security;
 
 import com.stockup.backend.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,15 +35,27 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {})
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Authentication token is missing or invalid\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Forbidden\",\"message\":\"You do not have permission to access this resource\"}");
+                        })
+                )
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
-                                "/api/predictions/**",
-                                "/api/stockout/**",
-                                "/api/reorder/**",
-                                "/api/inventory/**",
-                                "/api/dashboard/**",
+                                "/api/auth/google",
+                                "/api/auth/password-reset/**",
+                                "/api/currency/rates",
+                                "/api/currency/rate",
                                 "/actuator/**",
                                 "/health"
                         ).permitAll()

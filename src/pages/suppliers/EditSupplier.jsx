@@ -1,34 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import SupplierForm from '../../components/suppliers/SupplierForm';
+import { supplierApi } from '../../services/api';
 import '../../styles/suppliers/suppliers.css';
 
 const EditSupplier = () => {
   const { id } = useParams();
-  
-  // Mock fetching supplier data
-  const mockSupplier = {
-    id: id,
-    name: 'MedLife Distributors',
-    contactPerson: 'Alice Smith',
-    phone: '+1 234-567-8901',
-    email: 'orders@medlife.com',
-    address: '123 Health Ave',
-    city: 'New York',
-    state: 'NY',
-    pin: '10001',
-    status: 'Active',
-    paymentTerms: 'Net 30',
-    rating: 4.5,
-    suppliedMedicines: ['Paracetamol', 'Aspirin', 'Ibuprofen']
-  };
+  const [supplier, setSupplier] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    const fetchSupplier = async () => {
+      try {
+        setLoading(true);
+        const data = await supplierApi.getById(id);
+        if (active) setSupplier(data);
+      } catch (err) {
+        if (active) setError(err.message || 'Failed to load distributor details');
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    fetchSupplier();
+    return () => { active = false; };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="suppliers-page">
+        <div className="loading-state">Loading distributor…</div>
+      </div>
+    );
+  }
+
+  if (error || !supplier) {
+    return (
+      <div className="suppliers-page">
+        <div className="alert alert-error">{error || 'Distributor not found'}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="suppliers-page">
       <div className="suppliers-header">
-        <h1>Edit Supplier: {mockSupplier.name}</h1>
+        <h1>Edit Distributor: {supplier.name}</h1>
       </div>
-      <SupplierForm initialData={mockSupplier} isEdit={true} />
+      <SupplierForm initialData={supplier} isEdit={true} />
     </div>
   );
 };

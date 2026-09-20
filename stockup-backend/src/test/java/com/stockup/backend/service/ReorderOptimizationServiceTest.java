@@ -4,6 +4,7 @@ import com.stockup.backend.dto.DynamicReorderResponse;
 import com.stockup.backend.dto.ReorderRequest;
 import com.stockup.backend.model.Item;
 import com.stockup.backend.repository.ItemRepository;
+import com.stockup.backend.security.CurrentUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -24,6 +25,7 @@ public class ReorderOptimizationServiceTest {
 
     private ItemRepository itemRepository;
     private DemandStatisticsService demandStatisticsService;
+    private CurrentUserService currentUserService;
     private ReorderOptimizationService service;
 
     // ── Test item fixtures ─────────────────────────────────────────────────────
@@ -39,7 +41,8 @@ public class ReorderOptimizationServiceTest {
     public void setUp() {
         itemRepository = Mockito.mock(ItemRepository.class);
         demandStatisticsService = Mockito.mock(DemandStatisticsService.class);
-        service = new ReorderOptimizationService(itemRepository, demandStatisticsService);
+        currentUserService = Mockito.mock(CurrentUserService.class);
+        service = new ReorderOptimizationService(itemRepository, demandStatisticsService, currentUserService);
 
         // Inject configurable defaults via reflection
         setField(service, "defaultLeadTimeHours", 24);

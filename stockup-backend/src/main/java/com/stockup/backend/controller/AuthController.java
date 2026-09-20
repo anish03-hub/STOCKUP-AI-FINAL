@@ -3,6 +3,7 @@ package com.stockup.backend.controller;
 import com.stockup.backend.dto.LoginRequest;
 import com.stockup.backend.dto.LoginResponse;
 import com.stockup.backend.dto.RegisterRequest;
+import com.stockup.backend.dto.RegisterResponse;
 import com.stockup.backend.dto.UserResponse;
 import com.stockup.backend.security.JwtService;
 import com.stockup.backend.service.UserService;
@@ -10,6 +11,9 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.stockup.backend.dto.GoogleAuthRequest;
+import com.stockup.backend.dto.GoogleAuthResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,14 +24,20 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<LoginResponse> register(@Valid @RequestBody RegisterRequest request) {
-        LoginResponse response = userService.register(request);
+    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
+        RegisterResponse response = userService.register(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = userService.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<GoogleAuthResponse> googleAuth(@Valid @RequestBody GoogleAuthRequest request) {
+        GoogleAuthResponse response = userService.authenticateGoogleUser(request);
         return ResponseEntity.ok(response);
     }
 

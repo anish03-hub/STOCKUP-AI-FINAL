@@ -1,6 +1,10 @@
 package com.stockup.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Extended reorder optimization response that exposes the full
@@ -17,6 +21,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  *
  * Historical demand source: saleshourly.csv (50,532 hourly observations)
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DynamicReorderResponse {
 
@@ -85,73 +93,11 @@ public class DynamicReorderResponse {
     private double unitPrice;
     private double estimatedCost;
 
-    // ── Explanation ─────────────────────────────────────────────────────────────
     /** Human-readable explanation of how safety stock was calculated. */
     private String calculationNote;
 
-    // ── Constructors ────────────────────────────────────────────────────────────
-    public DynamicReorderResponse() {}
-
-    // ── Getters and Setters ─────────────────────────────────────────────────────
-    public String getMedicineName() { return medicineName; }
-    public void setMedicineName(String medicineName) { this.medicineName = medicineName; }
-
-    public String getProductCode() { return productCode; }
-    public void setProductCode(String productCode) { this.productCode = productCode; }
-
-    public boolean isItemFound() { return itemFound; }
-    public void setItemFound(boolean itemFound) { this.itemFound = itemFound; }
-
-    public int getCurrentStock() { return currentStock; }
-    public void setCurrentStock(int currentStock) { this.currentStock = currentStock; }
-
-    public double getAverageDemand() { return averageDemand; }
-    public void setAverageDemand(double averageDemand) { this.averageDemand = averageDemand; }
-
-    public double getDemandStdDev() { return demandStdDev; }
-    public void setDemandStdDev(double demandStdDev) { this.demandStdDev = demandStdDev; }
-
-    public int getHistoricalObservations() { return historicalObservations; }
-    public void setHistoricalObservations(int historicalObservations) { this.historicalObservations = historicalObservations; }
-
-    public boolean isHistoricalDataAvailable() { return historicalDataAvailable; }
-    public void setHistoricalDataAvailable(boolean historicalDataAvailable) { this.historicalDataAvailable = historicalDataAvailable; }
-
-    public double getLeadTimeHours() { return leadTimeHours; }
-    public void setLeadTimeHours(double leadTimeHours) { this.leadTimeHours = leadTimeHours; }
-
-    public double getServiceLevel() { return serviceLevel; }
-    public void setServiceLevel(double serviceLevel) { this.serviceLevel = serviceLevel; }
-
     public double getzScore() { return zScore; }
     public void setzScore(double zScore) { this.zScore = zScore; }
-
-    public double getSafetyStock() { return safetyStock; }
-    public void setSafetyStock(double safetyStock) { this.safetyStock = safetyStock; }
-
-    public double getExpectedLeadTimeDemand() { return expectedLeadTimeDemand; }
-    public void setExpectedLeadTimeDemand(double expectedLeadTimeDemand) { this.expectedLeadTimeDemand = expectedLeadTimeDemand; }
-
-    public double getReorderPoint() { return reorderPoint; }
-    public void setReorderPoint(double reorderPoint) { this.reorderPoint = reorderPoint; }
-
-    public int getPredictedDemand() { return predictedDemand; }
-    public void setPredictedDemand(int predictedDemand) { this.predictedDemand = predictedDemand; }
-
-    public double getTargetStock() { return targetStock; }
-    public void setTargetStock(double targetStock) { this.targetStock = targetStock; }
-
-    public int getReorderQuantity() { return reorderQuantity; }
-    public void setReorderQuantity(int reorderQuantity) { this.reorderQuantity = reorderQuantity; }
-
-    public double getUnitPrice() { return unitPrice; }
-    public void setUnitPrice(double unitPrice) { this.unitPrice = unitPrice; }
-
-    public double getEstimatedCost() { return estimatedCost; }
-    public void setEstimatedCost(double estimatedCost) { this.estimatedCost = estimatedCost; }
-
-    public String getCalculationNote() { return calculationNote; }
-    public void setCalculationNote(String calculationNote) { this.calculationNote = calculationNote; }
 
     // Legacy compat — kept for any existing code that calls getTotalEstimatedCost()
     public double getTotalEstimatedCost() { return estimatedCost; }
@@ -159,3 +105,5 @@ public class DynamicReorderResponse {
     // Legacy compat — safetyStock rounded to int for old UI code
     public int getSafetyStockInt() { return (int) Math.ceil(safetyStock); }
 }
+
+

@@ -25,8 +25,9 @@ public class Forecast {
     private String id;
 
     /** Foreign key to the product/item this forecast is for. */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Item item;
 
     /** Denormalised label kept for convenience / when the item is external. */
@@ -35,10 +36,15 @@ public class Forecast {
 
     private String forecastDate;        // ISO date the forecast targets
     private Double predictedDemand;
+    private Double actualDemand;           // Recorded actual consumption (if available)
     private String model;               // e.g. "RandomForest", "GradientBoosting"
     private Double confidence;          // optional 0..1
 
+    @Column(name = "business_id")
+    private String businessId;
+
     private LocalDateTime createdAt;
+
 
     @PrePersist
     void onCreate() {

@@ -1,0 +1,120 @@
+{
+  "model_name": "DailyDemandForecastingModel",
+  "version": "1.0",
+  "model_type": "HistGradientBoostingRegressor",
+  "source": "PostgreSQL daily_sales",
+  "total_records": 177990,
+  "training_records": 143026,
+  "test_records": 29644,
+  "training_date_range": [
+    "2020-02-10",
+    "2024-12-31"
+  ],
+  "test_date_range": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "feature_count": 25,
+  "features": [
+    "medicine",
+    "country",
+    "region",
+    "category",
+    "age_group",
+    "year",
+    "month",
+    "day",
+    "day_of_week",
+    "day_of_year",
+    "quarter",
+    "is_weekend",
+    "lag_1",
+    "lag_7",
+    "lag_14",
+    "lag_28",
+    "rolling_mean_7",
+    "rolling_mean_14",
+    "rolling_mean_28",
+    "rolling_std_7",
+    "rolling_std_28",
+    "unit_price",
+    "stock_level",
+    "expiry_days_remaining",
+    "covid_flag"
+  ],
+  "target": "units_sold",
+  "split_strategy": "Chronological (2020-2024 Train, 2025 Test holdout)",
+  "leakage_prevention": "Strict shift(1) before all lag and rolling calculations",
+  "metrics": {
+    "ml_model": {
+      "mae": 60.82,
+      "rmse": 81.3,
+      "wape_pct": 16.31,
+      "r2": 0.9028
+    },
+    "baseline_naive_previous_day": {
+      "mae": 148.25,
+      "rmse": 339.22,
+      "wape_pct": 39.75,
+      "r2": -0.6915
+    },
+    "baseline_7_day_moving_average": {
+      "mae": 122.01,
+      "rmse": 261.17,
+      "wape_pct": 32.72,
+      "r2": -0.0027
+    },
+    "mae_improvement_vs_naive_pct": 58.97,
+    "mae_improvement_vs_7day_ma_pct": 50.15
+  },
+  "supported_medicines": [
+    "Amlodipine",
+    "Amoxicillin",
+    "Azithromycin",
+    "Cetirizine",
+    "Cough Syrup",
+    "Ibuprofen",
+    "Metformin",
+    "Multivitamin",
+    "Paracetamol",
+    "Vitamin C"
+  ],
+  "supported_countries": [
+    "Argentina",
+    "Australia",
+    "Bangladesh",
+    "Brazil",
+    "Canada",
+    "China",
+    "France",
+    "Germany",
+    "India",
+    "Japan",
+    "Kenya",
+    "New Zealand",
+    "Nigeria",
+    "Saudi Arabia",
+    "South Korea",
+    "Sri Lanka",
+    "UAE",
+    "UK",
+    "USA"
+  ],
+  "supported_regions": [
+    "Africa",
+    "East Asia",
+    "Europe",
+    "Middle East",
+    "North America",
+    "Oceania",
+    "South America",
+    "South Asia"
+  ],
+  "supported_categories": [
+    "Antibiotic",
+    "Antipyretic",
+    "Chronic",
+    "Cough_Cold",
+    "Vitamin"
+  ]
+}

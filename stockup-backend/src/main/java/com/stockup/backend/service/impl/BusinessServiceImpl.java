@@ -5,6 +5,7 @@ import com.stockup.backend.dto.BusinessResponse;
 import com.stockup.backend.model.Business;
 import com.stockup.backend.repository.BusinessRepository;
 import com.stockup.backend.service.BusinessService;
+import com.stockup.backend.service.CompanyOnboardingService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 public class BusinessServiceImpl implements BusinessService {
 
     private final BusinessRepository businessRepository;
+    private final CompanyOnboardingService companyOnboardingService;
 
-    public BusinessServiceImpl(BusinessRepository businessRepository) {
+    public BusinessServiceImpl(BusinessRepository businessRepository, CompanyOnboardingService companyOnboardingService) {
         this.businessRepository = businessRepository;
+        this.companyOnboardingService = companyOnboardingService;
     }
 
     @Override
@@ -46,6 +49,9 @@ public class BusinessServiceImpl implements BusinessService {
         business.setCreatedAt(LocalDateTime.now());
 
         Business savedBusiness = businessRepository.save(business);
+        if (savedBusiness != null) {
+            companyOnboardingService.ensureCompanyCatalogInitialized(savedBusiness.getId(), savedBusiness.getBusinessName());
+        }
         return mapToResponse(savedBusiness);
     }
 
@@ -89,7 +95,9 @@ public class BusinessServiceImpl implements BusinessService {
         existingBusiness.setCity(request.getCity());
         existingBusiness.setState(request.getState());
         existingBusiness.setCountry(request.getCountry());
-        existingBusiness.setPincode(request.getPincode());
+        if (request.getCurrency() != null && !request.getCurrency().isBlank()) {
+            existingBusiness.setCurrency(request.getCurrency());
+        }
         // createdAt remains unchanged
 
         Business updatedBusiness = businessRepository.save(existingBusiness);
@@ -117,6 +125,7 @@ public class BusinessServiceImpl implements BusinessService {
                 business.getState(),
                 business.getCountry(),
                 business.getPincode(),
+                business.getCurrency() != null ? business.getCurrency() : "USD",
                 business.getCreatedAt()
         );
     }

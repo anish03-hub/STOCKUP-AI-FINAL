@@ -7,13 +7,14 @@
 /* ---- Suppliers Page ---- */
 .suppliers-page {
   animation: fadeIn 0.4s ease;
+  color: var(--text-primary, #0f172a);
 }
 
 /* ---- View Toggle ---- */
 .view-toggle {
   display: flex;
   gap: 4px;
-  background: var(--gray-100);
+  background: var(--surface-muted, #f1f5f9);
   padding: 4px;
   border-radius: var(--border-radius-sm);
 }
@@ -23,7 +24,7 @@
   border-radius: 6px;
   font-size: var(--font-size-sm);
   font-weight: 500;
-  color: var(--gray-500);
+  color: var(--text-secondary, #64748b);
   transition: all var(--transition-base);
   display: flex;
   align-items: center;
@@ -34,8 +35,8 @@
 }
 
 .view-toggle-btn.active {
-  background: white;
-  color: var(--primary-700);
+  background: var(--surface, #ffffff);
+  color: var(--primary, #2563eb);
   box-shadow: var(--shadow-sm);
 }
 
@@ -49,21 +50,22 @@
 
 /* ---- Supplier Card ---- */
 .supplier-card {
-  background: var(--bg-card);
+  background: var(--surface, #ffffff);
   border-radius: var(--border-radius-lg);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border, #e2e8f0);
   box-shadow: var(--shadow-sm);
   padding: 24px;
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
   gap: 16px;
+  color: var(--text-primary, inherit);
 }
 
 .supplier-card:hover {
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
-  border-color: var(--primary-200);
+  border-color: var(--primary-200, #93c5fd);
 }
 
 .supplier-card-header {
@@ -88,13 +90,13 @@
 .supplier-name {
   font-size: var(--font-size-base);
   font-weight: 700;
-  color: var(--gray-900);
+  color: var(--text-primary, #0f172a);
   margin-bottom: 2px;
 }
 
 .supplier-contact-person {
   font-size: var(--font-size-sm);
-  color: var(--gray-500);
+  color: var(--text-secondary, #64748b);
 }
 
 .supplier-card-body {
@@ -108,11 +110,11 @@
   align-items: center;
   gap: 8px;
   font-size: var(--font-size-sm);
-  color: var(--gray-600);
+  color: var(--text-secondary, #64748b);
 }
 
 .supplier-info-row svg {
-  color: var(--primary-500);
+  color: var(--primary-500, #3b82f6);
   flex-shrink: 0;
   font-size: 14px;
 }
@@ -122,7 +124,7 @@
   display: flex;
   gap: 16px;
   padding-top: 12px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border, #e2e8f0);
 }
 
 .supplier-stat {
@@ -135,12 +137,12 @@
 .supplier-stat-value {
   font-size: var(--font-size-lg);
   font-weight: 700;
-  color: var(--gray-900);
+  color: var(--text-primary, #0f172a);
 }
 
 .supplier-stat-label {
   font-size: var(--font-size-xs);
-  color: var(--gray-500);
+  color: var(--text-secondary, #64748b);
 }
 
 /* ---- Star Rating ---- */
@@ -155,7 +157,7 @@
 }
 
 .star-filled { color: #f59e0b; }
-.star-empty { color: var(--gray-300); }
+.star-empty { color: var(--border, #cbd5e1); }
 
 /* ---- Supplier Card Footer ---- */
 .supplier-card-footer {
@@ -167,9 +169,9 @@
 
 /* ---- Supplier Table Card ---- */
 .supplier-table-card {
-  background: var(--bg-card);
+  background: var(--surface, #ffffff);
   border-radius: var(--border-radius-lg);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border, #e2e8f0);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   margin-top: 24px;
@@ -178,10 +180,11 @@
 /* ---- Supplier Detail Page ---- */
 .supplier-detail-page {
   animation: fadeIn 0.4s ease;
+  color: var(--text-primary, #0f172a);
 }
 
 .supplier-detail-hero {
-  background: linear-gradient(135deg, var(--primary-700), var(--primary-900));
+  background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
   border-radius: var(--border-radius-lg);
   padding: 32px;
   color: white;
@@ -237,9 +240,9 @@
 }
 
 .supplier-detail-card {
-  background: var(--bg-card);
+  background: var(--surface, #ffffff);
   border-radius: var(--border-radius-lg);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border, #e2e8f0);
   box-shadow: var(--shadow-sm);
   padding: 24px;
 }
@@ -247,10 +250,10 @@
 .supplier-detail-card h3 {
   font-size: var(--font-size-base);
   font-weight: 700;
-  color: var(--gray-800);
+  color: var(--text-primary, #0f172a);
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border, #e2e8f0);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -261,7 +264,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid var(--gray-50);
+  border-bottom: 1px solid var(--border, #f1f5f9);
   font-size: var(--font-size-sm);
 }
 
@@ -270,12 +273,12 @@
 }
 
 .supplier-detail-label {
-  color: var(--gray-500);
+  color: var(--text-secondary, #64748b);
   font-weight: 500;
 }
 
 .supplier-detail-value {
-  color: var(--gray-800);
+  color: var(--text-primary, #0f172a);
   font-weight: 600;
   text-align: right;
 }
@@ -290,19 +293,19 @@
 
 .medicine-tag {
   padding: 4px 12px;
-  background: var(--primary-50);
-  color: var(--primary-700);
+  background: var(--surface-muted, #eff6ff);
+  color: var(--primary, #1d4ed8);
   border-radius: 100px;
   font-size: var(--font-size-xs);
   font-weight: 600;
-  border: 1px solid var(--primary-100);
+  border: 1px solid var(--border, #bfdbfe);
 }
 
 /* ---- Supplier Form ---- */
 .supplier-form-card {
-  background: var(--bg-card);
+  background: var(--surface, #ffffff);
   border-radius: var(--border-radius-lg);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border, #e2e8f0);
   box-shadow: var(--shadow-sm);
   padding: 32px;
   max-width: 900px;
@@ -312,7 +315,7 @@
 .supplier-form-section {
   margin-bottom: 28px;
   padding-bottom: 28px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border, #e2e8f0);
 }
 
 .supplier-form-section:last-child {
@@ -323,7 +326,7 @@
 .supplier-form-section-title {
   font-size: var(--font-size-base);
   font-weight: 700;
-  color: var(--gray-800);
+  color: var(--text-primary, #0f172a);
   margin-bottom: 20px;
   display: flex;
   align-items: center;
@@ -331,7 +334,7 @@
 }
 
 .supplier-form-section-title svg {
-  color: var(--primary-600);
+  color: var(--primary-600, #2563eb);
 }
 
 .supplier-form-grid {

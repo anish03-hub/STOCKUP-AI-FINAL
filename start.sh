@@ -10,6 +10,17 @@ echo "=================================================="
 echo "🚀 Initializing StockUp AI Local Development..."
 echo "=================================================="
 
+# Load environment variables from .env if present
+if [ -f "${PROJECT_ROOT}/.env" ]; then
+  TMP_ENV=$(mktemp)
+  tr -d '\r' < "${PROJECT_ROOT}/.env" > "${TMP_ENV}"
+  set -a
+  . "${TMP_ENV}"
+  set +a
+  rm -f "${TMP_ENV}"
+  echo "📄 Environment variables loaded from .env"
+fi
+
 # Helper function to check port status & health
 # Returns:
 # 0 - Healthy
@@ -73,7 +84,11 @@ elif [ $BOOT_STATUS -eq 2 ]; then
 else
   echo "🚀 Starting Spring Boot Backend..."
   cd "${PROJECT_ROOT}/stockup-backend"
-  nohup ./mvnw spring-boot:run -Dspring-boot.run.profiles=default > "${LOG_DIR}/spring-boot.log" 2>&1 &
+  SPRING_ARGS="-Dspring-boot.run.profiles=default"
+  if [ -n "${MAIL_PASSWORD}" ]; then
+    SPRING_ARGS="${SPRING_ARGS} -DMAIL_HOST=${MAIL_HOST:-smtp.gmail.com} -DMAIL_PORT=${MAIL_PORT:-587} -DMAIL_USERNAME=${MAIL_USERNAME:-ag584160@gmail.com} -DMAIL_PASSWORD=${MAIL_PASSWORD} -DMAIL_FROM=${MAIL_FROM:-ag584160@gmail.com} -Dspring.mail.password=${MAIL_PASSWORD}"
+  fi
+  nohup ./mvnw spring-boot:run ${SPRING_ARGS} > "${LOG_DIR}/spring-boot.log" 2>&1 &
   BOOT_PID=$!
   echo "   ↳ Started in background (PID: $BOOT_PID). Logs: logs/spring-boot.log"
   cd "${PROJECT_ROOT}"

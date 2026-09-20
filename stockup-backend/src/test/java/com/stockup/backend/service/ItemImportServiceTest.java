@@ -19,11 +19,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
-@SuppressWarnings("null")
+import com.stockup.backend.security.CurrentUserService;
+
 public class ItemImportServiceTest {
 
     @Mock
     private ItemRepository itemRepository;
+
+    @Mock
+    private CurrentUserService currentUserService;
 
     @InjectMocks
     private ItemServiceImpl itemService;

@@ -36,18 +36,18 @@
 .search-wrapper svg {
   position: absolute;
   left: 12px;
-  color: var(--gray-500);
+  color: var(--text-muted);
   font-size: 1.1rem;
 }
 
 .search-wrapper input {
   width: 100%;
   padding: 8px 12px 8px 36px;
-  border: 1px solid var(--gray-300);
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
   font-size: 0.875rem;
-  color: var(--gray-800);
-  background-color: var(--white);
+  color: var(--text-primary);
+  background-color: var(--input-bg);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -59,11 +59,11 @@
 
 .filter-select {
   padding: 8px 32px 8px 12px;
-  border: 1px solid var(--gray-300);
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
   font-size: 0.875rem;
-  color: var(--gray-800);
-  background-color: var(--white);
+  color: var(--text-primary);
+  background-color: var(--input-bg);
   appearance: none;
   cursor: pointer;
   min-width: 160px;
@@ -81,10 +81,10 @@
 }
 
 .medicines-table-card {
-  background: var(--white);
+  background: var(--surface);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--border-color);
   overflow: hidden;
   width: 100%;
 }
@@ -101,26 +101,30 @@
 }
 
 .medicines-table th {
-  background-color: var(--gray-50);
-  color: var(--gray-600);
+  background-color: var(--table-header);
+  color: var(--text-secondary);
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: var(--spacing-3) var(--spacing-4);
   font-weight: 600;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .medicines-table td {
   padding: var(--spacing-3) var(--spacing-4);
-  border-bottom: 1px solid var(--gray-100);
+  border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
-  color: var(--gray-800);
+  color: var(--text-primary);
   font-size: 0.875rem;
 }
 
+.medicines-table tbody tr {
+  background-color: var(--table-row);
+}
+
 .medicines-table tbody tr:hover {
-  background-color: var(--gray-50);
+  background-color: var(--table-row-hover);
 }
 
 .medicines-table tbody tr:last-child td {
@@ -137,8 +141,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: var(--primary-100);
-  color: var(--primary-700);
+  background-color: var(--surface-muted);
+  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -149,24 +153,24 @@
 
 .medicine-name-text {
   font-weight: 500;
-  color: var(--gray-900);
+  color: var(--text-primary);
 }
 
 .medicine-category-text {
   font-size: 0.75rem;
-  color: var(--gray-500);
+  color: var(--text-secondary);
   margin-top: 2px;
 }
 
 .medicine-code-badge {
   display: inline-block;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  background-color: var(--blue-50);
-  color: var(--blue-700);
+  background-color: var(--surface-muted);
+  color: var(--primary);
   padding: 2px 8px;
   border-radius: var(--border-radius-sm);
   font-size: 0.75rem;
-  border: 1px solid var(--blue-200);
+  border: 1px solid var(--border-color);
 }
 
 .status-badge {
@@ -201,7 +205,7 @@
   gap: var(--spacing-2);
 }
 
-.action-btn {
+.action-btn-group .action-btn {
   background: transparent;
   border: none;
   border-radius: var(--border-radius-sm);
@@ -213,29 +217,29 @@
   transition: background-color 0.2s, color 0.2s;
 }
 
-.action-btn:focus {
+.action-btn-group .action-btn:focus {
   outline: none;
   box-shadow: 0 0 0 2px var(--primary-100);
 }
 
-.action-btn.view {
+.action-btn-group .action-btn.view {
   color: var(--primary-600);
 }
-.action-btn.view:hover {
+.action-btn-group .action-btn.view:hover {
   background-color: var(--primary-50);
 }
 
-.action-btn.edit {
+.action-btn-group .action-btn.edit {
   color: var(--warning-600);
 }
-.action-btn.edit:hover {
+.action-btn-group .action-btn.edit:hover {
   background-color: var(--warning-50);
 }
 
-.action-btn.delete {
+.action-btn-group .action-btn.delete {
   color: var(--danger-600);
 }
-.action-btn.delete:hover {
+.action-btn-group .action-btn.delete:hover {
   background-color: var(--danger-50);
 }
 
@@ -245,7 +249,7 @@
   justify-content: center;
   gap: var(--spacing-2);
   padding: var(--spacing-4);
-  border-top: 1px solid var(--gray-200);
+  border-top: 1px solid var(--border-color);
 }
 
 .pagination-btn {
@@ -255,9 +259,9 @@
   min-width: 32px;
   height: 32px;
   padding: 0 8px;
-  border: 1px solid var(--gray-300);
-  background-color: var(--white);
-  color: var(--gray-700);
+  border: 1px solid var(--border-color);
+  background-color: var(--surface);
+  color: var(--text-primary);
   border-radius: var(--border-radius-md);
   font-size: 0.875rem;
   font-weight: 500;
@@ -266,20 +270,20 @@
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background-color: var(--gray-50);
-  border-color: var(--gray-400);
+  background-color: var(--surface-muted);
+  border-color: var(--border-strong);
 }
 
 .pagination-btn.active {
   background-color: var(--primary-600);
-  color: var(--white);
+  color: #ffffff;
   border-color: var(--primary-600);
 }
 
 .pagination-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: var(--gray-50);
+  background-color: var(--surface-muted);
 }
 
 /* Forms */
@@ -296,7 +300,7 @@
   align-items: center;
   font-size: 0.875rem;
   margin-bottom: var(--spacing-4);
-  color: var(--gray-500);
+  color: var(--text-muted);
 }
 
 .breadcrumb a {
@@ -310,19 +314,19 @@
 }
 
 .breadcrumb-separator {
-  color: var(--gray-400);
+  color: var(--text-muted);
 }
 
 .breadcrumb-current {
-  color: var(--gray-700);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .form-card {
-  background: var(--white);
+  background: var(--surface);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--border-color);
   padding: var(--spacing-6);
   margin-bottom: var(--spacing-6);
 }
@@ -330,8 +334,8 @@
 .form-section-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--gray-900);
-  border-bottom: 1px solid var(--gray-200);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: var(--spacing-3);
   margin-bottom: var(--spacing-4);
   margin-top: 0;
@@ -353,17 +357,17 @@
 .form-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--gray-700);
+  color: var(--text-secondary);
 }
 
 .form-input, .form-textarea {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid var(--gray-300);
+  border: 1px solid var(--input-border);
   border-radius: var(--border-radius-md);
   font-size: 0.875rem;
-  color: var(--gray-800);
-  background-color: var(--white);
+  color: var(--text-primary);
+  background-color: var(--input-bg);
   transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
 }
@@ -398,7 +402,7 @@
   gap: var(--spacing-3);
   margin-top: var(--spacing-6);
   padding-top: var(--spacing-4);
-  border-top: 1px solid var(--gray-200);
+  border-top: 1px solid var(--border-color);
 }
 
 .btn {
@@ -416,7 +420,7 @@
 
 .btn-primary {
   background-color: var(--primary-600);
-  color: var(--white);
+  color: #ffffff;
 }
 
 .btn-primary:hover {
@@ -424,13 +428,13 @@
 }
 
 .btn-secondary {
-  background-color: var(--white);
-  color: var(--gray-700);
-  border-color: var(--gray-300);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border-color);
 }
 
 .btn-secondary:hover {
-  background-color: var(--gray-50);
+  background-color: var(--surface-muted);
 }
 
 /* Detail Page */
@@ -447,7 +451,7 @@
   background: linear-gradient(135deg, var(--primary-700), var(--primary-900));
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-6);
-  color: var(--white);
+  color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -499,13 +503,13 @@
 
 .btn-outline-light {
   background-color: transparent;
-  color: var(--white);
+  color: #ffffff;
   border-color: rgba(255, 255, 255, 0.5);
 }
 
 .btn-outline-light:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  border-color: var(--white);
+  border-color: #ffffff;
 }
 
 .detail-content-grid {
@@ -515,10 +519,10 @@
 }
 
 .detail-card {
-  background: var(--white);
+  background: var(--surface);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--border-color);
   padding: var(--spacing-6);
   height: 100%;
 }
@@ -526,8 +530,8 @@
 .detail-card-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--gray-900);
-  border-bottom: 1px solid var(--gray-200);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: var(--spacing-3);
   margin-bottom: var(--spacing-4);
   margin-top: 0;
@@ -552,14 +556,14 @@
   text-transform: uppercase;
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--gray-500);
+  color: var(--text-muted);
   letter-spacing: 0.05em;
 }
 
 .detail-value {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: var(--gray-900);
+  color: var(--text-primary);
 }
 
 .stock-indicator-wrapper {
@@ -568,7 +572,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-4);
-  background-color: var(--gray-50);
+  background-color: var(--surface-muted);
   border-radius: var(--border-radius-lg);
   margin-bottom: var(--spacing-4);
 }
@@ -586,7 +590,7 @@
 
 .stock-label {
   font-size: 0.875rem;
-  color: var(--gray-600);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -606,9 +610,10 @@
 }
 
 .delete-modal {
-  background-color: var(--white);
+  background-color: var(--surface);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
   width: 100%;
   max-width: 400px;
   overflow: hidden;
@@ -622,7 +627,7 @@
 
 .modal-header {
   padding: var(--spacing-4) var(--spacing-5);
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -631,7 +636,7 @@
 .modal-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--gray-900);
+  color: var(--text-primary);
   margin: 0;
   display: flex;
   align-items: center;
@@ -645,7 +650,7 @@
 .modal-close {
   background: transparent;
   border: none;
-  color: var(--gray-500);
+  color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -655,29 +660,29 @@
 }
 
 .modal-close:hover {
-  background-color: var(--gray-100);
-  color: var(--gray-700);
+  background-color: var(--surface-muted);
+  color: var(--text-primary);
 }
 
 .modal-body {
   padding: var(--spacing-5);
-  color: var(--gray-700);
+  color: var(--text-secondary);
   font-size: 0.9375rem;
   line-height: 1.5;
 }
 
 .modal-footer {
   padding: var(--spacing-4) var(--spacing-5);
-  border-top: 1px solid var(--gray-200);
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   gap: var(--spacing-3);
-  background-color: var(--gray-50);
+  background-color: var(--surface-muted);
 }
 
 .btn-danger {
   background-color: var(--danger-600);
-  color: var(--white);
+  color: #ffffff;
 }
 
 .btn-danger:hover {
@@ -699,9 +704,10 @@
   align-items: center;
   gap: var(--spacing-3);
   padding: var(--spacing-3) var(--spacing-4);
-  background-color: var(--white);
+  background-color: var(--surface);
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
   border-left: 4px solid var(--primary-500);
   min-width: 300px;
   animation: slide-in-right 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -733,24 +739,24 @@
 .toast-title {
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--gray-900);
+  color: var(--text-primary);
   margin-bottom: 2px;
 }
 
 .toast-message {
   font-size: 0.8125rem;
-  color: var(--gray-600);
+  color: var(--text-secondary);
 }
 
 .toast-close {
   background: transparent;
   border: none;
-  color: var(--gray-400);
+  color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
 }
 .toast-close:hover {
-  color: var(--gray-600);
+  color: var(--text-primary);
 }
 
 /* Responsive adjustments */

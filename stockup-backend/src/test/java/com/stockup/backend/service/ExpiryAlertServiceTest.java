@@ -12,15 +12,19 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.stockup.backend.security.CurrentUserService;
+
 public class ExpiryAlertServiceTest {
 
     private ItemRepository itemRepository;
+    private CurrentUserService currentUserService;
     private ExpiryAlertService service;
 
     @BeforeEach
     public void setUp() {
         itemRepository = Mockito.mock(ItemRepository.class);
-        service = new ExpiryAlertService(itemRepository);
+        currentUserService = Mockito.mock(CurrentUserService.class);
+        service = new ExpiryAlertService(itemRepository, currentUserService);
     }
 
     @Test

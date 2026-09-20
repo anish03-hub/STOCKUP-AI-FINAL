@@ -8,7 +8,8 @@ import {
   FiCalendar, 
   FiBriefcase, 
   FiCheckCircle, 
-  FiSettings 
+  FiSettings,
+  FiAlertCircle 
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { authApi } from '../../services/api';

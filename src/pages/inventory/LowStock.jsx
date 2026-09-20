@@ -13,7 +13,7 @@ const LowStock = () => {
     const loadInventory = async () => {
       try {
         const data = await itemsApi.getAll();
-        setDbMedicines(data);
+        setDbMedicines(data || []);
       } catch (err) {
         console.error("Failed to load inventory data:", err);
       } finally {
@@ -24,29 +24,42 @@ const LowStock = () => {
   }, []);
   
   // Safe default in case medicines is not defined, mapped to required UI properties
-  const mockMedicines = useMemo(() => {
+  const medicines = useMemo(() => {
     const raw = dbMedicines || [];
-    return raw.map(m => ({
-      ...m,
-      available: m.available !== undefined ? m.available : (m.quantity || 0),
-      reserved: m.reserved !== undefined ? m.reserved : Math.floor((m.quantity || 0) * 0.05),
-      value: m.value !== undefined ? m.value : ((m.price || m.purchasePrice || 0) * (m.quantity || 0)),
-      unit: m.unit || 'units',
-      minStock: m.minStock || 0,
-      location: m.location || m.storageLocation || 'N/A'
-    }));
+    return raw.map(m => {
+      const qty = m.quantity ?? m.available ?? 0;
+      const minStock = (m.minStock && m.minStock > 0) ? m.minStock : 50;
+      const price = m.price || m.purchasePrice || 0;
+      return {
+        ...m,
+        available: qty,
+        reserved: m.reserved !== undefined ? m.reserved : Math.floor(qty * 0.05),
+        value: m.value !== undefined ? m.value : (price * qty),
+        unit: m.unit || 'units',
+        minStock: minStock,
+        location: m.location || m.storageLocation || 'Main Warehouse'
+      };
+    });
   }, [dbMedicines]);
 
   const lowStockItems = useMemo(() => {
-    return mockMedicines.filter(m => m.available < m.minStock);
-  }, [mockMedicines]);
+    return medicines.filter(m => m.available <= m.minStock);
+  }, [medicines]);
+
+  const criticalItems = useMemo(() => {
+    return lowStockItems.filter(m => m.available <= m.minStock * 0.3);
+  }, [lowStockItems]);
+
+  const warningItems = useMemo(() => {
+    return lowStockItems.filter(m => m.available > m.minStock * 0.3);
+  }, [lowStockItems]);
 
   const getFilteredItems = () => {
     if (severityFilter === 'critical') {
-      return lowStockItems.filter(m => m.available < m.minStock * 0.3);
+      return criticalItems;
     }
     if (severityFilter === 'warning') {
-      return lowStockItems.filter(m => m.available >= m.minStock * 0.3);
+      return warningItems;
     }
     return lowStockItems;
   };
@@ -61,7 +74,7 @@ const LowStock = () => {
         <div className="icon"><FiAlertCircle /></div>
         <div>
           <h4>Action Required</h4>
-          <p>Please review and create purchase orders for these critical items to prevent stockouts.</p>
+          <p>Found <strong>{lowStockItems.length}</strong> items below or at minimum safety stock threshold (50 units). Please review and create purchase orders to prevent stockouts.</p>
         </div>
       </div>
 
@@ -76,19 +89,24 @@ const LowStock = () => {
           className={severityFilter === 'critical' ? 'active' : ''} 
           onClick={() => setSeverityFilter('critical')}
         >
-          Critical
+          Critical ({criticalItems.length})
         </button>
         <button 
           className={severityFilter === 'warning' ? 'active' : ''} 
           onClick={() => setSeverityFilter('warning')}
         >
-          Warning
+          Warning ({warningItems.length})
         </button>
       </div>
 
-      <InventoryTable data={getFilteredItems()} />
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Loading low stock medicines...</div>
+      ) : (
+        <InventoryTable data={getFilteredItems()} />
+      )}
     </div>
   );
 };
 
 export default LowStock;
+

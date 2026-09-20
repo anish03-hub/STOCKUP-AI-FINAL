@@ -123,14 +123,14 @@ def preprocess_data(train_df, features_df, stores_df):
     for col in numerical_cols:
         if df[col].isnull().any():
             median_val = df[col].median()
-            df[col].fillna(median_val, inplace=True)
+            df[col] = df[col].fillna(median_val)
     
     # For categorical columns, fill with mode
     categorical_cols = df.select_dtypes(include=['object']).columns
     for col in categorical_cols:
         if df[col].isnull().any():
             mode_val = df[col].mode()[0] if len(df[col].mode()) > 0 else 'Unknown'
-            df[col].fillna(mode_val, inplace=True)
+            df[col] = df[col].fillna(mode_val)
     
     missing_after = df.isnull().sum().sum()
     print(f"  Missing values before: {missing_before}")
@@ -140,16 +140,18 @@ def preprocess_data(train_df, features_df, stores_df):
     print("Creating temporal features...")
     df['Year'] = df['Date'].dt.year
     df['Month'] = df['Date'].dt.month
-    df['Week'] = df['Date'].dt.isocalendar().week
+    df['Week'] = df['Date'].dt.isocalendar().week.astype(int)
     df['Day'] = df['Date'].dt.day
     df['Quarter'] = df['Date'].dt.quarter
+    if 'IsHoliday' in df.columns:
+        df['IsHoliday'] = df['IsHoliday'].astype(int)
     
     # Encode categorical variables
     print("Encoding categorical variables...")
     # Store and Dept are already numeric, but we'll treat them as categorical for modeling
     # Type column from stores needs encoding
     if 'Type' in df.columns:
-        df = pd.get_dummies(df, columns=['Type'], prefix='Type', drop_first=True)
+        df = pd.get_dummies(df, columns=['Type'], prefix='Type', drop_first=True, dtype=int)
     
     # Define features and target
     target_col = 'Weekly_Sales'
@@ -200,8 +202,8 @@ def train_models(X_train, y_train):
     
     models = {
         'Linear Regression': LinearRegression(),
-        'Random Forest Regressor': RandomForestRegressor(n_estimators=100, random_state=42),
-        'Gradient Boosting Regressor': GradientBoostingRegressor(n_estimators=100, random_state=42)
+        'Random Forest Regressor': RandomForestRegressor(n_estimators=100, max_depth=16, random_state=42, n_jobs=-1),
+        'Gradient Boosting Regressor': GradientBoostingRegressor(n_estimators=25, max_depth=4, random_state=42)
     }
     
     trained_models = {}

@@ -24,7 +24,7 @@ const StockHistory = () => {
       </div>
 
       <div className="inventory-table-card" style={{ marginBottom: '24px' }}>
-        <h3 style={{ marginTop: 0, marginBottom: '16px', color: 'var(--text-dark)' }}>Overall Stock Movement (Past 30 Days)</h3>
+        <h3 style={{ marginTop: 0, marginBottom: '16px', color: 'var(--text-primary)' }}>Overall Stock Movement (Past 30 Days)</h3>
         <div style={{ height: '300px', width: '100%' }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={mockHistoryData}>
@@ -32,14 +32,14 @@ const StockHistory = () => {
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Area type="monotone" dataKey="stock" stroke="var(--primary-color, #1a73e8)" fill="var(--primary-light, #e8f0fe)" />
+              <Area type="monotone" dataKey="stock" stroke="var(--primary, #1a73e8)" fill="var(--primary-light, #e8f0fe)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       <div className="inventory-table-card">
-        <h3 style={{ marginTop: 0, marginBottom: '16px', color: 'var(--text-dark)' }}>Recent Activity Logs</h3>
+        <h3 style={{ marginTop: 0, marginBottom: '16px', color: 'var(--text-primary)' }}>Recent Activity Logs</h3>
         <table className="inventory-table">
           <thead>
             <tr>

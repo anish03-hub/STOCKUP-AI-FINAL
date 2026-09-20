@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TbRobot } from 'react-icons/tb';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -6,6 +6,14 @@ import '../../styles/ai/ai.css';
 
 const ChatMessage = ({ message }) => {
   const isUser = message.role === 'user';
+
+  const cleanContent = useMemo(() => {
+    if (isUser || typeof message.content !== 'string') return message.content;
+    // Strip trailing source attribution lines (e.g. "Source: Live PostgreSQL database...")
+    return message.content
+      .replace(/\n\s*Source:.*$/gi, '')
+      .trim();
+  }, [message.content, isUser]);
 
   return (
     <div className={`message-wrapper ${isUser ? 'user' : 'ai'}`}>
@@ -21,7 +29,7 @@ const ChatMessage = ({ message }) => {
           ) : (
             <div className="markdown-content">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {message.content}
+                {cleanContent}
               </ReactMarkdown>
             </div>
           )}

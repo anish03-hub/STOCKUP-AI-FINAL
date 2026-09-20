@@ -4,3 +4,6 @@ pandas>=1.5.0
 numpy>=1.21.0
 scikit-learn>=1.1.0
 joblib>=1.1.0
+# Explainable AI — optional at runtime; /explain degrades to native
+# feature_importances_ when shap is absent.
+shap>=0.44.0

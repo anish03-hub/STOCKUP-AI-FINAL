@@ -4,6 +4,7 @@ import com.stockup.backend.dto.ExpiryAlertSummary;
 import com.stockup.backend.dto.ExpiryItemDetails;
 import com.stockup.backend.model.Item;
 import com.stockup.backend.repository.ItemRepository;
+import com.stockup.backend.security.CurrentUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +15,25 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExpiryAlertService {
 
     private final ItemRepository itemRepository;
+    private final CurrentUserService currentUserService;
 
     @Autowired
-    public ExpiryAlertService(ItemRepository itemRepository) {
+    public ExpiryAlertService(ItemRepository itemRepository, CurrentUserService currentUserService) {
         this.itemRepository = itemRepository;
+        this.currentUserService = currentUserService;
     }
 
     public ExpiryAlertSummary getExpiryAlerts() {
-        List<Item> allItems = itemRepository.findAll();
+        Optional<String> businessIdOpt = currentUserService.getCurrentUserBusinessIdOptional();
+        List<Item> allItems = businessIdOpt.isPresent()
+                ? itemRepository.findByBusinessId(businessIdOpt.get())
+                : itemRepository.findAll();
         LocalDate today = LocalDate.now();
 
         int criticalCount = 0;

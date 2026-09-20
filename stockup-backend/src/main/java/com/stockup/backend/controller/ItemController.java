@@ -41,7 +41,14 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemDTO>> getAllItems() {
+    public ResponseEntity<?> getItems(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
+            @RequestParam(value = "search", required = false) String search) {
+        if (page != null && size != null) {
+            org.springframework.data.domain.Page<ItemDTO> itemsPage = itemService.getItems(page, size, search);
+            return new ResponseEntity<>(itemsPage, HttpStatus.OK);
+        }
         List<ItemDTO> items = itemService.getAllItems();
         return new ResponseEntity<>(items, HttpStatus.OK);
     }

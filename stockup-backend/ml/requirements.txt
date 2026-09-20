@@ -2,3 +2,9 @@ pandas>=1.5.0
 numpy>=1.21.0
 scikit-learn>=1.1.0
 joblib>=1.1.0
+# Gradient boosting models (per system design)
+xgboost>=1.7.0
+lightgbm>=4.0.0
+# Explainable AI (feature attribution). The /explain endpoint falls back to
+# native feature_importances_ when shap is not installed.
+shap>=0.44.0

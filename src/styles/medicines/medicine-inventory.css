@@ -1,15 +1,15 @@
 /* src/styles/medicines/medicine-inventory.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+/* Google Fonts loaded via index.html instead of CSS @import to avoid build connection timeouts */
 
 .medicine-inventory {
-  --color-primary: #2563EB;
-  --color-primary-hover: #1D4ED8;
-  --color-background: #F4F8FC;
-  --color-cards: #FFFFFF;
-  --color-border: #E5E7EB;
+  --color-primary: var(--primary, #2563EB);
+  --color-primary-hover: var(--primary-hover, #1D4ED8);
+  --color-background: var(--app-bg, #F4F8FC);
+  --color-cards: var(--surface, #FFFFFF);
+  --color-border: var(--border-color, #E5E7EB);
   
-  --color-text-main: #1F2937;
-  --color-text-muted: #6B7280;
+  --color-text-main: var(--text-primary, #1F2937);
+  --color-text-muted: var(--text-secondary, #6B7280);
   
   --color-success: #10B981;
   --color-warning: #F59E0B;
@@ -85,7 +85,7 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: #EFF6FF;
+  background: var(--primary-light, #EFF6FF);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -148,7 +148,7 @@
 .search-bar {
   display: flex;
   align-items: center;
-  background: white;
+  background: var(--input-bg, #ffffff);
   border: 1px solid var(--color-border);
   padding: 10px 16px;
   border-radius: 12px;
@@ -172,7 +172,7 @@
 }
 
 .filter-dropdown select {
-  background: white;
+  background: var(--input-bg, #ffffff);
   color: var(--color-text-main);
   border: 1px solid var(--color-border);
   padding: 12px 16px;
@@ -192,7 +192,7 @@
   overflow-x: auto;
   border-radius: 16px;
   margin-bottom: 24px;
-  background: white;
+  background: var(--color-cards);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-soft);
 }
@@ -204,7 +204,7 @@
 }
 
 .medicine-table th {
-  background: #EEF5FF;
+  background: var(--table-header, #EEF5FF);
   color: var(--color-text-main);
   font-weight: 600;
   padding: 16px;
@@ -222,11 +222,12 @@
   border-bottom: 1px solid var(--color-border);
   font-size: 14px;
   color: var(--color-text-main);
+  background: var(--table-row, var(--surface));
   transition: background 0.2s;
 }
 
 .medicine-table tr:hover td {
-  background: #F8FAFC;
+  background: var(--table-row-hover, #F8FAFC);
 }
 
 /* Status Badges */
@@ -253,7 +254,7 @@
   display: flex;
   gap: 8px;
 }
-.action-btn {
+.action-buttons .action-btn {
   width: 32px;
   height: 32px;
   border-radius: 8px;
@@ -265,10 +266,10 @@
   color: white;
   transition: transform 0.2s;
 }
-.action-btn:hover { transform: scale(1.1); }
-.action-view { background: var(--color-primary); }
-.action-edit { background: var(--color-warning); }
-.action-delete { background: var(--color-danger); }
+.action-buttons .action-btn:hover { transform: scale(1.1); }
+.action-buttons .action-view { background: var(--color-primary); }
+.action-buttons .action-edit { background: var(--color-warning); }
+.action-buttons .action-delete { background: var(--color-danger); }
 
 /* Pagination */
 .pagination {
@@ -276,7 +277,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  background: white;
+  background: var(--color-cards);
   border-radius: 12px;
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-soft);
@@ -288,7 +289,7 @@
 }
 
 .page-btn {
-  background: white;
+  background: var(--color-cards);
   border: 1px solid var(--color-border);
   color: var(--color-text-main);
   padding: 8px 16px;
@@ -302,5 +303,5 @@
   color: white;
 }
 .page-btn:hover:not(.active) {
-  background: #F3F4F6;
+  background: var(--table-row-hover, #F3F4F6);
 }

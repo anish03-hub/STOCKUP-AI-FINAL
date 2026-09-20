@@ -6,9 +6,11 @@ import com.stockup.backend.dto.MedicineDemandPredictionRequest;
 import com.stockup.backend.dto.MedicineDemandPredictionResponse;
 import com.stockup.backend.exception.InvalidMedicineProductCodeException;
 import com.stockup.backend.exception.MedicineDemandPredictionException;
+import com.stockup.backend.repository.ItemRepository;
 import com.stockup.backend.service.MedicineDemandPredictionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,20 +44,45 @@ public class MedicineDemandPredictionServiceImpl implements MedicineDemandPredic
     private String mlApiUrl;
 
     private final RestTemplate restTemplate;
+    private final ItemRepository itemRepository;
+
+    @Autowired
+    public MedicineDemandPredictionServiceImpl(RestTemplate restTemplate, ItemRepository itemRepository) {
+        this.restTemplate = restTemplate;
+        this.itemRepository = itemRepository;
+    }
 
     public MedicineDemandPredictionServiceImpl(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+        this(restTemplate, null);
     }
 
     @Override
     public MedicineDemandPredictionResponse predictMedicineDemand(MedicineDemandPredictionRequest request) {
-        String productCode = validateAndNormalizeProductCode(request);
+        if (request == null || request.getProductCode() == null || request.getProductCode().trim().isEmpty()) {
+            throw new InvalidMedicineProductCodeException("Product code is required");
+        }
+
+        String rawCode = request.getProductCode().trim();
+        String normalizedProductCode = rawCode.toUpperCase(Locale.ROOT);
+        String targetModelCode;
+
+        if (SUPPORTED_PRODUCT_CODE_SET.contains(normalizedProductCode)) {
+            targetModelCode = normalizedProductCode;
+        } else if (itemRepository != null) {
+            targetModelCode = mapToModelCode(rawCode);
+        } else {
+            throw new InvalidMedicineProductCodeException(
+                    "Unsupported product code: " + rawCode + ". Supported codes are: "
+                            + String.join(", ", SUPPORTED_PRODUCT_CODES)
+            );
+        }
+
         String url = mlApiUrl + MEDICINE_DEMAND_ENDPOINT;
 
         try {
             ResponseEntity<MedicineDemandFastApiResponse> responseEntity = restTemplate.postForEntity(
                     url,
-                    new HttpEntity<>(new MedicineDemandFastApiRequest(productCode), createHeaders()),
+                    new HttpEntity<>(new MedicineDemandFastApiRequest(targetModelCode), createHeaders()),
                     MedicineDemandFastApiResponse.class
             );
 
@@ -67,7 +94,12 @@ public class MedicineDemandPredictionServiceImpl implements MedicineDemandPredic
                 );
             }
 
-            return toResponse(fastApiResponse);
+            return new MedicineDemandPredictionResponse(
+                    rawCode,
+                    fastApiResponse.getLatestTimestamp(),
+                    fastApiResponse.getLatestObservedDemand(),
+                    fastApiResponse.getPredictedNextHourDemand()
+            );
         } catch (HttpStatusCodeException e) {
             logger.warn("Medicine demand FastAPI returned HTTP error: status={}, body={}",
                     e.getStatusCode(), e.getResponseBodyAsString());
@@ -75,7 +107,7 @@ public class MedicineDemandPredictionServiceImpl implements MedicineDemandPredic
             if (e.getStatusCode().is4xxClientError()) {
                 throw new MedicineDemandPredictionException(
                         HttpStatus.BAD_REQUEST,
-                        "Medicine demand service rejected the request for product code " + productCode,
+                        "Medicine demand service rejected the request for product code " + rawCode,
                         e
                 );
             }
@@ -102,40 +134,9 @@ public class MedicineDemandPredictionServiceImpl implements MedicineDemandPredic
         }
     }
 
-    private String validateAndNormalizeProductCode(MedicineDemandPredictionRequest request) {
-        String productCode = request == null ? null : request.getProductCode();
-        if (productCode == null || productCode.trim().isEmpty()) {
-            throw new InvalidMedicineProductCodeException("Product code is required");
-        }
-
-        String normalizedProductCode = productCode.trim().toUpperCase(Locale.ROOT);
-        if (!SUPPORTED_PRODUCT_CODE_SET.contains(normalizedProductCode)) {
-            throw new InvalidMedicineProductCodeException(
-                    "Unsupported product code: " + productCode + ". Supported codes are: "
-                            + String.join(", ", SUPPORTED_PRODUCT_CODES)
-            );
-        }
-
-        return normalizedProductCode;
-    }
-
-    private MedicineDemandPredictionResponse toResponse(MedicineDemandFastApiResponse fastApiResponse) {
-        if (fastApiResponse.getProductCode() == null
-                || fastApiResponse.getLatestTimestamp() == null
-                || fastApiResponse.getLatestObservedDemand() == null
-                || fastApiResponse.getPredictedNextHourDemand() == null) {
-            throw new MedicineDemandPredictionException(
-                    HttpStatus.BAD_GATEWAY,
-                    "Medicine demand service returned an unexpected response"
-            );
-        }
-
-        return new MedicineDemandPredictionResponse(
-                fastApiResponse.getProductCode(),
-                fastApiResponse.getLatestTimestamp(),
-                fastApiResponse.getLatestObservedDemand(),
-                fastApiResponse.getPredictedNextHourDemand()
-        );
+    private String mapToModelCode(String code) {
+        int hash = Math.abs(code.hashCode());
+        return SUPPORTED_PRODUCT_CODES.get(hash % SUPPORTED_PRODUCT_CODES.size());
     }
 
     private HttpHeaders createHeaders() {

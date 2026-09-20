@@ -31,5 +31,9 @@ public class Business {
     private String state;
     private String country;
     private String pincode;
+    
+    @Column(name = "currency", length = 10)
+    private String currency = "USD";
+
     private LocalDateTime createdAt;
 }

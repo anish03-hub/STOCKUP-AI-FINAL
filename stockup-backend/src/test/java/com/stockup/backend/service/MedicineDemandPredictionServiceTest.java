@@ -22,7 +22,6 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@SuppressWarnings("null")
 public class MedicineDemandPredictionServiceTest {
 
     private static final String MEDICINE_DEMAND_URL = "http://localhost:8001/medicine-demand/predict";
