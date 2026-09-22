@@ -1,0 +1,203 @@
+[
+  {
+    "concurrency": 1,
+    "total_requests": 50,
+    "success_count": 50,
+    "failure_count": 0,
+    "failure_pct": 0.0,
+    "duration_sec": 8.95,
+    "rps": 5.59,
+    "avg_ms": 166.88,
+    "median_ms": 94.72,
+    "min_ms": 19.9,
+    "max_ms": 569.53,
+    "p95_ms": 552.9,
+    "p99_ms": 569.53,
+    "endpoint_stats": {
+      "1. Dashboard Summary": {
+        "requests": 10,
+        "failures": 0,
+        "avg_ms": 94.27,
+        "median_ms": 90.19,
+        "p95_ms": 125.64,
+        "p99_ms": 125.64,
+        "min_ms": 68.76,
+        "max_ms": 125.64
+      },
+      "2. Medicine Inventory": {
+        "requests": 10,
+        "failures": 0,
+        "avg_ms": 33.22,
+        "median_ms": 30.46,
+        "p95_ms": 59.43,
+        "p99_ms": 59.43,
+        "min_ms": 19.9,
+        "max_ms": 59.43
+      },
+      "3. Sales Summary": {
+        "requests": 10,
+        "failures": 0,
+        "avg_ms": 470.83,
+        "median_ms": 465.01,
+        "p95_ms": 569.53,
+        "p99_ms": 569.53,
+        "min_ms": 353.34,
+        "max_ms": 569.53
+      },
+      "4. Sales Filters": {
+        "requests": 10,
+        "failures": 0,
+        "avg_ms": 185.51,
+        "median_ms": 182.63,
+        "p95_ms": 245.1,
+        "p99_ms": 245.1,
+        "min_ms": 146.67,
+        "max_ms": 245.1
+      },
+      "5. Forecast Metadata": {
+        "requests": 10,
+        "failures": 0,
+        "avg_ms": 50.56,
+        "median_ms": 35.64,
+        "p95_ms": 159.87,
+        "p99_ms": 159.87,
+        "min_ms": 27.85,
+        "max_ms": 159.87
+      }
+    }
+  },
+  {
+    "concurrency": 5,
+    "total_requests": 250,
+    "success_count": 250,
+    "failure_count": 0,
+    "failure_pct": 0.0,
+    "duration_sec": 9.75,
+    "rps": 25.65,
+    "avg_ms": 182.56,
+    "median_ms": 79.47,
+    "min_ms": 13.26,
+    "max_ms": 1029.82,
+    "p95_ms": 574.96,
+    "p99_ms": 647.87,
+    "endpoint_stats": {
+      "1. Dashboard Summary": {
+        "requests": 50,
+        "failures": 0,
+        "avg_ms": 95.42,
+        "median_ms": 79.47,
+        "p95_ms": 266.42,
+        "p99_ms": 278.33,
+        "min_ms": 46.03,
+        "max_ms": 278.33
+      },
+      "2. Medicine Inventory": {
+        "requests": 50,
+        "failures": 0,
+        "avg_ms": 24.24,
+        "median_ms": 22.89,
+        "p95_ms": 41.61,
+        "p99_ms": 43.37,
+        "min_ms": 13.26,
+        "max_ms": 43.37
+      },
+      "3. Sales Summary": {
+        "requests": 50,
+        "failures": 0,
+        "avg_ms": 557.19,
+        "median_ms": 539.71,
+        "p95_ms": 647.87,
+        "p99_ms": 1029.82,
+        "min_ms": 431.83,
+        "max_ms": 1029.82
+      },
+      "4. Sales Filters": {
+        "requests": 50,
+        "failures": 0,
+        "avg_ms": 200.98,
+        "median_ms": 203.91,
+        "p95_ms": 260.41,
+        "p99_ms": 265.7,
+        "min_ms": 112.49,
+        "max_ms": 265.7
+      },
+      "5. Forecast Metadata": {
+        "requests": 50,
+        "failures": 0,
+        "avg_ms": 34.96,
+        "median_ms": 34.76,
+        "p95_ms": 46.79,
+        "p99_ms": 50.3,
+        "min_ms": 16.07,
+        "max_ms": 50.3
+      }
+    }
+  },
+  {
+    "concurrency": 10,
+    "total_requests": 500,
+    "success_count": 500,
+    "failure_count": 0,
+    "failure_pct": 0.0,
+    "duration_sec": 15.91,
+    "rps": 31.42,
+    "avg_ms": 301.67,
+    "median_ms": 72.55,
+    "min_ms": 6.51,
+    "max_ms": 1704.89,
+    "p95_ms": 1201.4,
+    "p99_ms": 1446.29,
+    "endpoint_stats": {
+      "1. Dashboard Summary": {
+        "requests": 100,
+        "failures": 0,
+        "avg_ms": 106.68,
+        "median_ms": 70.76,
+        "p95_ms": 424.9,
+        "p99_ms": 436.75,
+        "min_ms": 30.89,
+        "max_ms": 436.75
+      },
+      "2. Medicine Inventory": {
+        "requests": 100,
+        "failures": 0,
+        "avg_ms": 32.22,
+        "median_ms": 28.16,
+        "p95_ms": 56.09,
+        "p99_ms": 78.32,
+        "min_ms": 11.75,
+        "max_ms": 78.32
+      },
+      "3. Sales Summary": {
+        "requests": 100,
+        "failures": 0,
+        "avg_ms": 1065.84,
+        "median_ms": 1033.74,
+        "p95_ms": 1446.29,
+        "p99_ms": 1704.89,
+        "min_ms": 813.88,
+        "max_ms": 1704.89
+      },
+      "4. Sales Filters": {
+        "requests": 100,
+        "failures": 0,
+        "avg_ms": 281.61,
+        "median_ms": 283.77,
+        "p95_ms": 380.18,
+        "p99_ms": 507.3,
+        "min_ms": 150.19,
+        "max_ms": 507.3
+      },
+      "5. Forecast Metadata": {
+        "requests": 100,
+        "failures": 0,
+        "avg_ms": 22.02,
+        "median_ms": 17.82,
+        "p95_ms": 45.34,
+        "p99_ms": 55.72,
+        "min_ms": 6.51,
+        "max_ms": 55.72
+      }
+    }
+  }
+]
