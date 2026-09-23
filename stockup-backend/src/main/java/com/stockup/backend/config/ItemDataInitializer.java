@@ -88,6 +88,7 @@ public class ItemDataInitializer implements CommandLineRunner {
 
                 item.setExpiryDate(columns.get(8).trim());
                 item.setStatus(columns.get(9).trim());
+                item.setBusinessId(com.stockup.backend.service.CompanyOnboardingService.DEFAULT_BUSINESS_ID);
 
                 items.add(item);
             }

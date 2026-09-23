@@ -23,6 +23,11 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
 
     // ── Multi-Tenant Company Queries ─────────────────────────────────────────
     List<PurchaseOrder> findByBusinessIdOrderByCreatedAtDesc(String businessId);
+    long countByBusinessId(String businessId);
+
+    @org.springframework.data.jpa.repository.Modifying(clearAutomatically = true)
+    @org.springframework.data.jpa.repository.Query("UPDATE PurchaseOrder po SET po.businessId = :defaultBusinessId WHERE po.businessId IS NULL OR TRIM(po.businessId) = ''")
+    int assignUnassignedPurchaseOrdersToBusiness(@org.springframework.data.repository.query.Param("defaultBusinessId") String defaultBusinessId);
 
     List<PurchaseOrder> findByBusinessIdAndStatusOrderByCreatedAtDesc(String businessId, PurchaseOrderStatus status);
 

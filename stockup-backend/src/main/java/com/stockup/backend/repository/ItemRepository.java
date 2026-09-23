@@ -21,6 +21,12 @@ public interface ItemRepository extends JpaRepository<Item, String> {
 
     // ── Multi-Tenant Company Queries ─────────────────────────────────────────
     List<Item> findByBusinessId(String businessId);
+    long countByBusinessId(String businessId);
+
+    @org.springframework.data.jpa.repository.Modifying(clearAutomatically = true)
+    @Query("UPDATE Item i SET i.businessId = :defaultBusinessId WHERE i.businessId IS NULL OR TRIM(i.businessId) = ''")
+    int assignUnassignedItemsToBusiness(@Param("defaultBusinessId") String defaultBusinessId);
+
     Optional<Item> findByIdAndBusinessId(String id, String businessId);
     Optional<Item> findByCodeIgnoreCaseAndBusinessId(String code, String businessId);
     Optional<Item> findFirstByCodeIgnoreCaseAndBusinessId(String code, String businessId);

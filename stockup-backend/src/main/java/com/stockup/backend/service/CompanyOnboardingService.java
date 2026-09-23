@@ -56,43 +56,22 @@ public class CompanyOnboardingService implements CommandLineRunner {
     public void run(String... args) {
         log.info("Checking multi-tenant database isolation and company catalog assignments...");
 
-        // 1. Assign existing unassigned items to default company (fda_tester@stockup.com)
-        List<Item> unassignedItems = itemRepository.findAll().stream()
-                .filter(item -> item.getBusinessId() == null || item.getBusinessId().trim().isEmpty())
-                .toList();
-
-        if (!unassignedItems.isEmpty()) {
-            log.info("Assigning {} existing catalog items to default business ({})", unassignedItems.size(), DEFAULT_BUSINESS_ID);
-            for (Item item : unassignedItems) {
-                item.setBusinessId(DEFAULT_BUSINESS_ID);
-            }
-            itemRepository.saveAll(unassignedItems);
+        // 1. Assign existing unassigned items to default company (fda_tester@stockup.com) via bulk UPDATE
+        int updatedItems = itemRepository.assignUnassignedItemsToBusiness(DEFAULT_BUSINESS_ID);
+        if (updatedItems > 0) {
+            log.info("Assigned {} existing catalog items to default business ({})", updatedItems, DEFAULT_BUSINESS_ID);
         }
 
-        // 2. Assign existing unassigned suppliers
-        List<Supplier> unassignedSuppliers = supplierRepository.findAll().stream()
-                .filter(supp -> supp.getBusinessId() == null || supp.getBusinessId().trim().isEmpty())
-                .toList();
-
-        if (!unassignedSuppliers.isEmpty()) {
-            log.info("Assigning {} existing suppliers to default business ({})", unassignedSuppliers.size(), DEFAULT_BUSINESS_ID);
-            for (Supplier supp : unassignedSuppliers) {
-                supp.setBusinessId(DEFAULT_BUSINESS_ID);
-            }
-            supplierRepository.saveAll(unassignedSuppliers);
+        // 2. Assign existing unassigned suppliers via bulk UPDATE
+        int updatedSuppliers = supplierRepository.assignUnassignedSuppliersToBusiness(DEFAULT_BUSINESS_ID);
+        if (updatedSuppliers > 0) {
+            log.info("Assigned {} existing suppliers to default business ({})", updatedSuppliers, DEFAULT_BUSINESS_ID);
         }
 
-        // 3. Assign existing unassigned purchase orders
-        List<PurchaseOrder> unassignedPos = purchaseOrderRepository.findAll().stream()
-                .filter(po -> po.getBusinessId() == null || po.getBusinessId().trim().isEmpty())
-                .toList();
-
-        if (!unassignedPos.isEmpty()) {
-            log.info("Assigning {} existing purchase orders to default business ({})", unassignedPos.size(), DEFAULT_BUSINESS_ID);
-            for (PurchaseOrder po : unassignedPos) {
-                po.setBusinessId(DEFAULT_BUSINESS_ID);
-            }
-            purchaseOrderRepository.saveAll(unassignedPos);
+        // 3. Assign existing unassigned purchase orders via bulk UPDATE
+        int updatedPos = purchaseOrderRepository.assignUnassignedPurchaseOrdersToBusiness(DEFAULT_BUSINESS_ID);
+        if (updatedPos > 0) {
+            log.info("Assigned {} existing purchase orders to default business ({})", updatedPos, DEFAULT_BUSINESS_ID);
         }
 
         // 4. Ensure seed demo businesses have company catalog & suppliers initialized
@@ -143,9 +122,9 @@ public class CompanyOnboardingService implements CommandLineRunner {
         ensureDailySalesInitialized(businessId, companyName);
 
         // Duplicate protection check
-        List<Item> existingItems = itemRepository.findByBusinessId(businessId);
-        if (!existingItems.isEmpty()) {
-            log.info("Business {} ({}) already has {} items in database. Skipping duplicate import.", companyName, businessId, existingItems.size());
+        long existingItemCount = itemRepository.countByBusinessId(businessId);
+        if (existingItemCount > 0) {
+            log.info("Business {} ({}) already has {} items in database. Skipping duplicate import.", companyName, businessId, existingItemCount);
             return;
         }
 
@@ -292,8 +271,8 @@ public class CompanyOnboardingService implements CommandLineRunner {
 
         ensureDailySalesInitialized(businessId, companyName);
 
-        List<Item> existingCompanyItems = itemRepository.findByBusinessId(businessId);
-        if (existingCompanyItems.isEmpty()) {
+        long itemCounts = itemRepository.countByBusinessId(businessId);
+        if (itemCounts == 0) {
             log.info("Initializing baseline multi-tenant catalog for company: {} (businessId={})", companyName, businessId);
 
             // Clone baseline items from DEFAULT_BUSINESS_ID
@@ -322,8 +301,8 @@ public class CompanyOnboardingService implements CommandLineRunner {
             log.info("Initialized {} catalog items for company {}", companyItems.size(), companyName);
         }
 
-        List<Supplier> existingCompanySuppliers = supplierRepository.findByBusinessId(businessId);
-        if (existingCompanySuppliers.isEmpty()) {
+        long supplierCounts = supplierRepository.countByBusinessId(businessId);
+        if (supplierCounts == 0) {
             List<Supplier> defaultSuppliers = supplierRepository.findByBusinessId(DEFAULT_BUSINESS_ID);
             if (defaultSuppliers.isEmpty()) {
                 defaultSuppliers = supplierRepository.findAll();
@@ -354,8 +333,8 @@ public class CompanyOnboardingService implements CommandLineRunner {
         }
 
         // Initialize sample purchase orders if empty
-        List<PurchaseOrder> existingPos = purchaseOrderRepository.findByBusinessIdOrderByCreatedAtDesc(businessId);
-        if (existingPos.isEmpty()) {
+        long poCounts = purchaseOrderRepository.countByBusinessId(businessId);
+        if (poCounts == 0) {
             List<Item> companyItems = itemRepository.findByBusinessId(businessId);
             if (!companyItems.isEmpty()) {
                 Item item = companyItems.get(0);

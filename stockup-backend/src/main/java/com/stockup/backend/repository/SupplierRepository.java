@@ -15,6 +15,11 @@ public interface SupplierRepository extends JpaRepository<Supplier, String> {
     // ── Multi-Tenant Company Queries ─────────────────────────────────────────
     List<Supplier> findByBusinessId(String businessId);
     long countByBusinessId(String businessId);
+
+    @org.springframework.data.jpa.repository.Modifying(clearAutomatically = true)
+    @org.springframework.data.jpa.repository.Query("UPDATE Supplier s SET s.businessId = :defaultBusinessId WHERE s.businessId IS NULL OR TRIM(s.businessId) = ''")
+    int assignUnassignedSuppliersToBusiness(@org.springframework.data.repository.query.Param("defaultBusinessId") String defaultBusinessId);
+
     Optional<Supplier> findByIdAndBusinessId(String id, String businessId);
     Optional<Supplier> findByNameIgnoreCaseAndBusinessId(String name, String businessId);
     List<Supplier> findByBusinessIdAndStatusIgnoreCase(String businessId, String status);

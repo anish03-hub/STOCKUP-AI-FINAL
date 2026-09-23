@@ -6,7 +6,10 @@
  */
 
 // ─── Base URLs ───────────────────────────────────────────────────────────────
-const SPRING_API = '/api';
+const SPRING_API = import.meta.env.VITE_API_BASE_URL || '/api';
+const HEALTH_BASE = import.meta.env.VITE_API_BASE_URL
+  ? import.meta.env.VITE_API_BASE_URL.replace(/\/api$/, '')
+  : '';
 
 
 // ─── Token Helpers ───────────────────────────────────────────────────────────
@@ -728,7 +731,7 @@ export const aiApi = {
    */
   health: async () => {
     try {
-      const res = await fetch(`/health`, {
+      const res = await fetch(`${HEALTH_BASE}/health`, {
         signal: AbortSignal.timeout(3000),
       });
       return res.ok;
