@@ -36,42 +36,44 @@ public interface ItemRepository extends JpaRepository<Item, String> {
     Page<Item> findByBusinessId(String businessId, Pageable pageable);
 
     @Query(
-        value = "SELECT i FROM Item i WHERE i.businessId = :businessId AND (" +
-               "LOWER(i.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.code) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.category) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.manufacturer) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "(LOWER(:search) LIKE '%paracetamol%' AND (LOWER(i.name) LIKE '%acetaminophen%' OR LOWER(i.name) LIKE '%para%')) OR " +
-               "(LOWER(:search) LIKE '%acetaminophen%' AND (LOWER(i.name) LIKE '%paracetamol%' OR LOWER(i.name) LIKE '%para%'))" +
+        value = "SELECT * FROM items WHERE business_id = :businessId AND (" +
+               "LOWER(name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(code) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(category) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(manufacturer) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "(LOWER(:search) LIKE '%paracetamol%' AND (LOWER(name) LIKE '%acetaminophen%' OR LOWER(name) LIKE '%para%')) OR " +
+               "(LOWER(:search) LIKE '%acetaminophen%' AND (LOWER(name) LIKE '%paracetamol%' OR LOWER(name) LIKE '%para%'))" +
                ")",
-        countQuery = "SELECT COUNT(i) FROM Item i WHERE i.businessId = :businessId AND (" +
-               "LOWER(i.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.code) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.category) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.manufacturer) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "(LOWER(:search) LIKE '%paracetamol%' AND (LOWER(i.name) LIKE '%acetaminophen%' OR LOWER(i.name) LIKE '%para%')) OR " +
-               "(LOWER(:search) LIKE '%acetaminophen%' AND (LOWER(i.name) LIKE '%paracetamol%' OR LOWER(i.name) LIKE '%para%'))" +
-               ")"
+        countQuery = "SELECT COUNT(*) FROM items WHERE business_id = :businessId AND (" +
+               "LOWER(name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(code) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(category) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(manufacturer) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "(LOWER(:search) LIKE '%paracetamol%' AND (LOWER(name) LIKE '%acetaminophen%' OR LOWER(name) LIKE '%para%')) OR " +
+               "(LOWER(:search) LIKE '%acetaminophen%' AND (LOWER(name) LIKE '%paracetamol%' OR LOWER(name) LIKE '%para%'))" +
+               ")",
+        nativeQuery = true
     )
     Page<Item> searchItemsByBusinessId(@Param("businessId") String businessId, @Param("search") String search, Pageable pageable);
 
     @Query(
-        value = "SELECT i FROM Item i WHERE (" +
-               "LOWER(i.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.code) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.category) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.manufacturer) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "(LOWER(:search) LIKE '%paracetamol%' AND (LOWER(i.name) LIKE '%acetaminophen%' OR LOWER(i.name) LIKE '%para%')) OR " +
-               "(LOWER(:search) LIKE '%acetaminophen%' AND (LOWER(i.name) LIKE '%paracetamol%' OR LOWER(i.name) LIKE '%para%'))" +
+        value = "SELECT * FROM items WHERE (" +
+               "LOWER(name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(code) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(category) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(manufacturer) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "(LOWER(:search) LIKE '%paracetamol%' AND (LOWER(name) LIKE '%acetaminophen%' OR LOWER(name) LIKE '%para%')) OR " +
+               "(LOWER(:search) LIKE '%acetaminophen%' AND (LOWER(name) LIKE '%paracetamol%' OR LOWER(name) LIKE '%para%'))" +
                ")",
-        countQuery = "SELECT COUNT(i) FROM Item i WHERE (" +
-               "LOWER(i.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.code) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.category) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "LOWER(i.manufacturer) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-               "(LOWER(:search) LIKE '%paracetamol%' AND (LOWER(i.name) LIKE '%acetaminophen%' OR LOWER(i.name) LIKE '%para%')) OR " +
-               "(LOWER(:search) LIKE '%acetaminophen%' AND (LOWER(i.name) LIKE '%paracetamol%' OR LOWER(i.name) LIKE '%para%'))" +
-               ")"
+        countQuery = "SELECT COUNT(*) FROM items WHERE (" +
+               "LOWER(name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(code) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(category) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "LOWER(manufacturer) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+               "(LOWER(:search) LIKE '%paracetamol%' AND (LOWER(name) LIKE '%acetaminophen%' OR LOWER(name) LIKE '%para%')) OR " +
+               "(LOWER(:search) LIKE '%acetaminophen%' AND (LOWER(name) LIKE '%paracetamol%' OR LOWER(name) LIKE '%para%'))" +
+               ")",
+        nativeQuery = true
     )
     Page<Item> searchItems(@Param("search") String search, Pageable pageable);
 }
