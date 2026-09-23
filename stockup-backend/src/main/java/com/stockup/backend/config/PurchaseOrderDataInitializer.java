@@ -9,7 +9,8 @@ import com.stockup.backend.repository.PurchaseOrderRepository;
 import com.stockup.backend.repository.SupplierRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -24,14 +25,14 @@ import java.util.Optional;
 @Component
 @Order(2)
 @RequiredArgsConstructor
-public class PurchaseOrderDataInitializer implements CommandLineRunner {
+public class PurchaseOrderDataInitializer {
 
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final ItemRepository itemRepository;
     private final SupplierRepository supplierRepository;
 
-    @Override
-    public void run(String... args) {
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady() {
         if (purchaseOrderRepository.count() > 0) {
             return;
         }

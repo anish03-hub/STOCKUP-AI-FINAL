@@ -4,7 +4,8 @@ import com.stockup.backend.model.Supplier;
 import com.stockup.backend.repository.SupplierRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  * Runs only when the suppliers table is empty — safe on every restart.
  */
 @Component
-public class SupplierDataInitializer implements CommandLineRunner {
+public class SupplierDataInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(SupplierDataInitializer.class);
 
@@ -25,8 +26,8 @@ public class SupplierDataInitializer implements CommandLineRunner {
         this.supplierRepository = supplierRepository;
     }
 
-    @Override
-    public void run(String... args) {
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady() {
         if (supplierRepository.count() > 0) {
             return;
         }

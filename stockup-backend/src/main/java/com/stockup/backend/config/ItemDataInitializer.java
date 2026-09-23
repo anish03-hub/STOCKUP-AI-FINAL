@@ -5,7 +5,8 @@ import com.stockup.backend.repository.ItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ import java.util.List;
  * Runs on boot to provide an instant, turnkey experience in containerized deployments.
  */
 @Component
-public class ItemDataInitializer implements CommandLineRunner {
+public class ItemDataInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemDataInitializer.class);
 
@@ -35,8 +36,8 @@ public class ItemDataInitializer implements CommandLineRunner {
         this.itemRepository = itemRepository;
     }
 
-    @Override
-    public void run(String... args) {
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady() {
         if (itemRepository.count() > 0) {
             return;
         }

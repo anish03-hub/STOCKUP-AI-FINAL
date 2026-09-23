@@ -15,7 +15,8 @@ import com.stockup.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,7 @@ import java.util.Set;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CompanyOnboardingService implements CommandLineRunner {
+public class CompanyOnboardingService {
 
     public static final String DEFAULT_BUSINESS_ID = "e7320361-9bb5-4de1-a3db-131400c4b7aa"; // fda_tester@stockup.com
     public static final String APOLLO_BUSINESS_ID  = "f87f86c9-4381-4149-96b4-b0aea80144e0"; // Apollo Apex Healthcare
@@ -51,9 +52,9 @@ public class CompanyOnboardingService implements CommandLineRunner {
     @Value("classpath:medicines_2020_2025.csv")
     private Resource masterCsvResource;
 
-    @Override
+    @EventListener(ApplicationReadyEvent.class)
     @Transactional
-    public void run(String... args) {
+    public void onApplicationReady() {
         log.info("Checking multi-tenant database isolation and company catalog assignments...");
 
         // 1. Assign existing unassigned items to default company (fda_tester@stockup.com) via bulk UPDATE

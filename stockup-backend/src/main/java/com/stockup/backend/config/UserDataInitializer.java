@@ -5,7 +5,8 @@ import com.stockup.backend.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * and synchronizes credentials for existing ADMIN accounts supporting BOTH authentication methods.
  */
 @Component
-public class UserDataInitializer implements CommandLineRunner {
+public class UserDataInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDataInitializer.class);
 
@@ -32,8 +33,8 @@ public class UserDataInitializer implements CommandLineRunner {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public void run(String... args) {
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady() {
         // Ensure ag584160@gmail.com has valid local credentials & BOTH auth_provider configured
         userRepository.findByEmailIgnoreCase("ag584160@gmail.com").ifPresent(user -> {
             boolean updated = false;
