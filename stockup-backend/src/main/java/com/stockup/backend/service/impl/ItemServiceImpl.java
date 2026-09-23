@@ -114,17 +114,9 @@ public class ItemServiceImpl implements ItemService {
         Optional<String> bOpt = currentUserService.getCurrentUserBusinessIdOptional();
         if (bOpt.isPresent()) {
             String bId = bOpt.get();
-            if (search != null && !search.trim().isEmpty()) {
-                itemPage = itemRepository.searchItemsByBusinessId(bId, search.trim(), pageable);
-            } else {
-                itemPage = itemRepository.findByBusinessId(bId, pageable);
-            }
+            itemPage = itemRepository.findByBusinessId(bId, pageable);
         } else {
-            if (search != null && !search.trim().isEmpty()) {
-                itemPage = itemRepository.searchItems(search.trim(), pageable);
-            } else {
-                itemPage = itemRepository.findAll(pageable);
-            }
+            itemPage = itemRepository.findAll(pageable);
         }
         return itemPage.map(this::mapToDTO);
     }
