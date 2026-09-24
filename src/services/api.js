@@ -731,8 +731,16 @@ export const aiApi = {
    */
   health: async () => {
     try {
+      const res = await fetch(`${SPRING_API}/health`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (res.ok) return true;
+    } catch {
+      // Fallback check
+    }
+    try {
       const res = await fetch(`${HEALTH_BASE}/health`, {
-        signal: AbortSignal.timeout(3000),
+        signal: AbortSignal.timeout(5000),
       });
       return res.ok;
     } catch {

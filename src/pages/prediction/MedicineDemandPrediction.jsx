@@ -42,7 +42,7 @@ const getFriendlyError = (error) => {
     msg.includes('NetworkError') ||
     msg.includes('network')
   ) {
-    return 'Unable to reach the prediction service. Please make sure Spring Boot (:8080) and FastAPI (:8001) are running.';
+    return 'Unable to reach the prediction service. Please ensure the backend services are running.';
   }
   if (msg.toLowerCase().includes('unavailable')) {
     return 'Medicine demand prediction service is temporarily unavailable. Please try again shortly.';

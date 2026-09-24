@@ -57,7 +57,8 @@ public class SecurityConfig {
                                 "/api/currency/rates",
                                 "/api/currency/rate",
                                 "/actuator/**",
-                                "/health"
+                                "/health",
+                                "/api/health"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

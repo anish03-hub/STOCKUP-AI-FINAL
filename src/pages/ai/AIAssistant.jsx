@@ -123,7 +123,7 @@ const AIAssistant = () => {
       let errorMsg = `❌ **Error:** ${err.message}`;
 
       if (isConnected === false) {
-        errorMsg = '⚠️ **StockUp Backend is not running.** Please ensure your Spring Boot server is started on port 8080.';
+        errorMsg = '⚠️ **StockUp Backend is currently unreachable.** Please ensure the backend service is running.';
       }
 
       setMessages(prev => [
@@ -350,10 +350,7 @@ const AIAssistant = () => {
 
         {isConnected === false && (
           <div style={{ margin: '16px 20px 0', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '12px', padding: '14px 18px', fontSize: '14px', color: '#92400e' }}>
-            <strong>⚠️ Spring Boot backend is not running on port 8080.</strong> Please ensure the server is started:
-            <code style={{ display: 'block', marginTop: '6px', background: '#1f2937', color: '#f9fafb', padding: '8px 12px', borderRadius: '8px' }}>
-              mvn spring-boot:run
-            </code>
+            <strong>⚠️ StockUp AI Backend is currently unreachable.</strong> Please verify the backend service is running and accessible.
           </div>
         )}
 
