@@ -20,6 +20,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -48,40 +49,50 @@ public class CompanyOnboardingService {
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final UserRepository userRepository;
     private final DailySaleRepository dailySaleRepository;
+    private final TransactionTemplate transactionTemplate;
 
     @Value("classpath:medicines_2020_2025.csv")
     private Resource masterCsvResource;
 
     @EventListener(ApplicationReadyEvent.class)
-    @Transactional
     public void onApplicationReady() {
         log.info("Checking multi-tenant database isolation and company catalog assignments...");
 
         // 1. Assign existing unassigned items to default company (fda_tester@stockup.com) via bulk UPDATE
-        int updatedItems = itemRepository.assignUnassignedItemsToBusiness(DEFAULT_BUSINESS_ID);
-        if (updatedItems > 0) {
-            log.info("Assigned {} existing catalog items to default business ({})", updatedItems, DEFAULT_BUSINESS_ID);
+        try {
+            transactionTemplate.executeWithoutResult(status -> {
+                int updatedItems = itemRepository.assignUnassignedItemsToBusiness(DEFAULT_BUSINESS_ID);
+                if (updatedItems > 0) {
+                    log.info("Assigned {} existing catalog items to default business ({})", updatedItems, DEFAULT_BUSINESS_ID);
+                }
+
+                int updatedSuppliers = supplierRepository.assignUnassignedSuppliersToBusiness(DEFAULT_BUSINESS_ID);
+                if (updatedSuppliers > 0) {
+                    log.info("Assigned {} existing suppliers to default business ({})", updatedSuppliers, DEFAULT_BUSINESS_ID);
+                }
+
+                int updatedPos = purchaseOrderRepository.assignUnassignedPurchaseOrdersToBusiness(DEFAULT_BUSINESS_ID);
+                if (updatedPos > 0) {
+                    log.info("Assigned {} existing purchase orders to default business ({})", updatedPos, DEFAULT_BUSINESS_ID);
+                }
+            });
+        } catch (Exception e) {
+            log.error("Failed to assign unassigned entity records to default business: {}", e.getMessage());
         }
 
-        // 2. Assign existing unassigned suppliers via bulk UPDATE
-        int updatedSuppliers = supplierRepository.assignUnassignedSuppliersToBusiness(DEFAULT_BUSINESS_ID);
-        if (updatedSuppliers > 0) {
-            log.info("Assigned {} existing suppliers to default business ({})", updatedSuppliers, DEFAULT_BUSINESS_ID);
+        // 4. Discover all existing businesses and ensure company catalog & suppliers are initialized
+        List<Business> allBusinesses = businessRepository.findAll();
+        for (Business b : allBusinesses) {
+            try {
+                transactionTemplate.executeWithoutResult(status -> {
+                    ensureCompanyCatalogInitialized(b.getId(), b.getBusinessName());
+                });
+            } catch (Exception e) {
+                log.error("Failed to initialize catalog for business {} ({}): {}", b.getBusinessName(), b.getId(), e.getMessage());
+            }
         }
 
-        // 3. Assign existing unassigned purchase orders via bulk UPDATE
-        int updatedPos = purchaseOrderRepository.assignUnassignedPurchaseOrdersToBusiness(DEFAULT_BUSINESS_ID);
-        if (updatedPos > 0) {
-            log.info("Assigned {} existing purchase orders to default business ({})", updatedPos, DEFAULT_BUSINESS_ID);
-        }
-
-        // 4. Ensure seed demo businesses have company catalog & suppliers initialized
-        List<String> demoBusinessIds = List.of(DEFAULT_BUSINESS_ID, APOLLO_BUSINESS_ID, MEDLIFE_BUSINESS_ID);
-        for (String busId : demoBusinessIds) {
-            businessRepository.findById(busId).ifPresent(b -> ensureCompanyCatalogInitialized(b.getId(), b.getBusinessName()));
-        }
-
-        // 5. Connect target Google user (ag584160@gmail.com) to a valid Business & import existing master datasheet
+        // 5. Connect target Google user (ag584160@gmail.com) to a valid Business & ensure catalog initialized
         Optional<User> googleUserOpt = userRepository.findByEmail("ag584160@gmail.com");
         if (googleUserOpt.isPresent()) {
             User googleUser = googleUserOpt.get();
@@ -101,16 +112,23 @@ public class CompanyOnboardingService {
                 newBiz.setPhone(googleUser.getPhone() != null ? googleUser.getPhone() : "");
                 newBiz.setBusinessType("Hospital Pharmacy");
                 newBiz.setCreatedAt(LocalDateTime.now());
-                googleBusiness = businessRepository.save(newBiz);
+                Business savedBusiness = businessRepository.save(newBiz);
 
-                googleUser.setBusinessId(googleBusiness.getId());
+                googleUser.setBusinessId(savedBusiness.getId());
                 googleUser.setRole("ADMIN");
                 userRepository.save(googleUser);
-                log.info("Assigned new Business {} ({}) to Google user ag584160@gmail.com", googleBusiness.getBusinessName(), googleBusiness.getId());
-            }
+                log.info("Assigned new Business {} ({}) to Google user ag584160@gmail.com", savedBusiness.getBusinessName(), savedBusiness.getId());
 
-            // Import existing master datasheet into Google user's Business
-            importMasterDatasheetForBusiness(googleBusiness.getId(), googleBusiness.getBusinessName());
+                String newBusId = savedBusiness.getId();
+                String newBizName = savedBusiness.getBusinessName();
+                try {
+                    transactionTemplate.executeWithoutResult(status -> {
+                        ensureCompanyCatalogInitialized(newBusId, newBizName);
+                    });
+                } catch (Exception e) {
+                    log.error("Failed to initialize catalog for newly created business {} ({}): {}", newBizName, newBusId, e.getMessage());
+                }
+            }
         }
 
         log.info("Multi-tenant company catalog assignments completed successfully.");
