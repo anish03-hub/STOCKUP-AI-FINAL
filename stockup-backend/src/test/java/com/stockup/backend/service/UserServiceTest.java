@@ -144,12 +144,12 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testInvalidEmailDomain_ThrowsIllegalArgumentException() {
+    public void testInvalidEmailFormat_ThrowsIllegalArgumentException() {
         RegisterRequest request = createValidCombinedRequest();
-        request.setEmail("user@gmail.com");
+        request.setEmail("user@invalid-domain");
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> userService.register(request));
-        assertEquals("Company email must use the @stockupai.in domain.", ex.getMessage());
+        assertEquals("Please enter a valid email address.", ex.getMessage());
 
         verify(businessRepository, never()).save(any());
         verify(userRepository, never()).save(any());

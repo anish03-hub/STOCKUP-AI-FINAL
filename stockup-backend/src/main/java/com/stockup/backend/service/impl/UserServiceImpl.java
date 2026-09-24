@@ -174,23 +174,14 @@ public class UserServiceImpl implements UserService {
         if (rawEmail == null || rawEmail.trim().isEmpty()) {
             throw new IllegalArgumentException("Company email is required");
         }
-        String input = rawEmail.trim().toLowerCase();
-        String prefix;
-        if (input.contains("@")) {
-            if (!input.endsWith(COMPANY_EMAIL_DOMAIN)) {
-                throw new IllegalArgumentException("Company email must use the @stockupai.in domain.");
-            }
-            prefix = input.substring(0, input.length() - COMPANY_EMAIL_DOMAIN.length());
-        } else {
-            prefix = input;
+        String normalized = rawEmail.trim().toLowerCase();
+        if (!normalized.contains("@")) {
+            normalized = normalized + "@stockupai.in";
         }
-
-        String normalizedPrefix = prefix.replaceAll("\\s+", "").replaceAll("[^a-z0-9._-]", "");
-        if (normalizedPrefix.isEmpty()) {
-            throw new IllegalArgumentException("Company email prefix contains no valid characters");
+        if (normalized.indexOf("@") < 1 || !normalized.substring(normalized.indexOf("@")).contains(".")) {
+            throw new IllegalArgumentException("Please enter a valid email address.");
         }
-
-        return normalizedPrefix + COMPANY_EMAIL_DOMAIN;
+        return normalized;
     }
 
     private BusinessResponse mapToBusinessResponse(Business business) {

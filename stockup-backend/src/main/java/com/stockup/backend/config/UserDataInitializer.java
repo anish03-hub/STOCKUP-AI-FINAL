@@ -36,21 +36,42 @@ public class UserDataInitializer {
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         // Ensure ag584160@gmail.com has valid local credentials & BOTH auth_provider configured
-        userRepository.findByEmailIgnoreCase("ag584160@gmail.com").ifPresent(user -> {
+        User targetUser = userRepository.findByEmailIgnoreCase("ag584160@gmail.com").orElse(null);
+        if (targetUser == null) {
+            targetUser = new User();
+            targetUser.setEmail("ag584160@gmail.com");
+            targetUser.setFullName("Anish Sah");
+            targetUser.setPhone("+91 98765 43210");
+            targetUser.setRole("ADMIN");
+            targetUser.setAuthProvider("BOTH");
+            targetUser.setBusinessId(com.stockup.backend.service.CompanyOnboardingService.DEFAULT_BUSINESS_ID);
+            targetUser.setPassword(passwordEncoder.encode(adminPassword));
+            targetUser.setCreatedAt(LocalDateTime.now());
+            userRepository.save(targetUser);
+            logger.info("Created target admin account ag584160@gmail.com with default credentials and BOTH auth provider.");
+        } else {
             boolean updated = false;
-            if (!"BOTH".equalsIgnoreCase(user.getAuthProvider())) {
-                user.setAuthProvider("BOTH");
+            if (!"BOTH".equalsIgnoreCase(targetUser.getAuthProvider())) {
+                targetUser.setAuthProvider("BOTH");
                 updated = true;
             }
-            if (user.getPassword() == null || !passwordEncoder.matches(adminPassword, user.getPassword())) {
-                user.setPassword(passwordEncoder.encode(adminPassword));
+            if (targetUser.getBusinessId() == null || targetUser.getBusinessId().isBlank()) {
+                targetUser.setBusinessId(com.stockup.backend.service.CompanyOnboardingService.DEFAULT_BUSINESS_ID);
+                updated = true;
+            }
+            if (targetUser.getRole() == null || targetUser.getRole().isBlank()) {
+                targetUser.setRole("ADMIN");
+                updated = true;
+            }
+            if (targetUser.getPassword() == null || targetUser.getPassword().isBlank()) {
+                targetUser.setPassword(passwordEncoder.encode(adminPassword));
                 updated = true;
             }
             if (updated) {
-                userRepository.save(user);
-                logger.info("Synchronized credentials and BOTH auth provider for target admin account.");
+                userRepository.save(targetUser);
+                logger.info("Synchronized metadata for target admin account.");
             }
-        });
+        }
 
         if (userRepository.count() > 0) {
             return;

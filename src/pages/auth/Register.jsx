@@ -11,6 +11,22 @@ const Register = () => {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [regSuccessMsg, setRegSuccessMsg] = useState('');
+
+  // Mode: 'choose' (Google primary + Email option) | 'email' (Email+Password Form)
+  const [regMode, setRegMode] = useState('choose');
+
+  // Email Registration Form State
+  const [regForm, setRegForm] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+    businessName: '',
+    businessType: 'Hospital Pharmacy',
+  });
+  const [regErrors, setRegErrors] = useState({});
 
   // Google OAuth state for onboarding modal
   const [pendingCredential, setPendingCredential] = useState(null);
@@ -23,6 +39,68 @@ const Register = () => {
     address: ''
   });
   const [businessError, setBusinessError] = useState('');
+
+  // Validate Email Registration Form
+  const validateRegForm = () => {
+    const errs = {};
+    if (!regForm.email || !regForm.email.trim()) {
+      errs.email = 'Company email is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regForm.email.trim())) {
+      errs.email = 'Please enter a valid email address.';
+    }
+
+    if (!regForm.phone || !regForm.phone.trim()) {
+      errs.phone = 'Phone number is required.';
+    } else if (!/^\+?\d{10,15}$/.test(regForm.phone.trim())) {
+      errs.phone = 'Phone number must be between 10 and 15 digits.';
+    }
+
+    if (!regForm.password || regForm.password.length < 8) {
+      errs.password = 'Password must be at least 8 characters.';
+    }
+
+    if (regForm.password !== regForm.confirmPassword) {
+      errs.confirmPassword = 'Passwords do not match.';
+    }
+
+    if (!regForm.businessName || !regForm.businessName.trim()) {
+      errs.businessName = 'Pharmacy / Business Name is required.';
+    }
+
+    setRegErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  // Submit Email + Password Registration
+  const handleEmailRegister = async (e) => {
+    e.preventDefault();
+    setServerError('');
+    setRegSuccessMsg('');
+
+    if (!validateRegForm()) return;
+
+    setIsSubmitting(true);
+    try {
+      await authApi.register({
+        fullName: regForm.fullName.trim() || regForm.businessName.trim(),
+        email: regForm.email.trim(),
+        phone: regForm.phone.trim(),
+        password: regForm.password,
+        confirmPassword: regForm.confirmPassword,
+        businessName: regForm.businessName.trim(),
+        businessType: regForm.businessType,
+      });
+
+      setRegSuccessMsg('Account created successfully! Please sign in with your credentials.');
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 1500);
+    } catch (err) {
+      setServerError(err.message || 'Registration failed.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Handle Google OAuth response
   const handleGoogleSuccess = async (credential) => {
@@ -102,13 +180,14 @@ const Register = () => {
       </div>
       
       <div className="auth-right">
-        <div className="auth-card" style={{ maxWidth: '440px', width: '100%' }}>
+        <div className="auth-card" style={{ maxWidth: '460px', width: '100%' }}>
           <div className="auth-logo">
             <RiHospitalLine />
             <span>StockUp AI</span>
           </div>
+
           <h2 className="auth-title">Create Your Account</h2>
-          <p className="auth-subtitle">Continue with Google to register your pharmacy or hospital business</p>
+          <p className="auth-subtitle">Register your pharmacy or hospital business</p>
           
           {serverError && (
             <div style={{
@@ -124,15 +203,166 @@ const Register = () => {
             </div>
           )}
 
-          {/* Primary Google Registration Call to Action */}
-          <div style={{ marginTop: '24px', marginBottom: '20px' }}>
-            <GoogleSignInButton
-              onSuccess={handleGoogleSuccess}
-              onError={(msg) => setServerError(msg)}
-              disabled={isSubmitting}
-              text="Continue with Google"
-            />
-          </div>
+          {regSuccessMsg && (
+            <div style={{
+              padding: '10px 14px',
+              marginBottom: '16px',
+              borderRadius: '8px',
+              fontSize: '13px',
+              background: '#dcfce7',
+              color: '#15803d',
+              border: '1px solid #86efac',
+            }}>
+              {regSuccessMsg}
+            </div>
+          )}
+
+          {regMode === 'choose' ? (
+            <>
+              {/* Primary Google Registration Call to Action */}
+              <div style={{ marginTop: '20px', marginBottom: '20px' }}>
+                <GoogleSignInButton
+                  onSuccess={handleGoogleSuccess}
+                  onError={(msg) => setServerError(msg)}
+                  disabled={isSubmitting}
+                  text="Continue with Google"
+                />
+              </div>
+
+              {/* Divider */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                margin: '20px 0',
+                color: 'var(--text-muted, #94a3b8)',
+                fontSize: '0.8rem',
+                fontWeight: '600'
+              }}>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border-color, #e2e8f0)' }} />
+                <span style={{ padding: '0 12px', letterSpacing: '1px' }}>OR</span>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border-color, #e2e8f0)' }} />
+              </div>
+
+              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <button
+                  type="button"
+                  className="auth-btn"
+                  onClick={() => setRegMode('email')}
+                  style={{
+                    background: 'var(--surface-muted, #f1f5f9)',
+                    color: 'var(--text-primary, #0f172a)',
+                    border: '1px solid var(--border-color, #cbd5e1)'
+                  }}
+                >
+                  Register with Email & Password
+                </button>
+              </div>
+            </>
+          ) : (
+            <form onSubmit={handleEmailRegister} style={{ marginTop: '16px' }}>
+              <AuthInput
+                label="Full Name"
+                id="fullName"
+                name="fullName"
+                placeholder="e.g. Dr. Anish Sah"
+                value={regForm.fullName}
+                onChange={(e) => setRegForm(prev => ({ ...prev, fullName: e.target.value }))}
+              />
+
+              <AuthInput
+                label="Company / Work Email *"
+                id="regEmail"
+                name="regEmail"
+                type="email"
+                placeholder="e.g. contact@mypharmacy.com"
+                value={regForm.email}
+                onChange={(e) => setRegForm(prev => ({ ...prev, email: e.target.value }))}
+                error={regErrors.email}
+                required
+              />
+
+              <AuthInput
+                label="Phone Number *"
+                id="regPhone"
+                name="regPhone"
+                placeholder="e.g. +91 98765 43210"
+                value={regForm.phone}
+                onChange={(e) => setRegForm(prev => ({ ...prev, phone: e.target.value }))}
+                error={regErrors.phone}
+                required
+              />
+
+              <AuthInput
+                label="Password *"
+                id="regPassword"
+                name="regPassword"
+                type="password"
+                placeholder="At least 8 characters"
+                value={regForm.password}
+                onChange={(e) => setRegForm(prev => ({ ...prev, password: e.target.value }))}
+                error={regErrors.password}
+                required
+              />
+
+              <AuthInput
+                label="Confirm Password *"
+                id="regConfirmPassword"
+                name="regConfirmPassword"
+                type="password"
+                placeholder="Re-enter password"
+                value={regForm.confirmPassword}
+                onChange={(e) => setRegForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                error={regErrors.confirmPassword}
+                required
+              />
+
+              <AuthInput
+                label="Pharmacy / Business Name *"
+                id="regBusinessName"
+                name="regBusinessName"
+                placeholder="e.g. StockUp Healthcare Pharmacy"
+                value={regForm.businessName}
+                onChange={(e) => setRegForm(prev => ({ ...prev, businessName: e.target.value }))}
+                error={regErrors.businessName}
+                required
+              />
+
+              <div className="auth-input-group" style={{ marginBottom: '16px' }}>
+                <label htmlFor="regBusinessType" className="auth-label">Business Type</label>
+                <div className="auth-input-wrapper">
+                  <select
+                    id="regBusinessType"
+                    name="regBusinessType"
+                    className="auth-input"
+                    value={regForm.businessType}
+                    onChange={(e) => setRegForm(prev => ({ ...prev, businessType: e.target.value }))}
+                  >
+                    <option value="Hospital Pharmacy">Hospital Pharmacy</option>
+                    <option value="Retail Pharmacy">Retail Pharmacy</option>
+                    <option value="Wholesale Pharmacy">Wholesale Pharmacy</option>
+                    <option value="Clinic / Medical Center">Clinic / Medical Center</option>
+                    <option value="Health System / Hospital">Health System / Hospital</option>
+                    <option value="Pharmaceutical Distributor">Pharmaceutical Distributor</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                <button
+                  type="button"
+                  className="auth-btn"
+                  onClick={() => setRegMode('choose')}
+                  style={{ background: 'var(--surface-muted, #f1f5f9)', color: 'var(--text-primary, #0f172a)', border: '1px solid var(--border-color, #cbd5e1)' }}
+                >
+                  Back
+                </button>
+                <button type="submit" className="auth-btn" disabled={isSubmitting}>
+                  {isSubmitting ? 'Creating Account...' : 'Register Account'}
+                </button>
+              </div>
+            </form>
+          )}
 
           <p style={{
             fontSize: '0.85rem',
