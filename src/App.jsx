@@ -52,7 +52,6 @@ import Settings from './pages/profile/Settings';
 import UserManagement from './pages/users/UserManagement';
 
 // Prediction & Reorder
-import DemandPrediction from './pages/prediction/DemandPrediction';
 import MedicineDemandPrediction from './pages/prediction/MedicineDemandPrediction';
 import StockoutPrediction from './pages/stockout/StockoutPrediction';
 import ReorderOptimization from './pages/reorder/ReorderOptimization';
@@ -117,8 +116,10 @@ function App() {
               <Route path="forecast" element={<ForecastDashboard />} />
               <Route path="forecast/history" element={<PredictionHistory />} />
               <Route path="forecast/:id" element={<ForecastDetails />} />
-              <Route path="prediction" element={<DemandPrediction />} />
-              <Route path="prediction/demand" element={<DemandPrediction />} />
+              {/* Canonical Medicine Demand Forecasting page. Legacy /prediction and
+                  /prediction/demand routes redirect here so old bookmarks/links keep working. */}
+              <Route path="prediction" element={<Navigate to="/prediction/medicine-demand" replace />} />
+              <Route path="prediction/demand" element={<Navigate to="/prediction/medicine-demand" replace />} />
               <Route path="prediction/medicine" element={<MedicineDemandPrediction />} />
               <Route path="prediction/medicine-demand" element={<MedicineDemandPrediction />} />
               <Route path="prediction/stockout" element={<StockoutPrediction />} />

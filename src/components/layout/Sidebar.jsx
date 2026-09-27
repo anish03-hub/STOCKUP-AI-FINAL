@@ -63,7 +63,6 @@ const Sidebar = ({ collapsed }) => {
       title: 'Analytics & AI',
       items: [
         { label: 'Forecast', path: '/forecast', icon: <RiBarChartBoxLine /> },
-        { label: 'Demand Prediction', path: '/prediction', icon: <RiBarChartBoxLine />, exact: true },
         { label: 'Medicine Demand Prediction', path: '/prediction/medicine-demand', icon: <RiMedicineBottleLine /> },
         { label: 'Stock-out Prediction', path: '/stockout', icon: <RiAlertLine /> },
         { label: 'Reorder Optimization', path: '/reorder', icon: <RiShoppingCartLine /> },
