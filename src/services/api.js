@@ -41,19 +41,32 @@ export const logout = () => {
  */
 async function request(url, options = {}) {
   const token = getToken();
+  // `timeout` (ms) is an opt-in per-call setting; when omitted, behaviour is
+  // unchanged (no timeout) so existing callers are unaffected.
+  const { timeout, ...fetchOptions } = options;
   const headers = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...fetchOptions.headers,
   };
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
+  const fetchInit = { ...fetchOptions, headers };
+  if (timeout) {
+    // Prevents the UI from hanging forever when a downstream service (e.g. the
+    // ML forecasting API) is slow or unreachable.
+    fetchInit.signal = AbortSignal.timeout(timeout);
+  }
+
   let res;
   try {
-    res = await fetch(url, { ...options, headers });
+    res = await fetch(url, fetchInit);
   } catch (err) {
+    if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+      throw new Error('The request timed out. The service may be busy or unavailable. Please try again.');
+    }
     if (err.name === 'TypeError' || (err.message && err.message.toLowerCase().includes('fetch'))) {
       throw new Error('Unable to connect to StockUp AI backend.');
     }
@@ -639,6 +652,8 @@ export const dailyForecastApi = {
     const res = await request(`${SPRING_API}/forecast/daily/predict`, {
       method: 'POST',
       body: JSON.stringify({ medicine, forecastDays, country }),
+      // Bound the wait so the forecast UI can never hang indefinitely.
+      timeout: 45000,
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
@@ -648,7 +663,7 @@ export const dailyForecastApi = {
   },
 
   metadata: async () => {
-    const res = await request(`${SPRING_API}/forecast/daily/metadata`);
+    const res = await request(`${SPRING_API}/forecast/daily/metadata`, { timeout: 15000 });
     if (!res.ok) throw new Error('Failed to fetch daily demand model metadata');
     return res.json();
   },
