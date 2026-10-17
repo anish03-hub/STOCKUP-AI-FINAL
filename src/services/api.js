@@ -127,7 +127,7 @@ export const authApi = {
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || `Login failed (${res.status})`);
+      throw new Error(errorData.message || errorData.error || `Login failed (${res.status})`);
     }
 
     const data = await res.json();

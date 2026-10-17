@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -94,7 +95,7 @@ public class UserServiceImpl implements UserService {
         String companyEmail = normalizeAndValidateCompanyEmail(request.getEmail());
 
         // 3. Check if user email or phone already exists
-        if (userRepository.findByEmail(companyEmail).isPresent() ||
+        if (userRepository.findByEmailIgnoreCase(companyEmail).isPresent() ||
                 businessRepository.findByEmail(companyEmail).isPresent()) {
             throw new IllegalStateException("Company email is already registered.");
         }
@@ -212,6 +213,13 @@ public class UserServiceImpl implements UserService {
 
         String rawEmail = request.getEmail().trim();
         String normalizedEmail = rawEmail.toLowerCase();
+
+        User existingUser = userRepository.findByEmailIgnoreCase(normalizedEmail)
+                .orElseGet(() -> userRepository.findByEmailIgnoreCase(rawEmail).orElse(null));
+
+        if (existingUser != null && "GOOGLE".equalsIgnoreCase(existingUser.getAuthProvider())) {
+            throw new BadCredentialsException("Invalid email or password.");
+        }
 
         Authentication authentication;
         try {
@@ -388,7 +396,7 @@ public class UserServiceImpl implements UserService {
 
         // 2. Check if user exists by googleSubject or by email
         User existingUser = userRepository.findByGoogleSubject(googleSub)
-                .orElseGet(() -> userRepository.findByEmail(googleEmail).orElse(null));
+                .orElseGet(() -> userRepository.findByEmailIgnoreCase(googleEmail).orElse(null));
 
         if (existingUser != null) {
             String busId = existingUser.getBusinessId();

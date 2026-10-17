@@ -88,33 +88,24 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             log.warn("PASSWORD_RESET_RATE_LIMITED: Identifier='{}' exceeded hourly request limit", maskIdentifier(identifier));
             return PasswordResetResponseDTO.builder()
                     .success(true)
+                    .resetRequestId(UUID.randomUUID().toString())
+                    .contactType("EMAIL")
                     .message(GENERIC_RESPONSE_MESSAGE)
                     .build();
         }
 
-        Optional<User> userOpt = userRepository.findByEmail(identifier);
+        Optional<User> userOpt = userRepository.findByEmailIgnoreCase(identifier);
         if (userOpt.isEmpty()) {
             log.info("PASSWORD_RESET_NOT_FOUND: No registered user for identifier='{}'", maskIdentifier(identifier));
             return PasswordResetResponseDTO.builder()
                     .success(true)
+                    .resetRequestId(UUID.randomUUID().toString())
+                    .contactType("EMAIL")
                     .message(GENERIC_RESPONSE_MESSAGE)
                     .build();
         }
 
         User user = userOpt.get();
-
-        // Check if account uses GOOGLE sign-in exclusively without local password
-        boolean isGoogleOnly = "GOOGLE".equalsIgnoreCase(user.getAuthProvider()) 
-                && (user.getPassword() == null || user.getPassword().isBlank());
-
-        if (isGoogleOnly) {
-            log.info("PASSWORD_RESET_GOOGLE_ONLY: Identifier='{}' is a Google-only account", maskIdentifier(identifier));
-            return PasswordResetResponseDTO.builder()
-                    .success(true)
-                    .isGoogleOnly(true)
-                    .message("This account uses Google Sign-In. You can continue with Google from the login page.")
-                    .build();
-        }
 
         // Generate cryptographically secure 6-digit OTP
         int otpNumber = 100000 + secureRandom.nextInt(900000);
@@ -153,6 +144,8 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             tokenRepository.save(token);
             return PasswordResetResponseDTO.builder()
                     .success(true)
+                    .resetRequestId(UUID.randomUUID().toString())
+                    .contactType("EMAIL")
                     .message(GENERIC_RESPONSE_MESSAGE)
                     .build();
         }
@@ -161,7 +154,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
                 .success(true)
                 .resetRequestId(resetRequestId)
                 .contactType("EMAIL")
-                .message("If an account matches the information provided, a verification code has been sent to your registered email.")
+                .message(GENERIC_RESPONSE_MESSAGE)
                 .build();
     }
 

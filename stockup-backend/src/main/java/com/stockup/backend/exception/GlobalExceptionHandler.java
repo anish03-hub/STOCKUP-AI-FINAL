@@ -88,7 +88,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, String>> handleBadCredentialsException(BadCredentialsException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", "Unauthorized: " + ex.getMessage());
+        error.put("error", "Invalid email or password.");
+        error.put("message", "Invalid email or password.");
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 

@@ -11,4 +11,8 @@ import lombok.NoArgsConstructor;
 public class PasswordResetRequestDTO {
     @NotBlank(message = "Identifier (email or phone) is required")
     private String identifier;
+
+    public void setIdentifier(String identifier) {
+        this.identifier = (identifier != null) ? identifier.trim() : null;
+    }
 }

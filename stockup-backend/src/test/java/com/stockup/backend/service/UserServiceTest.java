@@ -80,7 +80,7 @@ public class UserServiceTest {
         RegisterRequest request = createValidCombinedRequest();
         String expectedEmail = "alicesharma@stockupai.in";
 
-        when(userRepository.findByEmail(expectedEmail)).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase(expectedEmail)).thenReturn(Optional.empty());
         when(userRepository.findByPhone(request.getPhone())).thenReturn(Optional.empty());
         when(businessRepository.findByEmail(expectedEmail)).thenReturn(Optional.empty());
         when(businessRepository.findByPhone(request.getPhone())).thenReturn(Optional.empty());
@@ -159,7 +159,7 @@ public class UserServiceTest {
     public void testDuplicateUserEmail_ThrowsIllegalStateException() {
         RegisterRequest request = createValidCombinedRequest();
         String expectedEmail = "alicesharma@stockupai.in";
-        when(userRepository.findByEmail(expectedEmail)).thenReturn(Optional.of(new User()));
+        when(userRepository.findByEmailIgnoreCase(expectedEmail)).thenReturn(Optional.of(new User()));
 
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> userService.register(request));
         assertEquals("Company email is already registered.", ex.getMessage());
@@ -172,7 +172,7 @@ public class UserServiceTest {
     public void testDuplicateUserPhone_ThrowsIllegalStateException() {
         RegisterRequest request = createValidCombinedRequest();
         String expectedEmail = "alicesharma@stockupai.in";
-        when(userRepository.findByEmail(expectedEmail)).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase(expectedEmail)).thenReturn(Optional.empty());
         when(businessRepository.findByEmail(expectedEmail)).thenReturn(Optional.empty());
         when(userRepository.findByPhone(request.getPhone())).thenReturn(Optional.of(new User()));
 
@@ -538,6 +538,142 @@ public class UserServiceTest {
             userService.changePassword(req);
         });
         assertEquals("New password cannot be identical to current password.", exc.getMessage());
+    }
+
+    @Test
+    public void testLogin_GoogleOnlyAccount_ThrowsBadCredentialsException() {
+        User googleOnlyUser = new User();
+        googleOnlyUser.setId("usr-google-only");
+        googleOnlyUser.setEmail("ag584160@gmail.com");
+        googleOnlyUser.setAuthProvider("GOOGLE");
+
+        when(userRepository.findByEmailIgnoreCase("ag584160@gmail.com")).thenReturn(Optional.of(googleOnlyUser));
+
+        com.stockup.backend.dto.LoginRequest req = new com.stockup.backend.dto.LoginRequest();
+        req.setEmail("ag584160@gmail.com");
+        req.setPassword("AnyPassword123!");
+
+        org.springframework.security.authentication.BadCredentialsException ex =
+                assertThrows(org.springframework.security.authentication.BadCredentialsException.class, () -> userService.login(req));
+        assertEquals("Invalid email or password.", ex.getMessage());
+        verify(authenticationManager, never()).authenticate(any());
+    }
+
+    @Test
+    public void testLogin_UnknownEmail_ThrowsBadCredentialsException() {
+        when(userRepository.findByEmailIgnoreCase("unknown@stockupai.in")).thenReturn(Optional.empty());
+        when(authenticationManager.authenticate(any()))
+                .thenThrow(new org.springframework.security.authentication.BadCredentialsException("Bad credentials"));
+
+        com.stockup.backend.dto.LoginRequest req = new com.stockup.backend.dto.LoginRequest();
+        req.setEmail("unknown@stockupai.in");
+        req.setPassword("AnyPassword123!");
+
+        assertThrows(org.springframework.security.authentication.BadCredentialsException.class, () -> userService.login(req));
+    }
+
+    @Test
+    public void testLogin_IncorrectPassword_ThrowsBadCredentialsException() {
+        User user = new User();
+        user.setId("usr-both-123");
+        user.setEmail("ag584160@gmail.com");
+        user.setAuthProvider("BOTH");
+
+        when(userRepository.findByEmailIgnoreCase("ag584160@gmail.com")).thenReturn(Optional.of(user));
+        when(authenticationManager.authenticate(any()))
+                .thenThrow(new org.springframework.security.authentication.BadCredentialsException("Bad credentials"));
+
+        com.stockup.backend.dto.LoginRequest req = new com.stockup.backend.dto.LoginRequest();
+        req.setEmail("ag584160@gmail.com");
+        req.setPassword("WrongPassword!");
+
+        assertThrows(org.springframework.security.authentication.BadCredentialsException.class, () -> userService.login(req));
+    }
+
+    @Test
+    public void testLogin_WhitespaceAndEmailCaseNormalization_Succeeds() {
+        User user = new User();
+        user.setId("usr-norm-1");
+        user.setEmail("ag584160@gmail.com");
+        user.setRole("ADMIN");
+        user.setAuthProvider("BOTH");
+        user.setBusinessId("biz-norm-1");
+
+        org.springframework.security.core.Authentication mockAuth = mock(org.springframework.security.core.Authentication.class);
+        org.springframework.security.core.userdetails.UserDetails mockDetails =
+                org.springframework.security.core.userdetails.User.builder()
+                        .username("ag584160@gmail.com")
+                        .password("encoded-pass")
+                        .roles("ADMIN")
+                        .build();
+
+        when(mockAuth.getPrincipal()).thenReturn(mockDetails);
+        when(authenticationManager.authenticate(any())).thenReturn(mockAuth);
+        when(userRepository.findByEmailIgnoreCase("ag584160@gmail.com")).thenReturn(Optional.of(user));
+        when(jwtService.generateToken(any())).thenReturn("mock-token-normalized");
+
+        com.stockup.backend.dto.LoginRequest req = new com.stockup.backend.dto.LoginRequest();
+        req.setEmail("   AG584160@GMAIL.COM   ");
+        req.setPassword("Password123!");
+
+        com.stockup.backend.dto.LoginResponse response = userService.login(req);
+        assertNotNull(response);
+        assertEquals("mock-token-normalized", response.getToken());
+        assertEquals("ag584160@gmail.com", response.getUser().getEmail());
+    }
+
+    @Test
+    public void testRegister_DuplicateEmailDifferentCase_ThrowsIllegalStateException() {
+        RegisterRequest request = createValidCombinedRequest();
+        request.setEmail("ALICESHARMA@stockupai.in");
+
+        User existing = new User();
+        existing.setEmail("alicesharma@stockupai.in");
+
+        when(userRepository.findByEmailIgnoreCase("alicesharma@stockupai.in")).thenReturn(Optional.of(existing));
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> userService.register(request));
+        assertEquals("Company email is already registered.", ex.getMessage());
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    public void testAuthenticateGoogleUser_ExistingUserMixedCaseEmail_ResolvesSameUser() {
+        com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload payload =
+                new com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload();
+        payload.setSubject("google-sub-same-user");
+        payload.setEmail("ag584160@gmail.com");
+        payload.set("name", "Anish Sah");
+
+        when(googleTokenVerifierService.verifyToken("token-same-user")).thenReturn(payload);
+
+        User existingUser = new User();
+        existingUser.setId("usr-same-user");
+        existingUser.setEmail("AG584160@GMAIL.COM");
+        existingUser.setPassword("$2a$10$existingPasswordHash1234567890");
+        existingUser.setAuthProvider("BOTH");
+        existingUser.setBusinessId("biz-same-1");
+        existingUser.setRole("ADMIN");
+
+        when(userRepository.findByGoogleSubject("google-sub-same-user")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase("ag584160@gmail.com")).thenReturn(Optional.of(existingUser));
+
+        Business existingBiz = new Business();
+        existingBiz.setId("biz-same-1");
+        existingBiz.setBusinessName("StockUp Pharmacy");
+        when(businessRepository.findById("biz-same-1")).thenReturn(Optional.of(existingBiz));
+
+        when(jwtService.generateToken(any())).thenReturn("jwt-same-user");
+
+        com.stockup.backend.dto.GoogleAuthRequest authReq = new com.stockup.backend.dto.GoogleAuthRequest();
+        authReq.setCredential("token-same-user");
+
+        com.stockup.backend.dto.GoogleAuthResponse response = userService.authenticateGoogleUser(authReq);
+
+        assertNotNull(response);
+        assertEquals("SUCCESS", response.getStatus());
+        assertEquals("usr-same-user", response.getUser().getId());
+        assertEquals("biz-same-1", response.getUser().getBusinessId());
     }
 }
 

@@ -84,7 +84,7 @@ class PasswordResetServiceTest {
     void testRequestPasswordReset_Success() {
         PasswordResetRequestDTO dto = new PasswordResetRequestDTO("ag584160@gmail.com");
         when(tokenRepository.countByIdentifierSince(any(), any())).thenReturn(0L);
-        when(userRepository.findByEmail("ag584160@gmail.com")).thenReturn(Optional.of(sampleUser));
+        when(userRepository.findByEmailIgnoreCase("ag584160@gmail.com")).thenReturn(Optional.of(sampleUser));
         when(emailNotificationService.sendPasswordResetOtp(eq("ag584160@gmail.com"), any())).thenReturn(true);
 
         PasswordResetResponseDTO response = passwordResetService.requestPasswordReset(dto, "127.0.0.1");
@@ -106,18 +106,33 @@ class PasswordResetServiceTest {
     }
 
     @Test
-    @DisplayName("2. Unknown email returns generic response without exposing account absence")
+    @DisplayName("2. Unknown email returns equivalent generic response without creating token or sending email")
     void testRequestPasswordReset_UnknownEmail() {
         PasswordResetRequestDTO dto = new PasswordResetRequestDTO("unknown@gmail.com");
         when(tokenRepository.countByIdentifierSince(any(), any())).thenReturn(0L);
-        when(userRepository.findByEmail("unknown@gmail.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase("unknown@gmail.com")).thenReturn(Optional.empty());
 
         PasswordResetResponseDTO response = passwordResetService.requestPasswordReset(dto, "127.0.0.1");
 
         assertTrue(response.isSuccess());
-        assertNull(response.getResetRequestId());
+        assertNotNull(response.getResetRequestId(), "Public response must return a dummy requestId to prevent account enumeration");
+        assertEquals("EMAIL", response.getContactType());
         assertTrue(response.getMessage().contains("If an account matches"));
         verify(emailNotificationService, never()).sendPasswordResetOtp(any(), any());
+        verify(tokenRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("2b. Verification attempt using dummy or unknown resetRequestId fails safely")
+    void testVerifyOtp_WithDummyResetRequestId_FailsSafely() {
+        String dummyRequestId = java.util.UUID.randomUUID().toString();
+        when(tokenRepository.findById(dummyRequestId)).thenReturn(Optional.empty());
+
+        PasswordResetVerifyDTO verifyDTO = new PasswordResetVerifyDTO(dummyRequestId, "123456");
+        PasswordResetResponseDTO response = passwordResetService.verifyOtp(verifyDTO);
+
+        assertFalse(response.isSuccess());
+        assertTrue(response.getMessage().contains("expired or is invalid"));
     }
 
     @Test
