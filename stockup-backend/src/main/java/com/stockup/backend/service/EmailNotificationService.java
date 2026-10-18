@@ -8,13 +8,23 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -22,6 +32,7 @@ public class EmailNotificationService {
 
     private final JavaMailSender mailSender;
     private final ExpiryNotificationLogRepository logRepository;
+    private final RestTemplate restTemplate;
 
     @Value("${spring.mail.host:smtp.gmail.com}")
     private String mailHost;
@@ -38,21 +49,56 @@ public class EmailNotificationService {
     @Value("${mail.from:ag584160@gmail.com}")
     private String mailFrom;
 
+    @Value("${resend.api.url:https://api.resend.com/emails}")
+    private String resendApiUrl = "https://api.resend.com/emails";
+
+    @Value("${resend.api.key:}")
+    private String resendApiKey = "";
+
+    @Value("${resend.from.email:onboarding@resend.dev}")
+    private String resendFromEmail = "onboarding@resend.dev";
+
     @Autowired
     public EmailNotificationService(
             @Autowired(required = false) JavaMailSender mailSender,
-            ExpiryNotificationLogRepository logRepository) {
+            ExpiryNotificationLogRepository logRepository,
+            @Autowired(required = false) RestTemplate restTemplate) {
         this.mailSender = mailSender;
         this.logRepository = logRepository;
+        this.restTemplate = (restTemplate != null) ? restTemplate : createDefaultRestTemplate();
+    }
+
+    public EmailNotificationService(
+            JavaMailSender mailSender,
+            ExpiryNotificationLogRepository logRepository) {
+        this(mailSender, logRepository, null);
+    }
+
+    private static RestTemplate createDefaultRestTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(10000);
+        return new RestTemplate(factory);
+    }
+
+    // Package-private setter for unit testing configuration without Spring context
+    void setResendConfig(String apiUrl, String apiKey, String fromEmail) {
+        this.resendApiUrl = apiUrl;
+        this.resendApiKey = apiKey;
+        this.resendFromEmail = fromEmail;
     }
 
     @jakarta.annotation.PostConstruct
-    public void logSmtpDiagnostic() {
+    public void logEmailDiagnostic() {
         boolean hasPassword = mailPassword != null && !mailPassword.trim().isEmpty();
         String activeUser = (mailUsername != null && !mailUsername.isBlank()) ? mailUsername : "ag584160@gmail.com";
         String fromAddress = (mailFrom != null && !mailFrom.isBlank()) ? mailFrom : activeUser;
         log.info("SMTP_CONFIG_DIAGNOSTIC: host='{}:{}', mailUsername='{}', mailFrom='{}', passwordConfigured={}",
                 mailHost, mailPort, activeUser, fromAddress, hasPassword);
+
+        boolean hasResendKey = resendApiKey != null && !resendApiKey.trim().isEmpty();
+        log.info("RESEND_CONFIG_DIAGNOSTIC: apiUrl='{}', fromEmail='{}', apiKeyConfigured={}",
+                resendApiUrl, resendFromEmail, hasResendKey);
     }
 
     /**
@@ -249,10 +295,7 @@ public class EmailNotificationService {
     }
 
     /**
-     * Send a password reset OTP verification email to the user.
-     */
-    /**
-     * Send a password reset OTP verification email to the user.
+     * Send a password reset OTP verification email via Resend's HTTPS API.
      */
     public boolean sendPasswordResetOtp(String recipientEmail, String otp) {
         if (recipientEmail == null || recipientEmail.isBlank()) {
@@ -260,13 +303,29 @@ public class EmailNotificationService {
             return false;
         }
 
-        String domain = recipientEmail.contains("@") ? recipientEmail.substring(recipientEmail.indexOf("@") + 1) : "unknown";
-        boolean hasPassword = mailPassword != null && !mailPassword.isBlank();
-        String activeUser = (mailUsername != null && !mailUsername.isBlank()) ? mailUsername : "ag584160@gmail.com";
-        String fromAddress = (mailFrom != null && !mailFrom.isBlank()) ? mailFrom : activeUser;
+        String domain = recipientEmail.contains("@")
+                ? recipientEmail.substring(recipientEmail.indexOf("@") + 1)
+                : "unknown";
 
-        log.info("PASSWORD_RESET_EMAIL_ATTEMPT: recipientDomain='{}', host='{}:{}', mailUsername='{}', mailFrom='{}', passwordConfigured={}",
-                domain, mailHost, mailPort, activeUser, fromAddress, hasPassword);
+        boolean hasResendKey = resendApiKey != null && !resendApiKey.trim().isEmpty();
+        String activeFrom = (resendFromEmail != null && !resendFromEmail.trim().isEmpty())
+                ? resendFromEmail.trim()
+                : "onboarding@resend.dev";
+        String activeApiUrl = (resendApiUrl != null && !resendApiUrl.trim().isEmpty())
+                ? resendApiUrl.trim()
+                : "https://api.resend.com/emails";
+
+        log.info("PASSWORD_RESET_EMAIL_ATTEMPT: service='Resend', recipientDomain='{}', apiUrl='{}', fromEmail='{}', apiKeyConfigured={}",
+                domain, activeApiUrl, activeFrom, hasResendKey);
+
+        if (!hasResendKey) {
+            log.warn("PASSWORD_RESET_EMAIL_FAILED: Resend API key is not configured (RESEND_API_KEY is missing/blank). Cannot deliver email via Resend.");
+            return false;
+        }
+
+        String formattedFrom = (activeFrom.contains("<") && activeFrom.contains(">"))
+                ? activeFrom
+                : "StockUp AI <" + activeFrom + ">";
 
         String subject = "StockUp AI — Password Reset Verification Code";
         String htmlBody = String.format(
@@ -291,47 +350,53 @@ public class EmailNotificationService {
             otp
         );
 
-        if (mailSender == null) {
-            log.warn("PASSWORD_RESET_EMAIL_FAILED: JavaMailSender bean unavailable. recipientDomain='{}'", domain);
-            return false;
-        }
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("from", formattedFrom);
+        payload.put("to", List.of(recipientEmail.trim()));
+        payload.put("subject", subject);
+        payload.put("html", htmlBody);
 
-        if (mailSender instanceof org.springframework.mail.javamail.JavaMailSenderImpl impl) {
-            if (!hasPassword) {
-                log.warn("PASSWORD_RESET_EMAIL_FAILED: SMTP password is not configured (MAIL_PASSWORD is blank). Cannot deliver email via Gmail SMTP.");
-                return false;
-            }
-            impl.setPassword(mailPassword.replaceAll("\\s+", ""));
-            if (mailUsername != null && !mailUsername.isBlank()) {
-                impl.setUsername(mailUsername.trim());
-            }
-            if (mailHost != null && !mailHost.isBlank()) {
-                impl.setHost(mailHost.trim());
-            }
-            if (mailPort > 0) {
-                impl.setPort(mailPort);
-            }
-            java.util.Properties props = impl.getJavaMailProperties();
-            props.put("mail.smtp.connectiontimeout", "5000");
-            props.put("mail.smtp.timeout", "5000");
-            props.put("mail.smtp.writetimeout", "5000");
-        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(resendApiKey.trim());
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(payload, headers);
 
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom(fromAddress);
-            helper.setTo(recipientEmail);
-            helper.setSubject(subject);
-            helper.setText(htmlBody, true);
-
-            mailSender.send(message);
-            log.info("PASSWORD_RESET_EMAIL_SENT: recipientDomain='{}'", domain);
-            return true;
+            ResponseEntity<Map> responseEntity = restTemplate.postForEntity(activeApiUrl, requestEntity, Map.class);
+            if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
+                Object id = responseEntity.getBody().get("id");
+                if (id != null && !id.toString().isBlank()) {
+                    log.info("PASSWORD_RESET_EMAIL_SENT: Successfully dispatched via Resend HTTPS API to recipientDomain='{}', messageId='{}'",
+                            domain, id);
+                    return true;
+                } else {
+                    log.error("PASSWORD_RESET_EMAIL_FAILED: Resend response missing message id for recipientDomain='{}'", domain);
+                    return false;
+                }
+            } else {
+                log.error("PASSWORD_RESET_EMAIL_FAILED: Resend returned unexpected status '{}' for recipientDomain='{}'",
+                        responseEntity.getStatusCode(), domain);
+                return false;
+            }
+        } catch (HttpStatusCodeException e) {
+            log.error("PASSWORD_RESET_EMAIL_FAILED: Resend API HTTP error: status='{}', recipientDomain='{}', errorBody='{}'",
+                    e.getStatusCode(), domain, sanitizeErrorBody(e.getResponseBodyAsString()));
+            return false;
+        } catch (ResourceAccessException e) {
+            log.error("PASSWORD_RESET_EMAIL_FAILED: Resend API connection/read timeout: recipientDomain='{}', message='{}'",
+                    domain, e.getMessage());
+            return false;
         } catch (Exception e) {
-            log.error("PASSWORD_RESET_EMAIL_FAILED: recipientDomain='{}', errorType='{}', message='{}'",
+            log.error("PASSWORD_RESET_EMAIL_FAILED: Resend API unexpected error: recipientDomain='{}', errorType='{}', message='{}'",
                     domain, e.getClass().getSimpleName(), e.getMessage());
             return false;
         }
+    }
+
+    private String sanitizeErrorBody(String raw) {
+        if (raw == null) return "none";
+        String clean = raw.replaceAll("[\\r\\n]+", " ").trim();
+        return clean.length() > 200 ? clean.substring(0, 200) + "..." : clean;
     }
 }

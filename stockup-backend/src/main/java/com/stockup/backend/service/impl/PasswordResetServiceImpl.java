@@ -142,7 +142,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         if (!emailSent) {
             token.setUsed(true);
             tokenRepository.save(token);
-            log.error("PASSWORD_RESET_DISPATCH_FAILED: Failed to deliver OTP email for identifier='{}'. Check SMTP configuration.", maskIdentifier(identifier));
+            log.error("PASSWORD_RESET_DISPATCH_FAILED: Failed to deliver OTP email for identifier='{}'. Check email delivery configuration.", maskIdentifier(identifier));
             return PasswordResetResponseDTO.builder()
                     .success(false)
                     .contactType("EMAIL")
