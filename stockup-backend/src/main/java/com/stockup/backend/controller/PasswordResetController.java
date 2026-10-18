@@ -30,6 +30,9 @@ public class PasswordResetController {
             HttpServletRequest request) {
         String clientIp = getClientIp(request);
         PasswordResetResponseDTO response = passwordResetService.requestPasswordReset(dto, clientIp);
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(response);
+        }
         return ResponseEntity.ok(response);
     }
 

@@ -192,14 +192,14 @@ export const authApi = {
   },
 
   /**
-   * Password Reset Flow Endpoints
+   * Password Reset Flow Endpoints (with bounded timeout protection)
    */
   requestPasswordReset: async (identifier) => {
-    const res = await fetch(`${SPRING_API}/auth/password-reset/request`, {
+    const res = await fetchWithTimeout(`${SPRING_API}/auth/password-reset/request`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identifier }),
-    });
+    }, 15000);
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || err.error || 'Failed to request password reset.');
@@ -208,11 +208,11 @@ export const authApi = {
   },
 
   resendPasswordResetOtp: async (resetRequestId) => {
-    const res = await fetch(`${SPRING_API}/auth/password-reset/resend`, {
+    const res = await fetchWithTimeout(`${SPRING_API}/auth/password-reset/resend`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ resetRequestId }),
-    });
+    }, 15000);
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || err.error || 'Failed to resend verification code.');
@@ -221,11 +221,11 @@ export const authApi = {
   },
 
   verifyPasswordResetOtp: async (resetRequestId, otp) => {
-    const res = await fetch(`${SPRING_API}/auth/password-reset/verify`, {
+    const res = await fetchWithTimeout(`${SPRING_API}/auth/password-reset/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ resetRequestId, otp }),
-    });
+    }, 15000);
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || err.error || 'Invalid verification code.');
@@ -234,11 +234,11 @@ export const authApi = {
   },
 
   completePasswordReset: async (resetToken, newPassword) => {
-    const res = await fetch(`${SPRING_API}/auth/password-reset/complete`, {
+    const res = await fetchWithTimeout(`${SPRING_API}/auth/password-reset/complete`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ resetToken, newPassword }),
-    });
+    }, 15000);
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || err.error || 'Failed to complete password reset.');
@@ -248,16 +248,51 @@ export const authApi = {
 
   cancelPasswordReset: async (resetRequestId, resetToken) => {
     try {
-      await fetch(`${SPRING_API}/auth/password-reset/cancel`, {
+      await fetchWithTimeout(`${SPRING_API}/auth/password-reset/cancel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resetRequestId, resetToken }),
-      });
-    } catch (_err) {
+      }, 5000);
+    } catch {
       // Safe fire-and-forget cancellation
     }
   },
 };
+
+/**
+ * Bounded timeout fetch helper for authentication and recovery requests.
+ * Ensures client requests never hang indefinitely when network or backend connections stall.
+ */
+async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+  let timerId;
+  const controller = new AbortController();
+  const timeoutPromise = new Promise((_, reject) => {
+    timerId = setTimeout(() => {
+      controller.abort();
+      const err = new Error('The request timed out. The service may be busy or temporarily unavailable. Please try again.');
+      err.name = 'TimeoutError';
+      reject(err);
+    }, timeoutMs);
+  });
+
+  try {
+    const response = await Promise.race([
+      fetch(url, { ...options, signal: options.signal || controller.signal }),
+      timeoutPromise,
+    ]);
+    return response;
+  } catch (err) {
+    if (err.name === 'AbortError' || err.name === 'TimeoutError') {
+      throw new Error('The request timed out. Please check your connection and try again.');
+    }
+    if (err.name === 'TypeError' || (err.message && err.message.toLowerCase().includes('fetch'))) {
+      throw new Error('Unable to connect to StockUp AI backend. Please verify your connection.');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timerId);
+  }
+}
 
 // ─── Items API (Spring Boot) ────────────────────────────────────────────────
 export const itemsApi = {

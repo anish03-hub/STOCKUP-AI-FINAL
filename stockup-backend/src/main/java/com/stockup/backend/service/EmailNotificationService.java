@@ -291,34 +291,47 @@ public class EmailNotificationService {
             otp
         );
 
-        if (mailSender != null) {
-            try {
-                if (mailSender instanceof org.springframework.mail.javamail.JavaMailSenderImpl impl) {
-                    if (mailPassword != null && !mailPassword.isBlank()) {
-                        impl.setPassword(mailPassword.replaceAll("\\s+", ""));
-                    }
-                    if (mailUsername != null && !mailUsername.isBlank()) {
-                        impl.setUsername(mailUsername.trim());
-                    }
-                }
-                MimeMessage message = mailSender.createMimeMessage();
-                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-                helper.setFrom(fromAddress);
-                helper.setTo(recipientEmail);
-                helper.setSubject(subject);
-                helper.setText(htmlBody, true);
+        if (mailSender == null) {
+            log.warn("PASSWORD_RESET_EMAIL_FAILED: JavaMailSender bean unavailable. recipientDomain='{}'", domain);
+            return false;
+        }
 
-                mailSender.send(message);
-                log.info("PASSWORD_RESET_EMAIL_SENT: recipientDomain='{}'", domain);
-                return true;
-            } catch (Exception e) {
-                log.error("PASSWORD_RESET_EMAIL_FAILED: recipientDomain='{}', errorType='{}', message='{}'",
-                        domain, e.getClass().getSimpleName(), e.getMessage(), e);
+        if (mailSender instanceof org.springframework.mail.javamail.JavaMailSenderImpl impl) {
+            if (!hasPassword) {
+                log.warn("PASSWORD_RESET_EMAIL_FAILED: SMTP password is not configured (MAIL_PASSWORD is blank). Cannot deliver email via Gmail SMTP.");
                 return false;
             }
-        } else {
-            log.warn("PASSWORD_RESET_EMAIL_SIMULATED: JavaMailSender bean unavailable. recipientDomain='{}'", domain);
+            impl.setPassword(mailPassword.replaceAll("\\s+", ""));
+            if (mailUsername != null && !mailUsername.isBlank()) {
+                impl.setUsername(mailUsername.trim());
+            }
+            if (mailHost != null && !mailHost.isBlank()) {
+                impl.setHost(mailHost.trim());
+            }
+            if (mailPort > 0) {
+                impl.setPort(mailPort);
+            }
+            java.util.Properties props = impl.getJavaMailProperties();
+            props.put("mail.smtp.connectiontimeout", "5000");
+            props.put("mail.smtp.timeout", "5000");
+            props.put("mail.smtp.writetimeout", "5000");
+        }
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(fromAddress);
+            helper.setTo(recipientEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
+
+            mailSender.send(message);
+            log.info("PASSWORD_RESET_EMAIL_SENT: recipientDomain='{}'", domain);
             return true;
+        } catch (Exception e) {
+            log.error("PASSWORD_RESET_EMAIL_FAILED: recipientDomain='{}', errorType='{}', message='{}'",
+                    domain, e.getClass().getSimpleName(), e.getMessage());
+            return false;
         }
     }
 }

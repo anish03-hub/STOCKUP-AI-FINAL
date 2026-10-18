@@ -106,6 +106,26 @@ class PasswordResetServiceTest {
     }
 
     @Test
+    @DisplayName("1b. Existing email requests reset but email delivery fails -> returns failure response")
+    void testRequestPasswordReset_EmailDeliveryFails() {
+        PasswordResetRequestDTO dto = new PasswordResetRequestDTO("ag584160@gmail.com");
+        when(tokenRepository.countByIdentifierSince(any(), any())).thenReturn(0L);
+        when(userRepository.findByEmailIgnoreCase("ag584160@gmail.com")).thenReturn(Optional.of(sampleUser));
+        when(emailNotificationService.sendPasswordResetOtp(eq("ag584160@gmail.com"), any())).thenReturn(false);
+
+        PasswordResetResponseDTO response = passwordResetService.requestPasswordReset(dto, "127.0.0.1");
+
+        assertFalse(response.isSuccess());
+        assertTrue(response.getMessage().contains("Unable to deliver"));
+        assertNull(response.getResetRequestId());
+
+        ArgumentCaptor<PasswordResetToken> tokenCaptor = ArgumentCaptor.forClass(PasswordResetToken.class);
+        verify(tokenRepository, atLeastOnce()).save(tokenCaptor.capture());
+        PasswordResetToken lastSavedToken = tokenCaptor.getValue();
+        assertTrue(lastSavedToken.isUsed(), "Failed request token must be marked as used");
+    }
+
+    @Test
     @DisplayName("2. Unknown email returns equivalent generic response without creating token or sending email")
     void testRequestPasswordReset_UnknownEmail() {
         PasswordResetRequestDTO dto = new PasswordResetRequestDTO("unknown@gmail.com");

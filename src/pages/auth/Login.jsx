@@ -122,12 +122,37 @@ const Login = () => {
     setResetError('');
     try {
       const res = await authApi.requestPasswordReset(resetEmail.trim());
-      if (res && res.resetRequestId) {
-        setResetRequestId(res.resetRequestId);
+      if (res && res.success) {
+        if (res.resetRequestId) {
+          setResetRequestId(res.resetRequestId);
+        }
+        setResetStep('OTP');
+      } else {
+        setResetError(res?.message || 'Failed to request password reset code.');
       }
-      setResetStep('OTP');
     } catch (err) {
       setResetError(err.message || 'Failed to request password reset code.');
+    } finally {
+      setIsResetSubmitting(false);
+    }
+  };
+
+  const handleResendResetOtp = async () => {
+    if (!resetRequestId) {
+      setResetError('Password reset session not found. Please request a new code.');
+      return;
+    }
+    setIsResetSubmitting(true);
+    setResetError('');
+    try {
+      const res = await authApi.resendPasswordResetOtp(resetRequestId);
+      if (res && res.success) {
+        setResetError('');
+      } else {
+        setResetError(res?.message || 'Failed to resend verification code.');
+      }
+    } catch (err) {
+      setResetError(err.message || 'Failed to resend verification code.');
     } finally {
       setIsResetSubmitting(false);
     }
@@ -831,6 +856,15 @@ const Login = () => {
                     style={{ background: 'var(--surface-muted, #f1f5f9)', color: 'var(--text-primary, #0f172a)', border: '1px solid var(--border-color, #cbd5e1)' }}
                   >
                     Back
+                  </button>
+                  <button
+                    type="button"
+                    className="auth-btn"
+                    onClick={handleResendResetOtp}
+                    disabled={isResetSubmitting}
+                    style={{ background: 'var(--surface-muted, #f1f5f9)', color: 'var(--text-primary, #0f172a)', border: '1px solid var(--border-color, #cbd5e1)' }}
+                  >
+                    Resend Code
                   </button>
                   <button type="submit" className="auth-btn" disabled={isResetSubmitting}>
                     {isResetSubmitting ? 'Verifying...' : 'Verify Code'}

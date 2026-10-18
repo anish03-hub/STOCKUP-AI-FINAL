@@ -60,4 +60,29 @@ class EmailNotificationServiceTest {
 
         assertFalse(result);
     }
+
+    @Test
+    @DisplayName("sendPasswordResetOtp returns false for null or blank recipient email")
+    void testSendPasswordResetOtp_BlankEmail() {
+        assertFalse(emailNotificationService.sendPasswordResetOtp(null, "123456"));
+        assertFalse(emailNotificationService.sendPasswordResetOtp("   ", "123456"));
+    }
+
+    @Test
+    @DisplayName("sendPasswordResetOtp returns false when mailSender is null")
+    void testSendPasswordResetOtp_NullMailSender() {
+        EmailNotificationService serviceWithoutSender = new EmailNotificationService(null, logRepository);
+        assertFalse(serviceWithoutSender.sendPasswordResetOtp("ag584160@gmail.com", "123456"));
+    }
+
+    @Test
+    @DisplayName("sendPasswordResetOtp returns false immediately when JavaMailSenderImpl has no password configured")
+    void testSendPasswordResetOtp_JavaMailSenderImpl_NoPassword() {
+        org.springframework.mail.javamail.JavaMailSenderImpl impl = new org.springframework.mail.javamail.JavaMailSenderImpl();
+        EmailNotificationService serviceWithImpl = new EmailNotificationService(impl, logRepository);
+
+        boolean result = serviceWithImpl.sendPasswordResetOtp("ag584160@gmail.com", "123456");
+
+        assertFalse(result);
+    }
 }

@@ -142,11 +142,11 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         if (!emailSent) {
             token.setUsed(true);
             tokenRepository.save(token);
+            log.error("PASSWORD_RESET_DISPATCH_FAILED: Failed to deliver OTP email for identifier='{}'. Check SMTP configuration.", maskIdentifier(identifier));
             return PasswordResetResponseDTO.builder()
-                    .success(true)
-                    .resetRequestId(UUID.randomUUID().toString())
+                    .success(false)
                     .contactType("EMAIL")
-                    .message(GENERIC_RESPONSE_MESSAGE)
+                    .message("Unable to deliver verification code email at this time. Please try again later or contact support.")
                     .build();
         }
 
@@ -190,9 +190,19 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         token.setCreatedAt(LocalDateTime.now());
         tokenRepository.save(token);
 
-        Optional<User> userOpt = userRepository.findByEmail(token.getIdentifier());
+        Optional<User> userOpt = userRepository.findByEmailIgnoreCase(token.getIdentifier());
+        boolean emailSent = false;
         if (userOpt.isPresent()) {
-            emailNotificationService.sendPasswordResetOtp(userOpt.get().getEmail(), newOtp);
+            emailSent = emailNotificationService.sendPasswordResetOtp(userOpt.get().getEmail(), newOtp);
+        }
+
+        if (!emailSent) {
+            log.error("PASSWORD_RESET_RESEND_FAILED: Failed to resend OTP for resetRequestId='{}'", resetRequestId);
+            return PasswordResetResponseDTO.builder()
+                    .success(false)
+                    .resetRequestId(resetRequestId)
+                    .message("Unable to deliver verification code email at this time. Please try again later.")
+                    .build();
         }
 
         log.info("PASSWORD_RESET_OTP_RESENT: Resent OTP for resetRequestId='{}'", resetRequestId);
