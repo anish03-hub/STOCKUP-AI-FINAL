@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 
 const GoogleSignInButton = ({ onSuccess, onError, disabled = false, text = 'Continue with Google' }) => {
   const buttonRef = useRef(null);
+  const containerRef = useRef(null);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [googleAvailable, setGoogleAvailable] = useState(false);
@@ -39,6 +40,36 @@ const GoogleSignInButton = ({ onSuccess, onError, disabled = false, text = 'Cont
     }
   }, []);
 
+  const getContainerWidth = useCallback(() => {
+    if (containerRef.current) {
+      const w = containerRef.current.clientWidth || containerRef.current.offsetWidth;
+      if (w > 0) {
+        // Google Identity Services renderButton requires pixel width in [200, 400]
+        return Math.min(400, Math.max(200, Math.floor(w)));
+      }
+    }
+    return 344; // Default to standard auth-card inner content width
+  }, []);
+
+  const renderGoogleButton = useCallback(() => {
+    if (!buttonRef.current || !window.google?.accounts?.id || !clientId) {
+      return;
+    }
+
+    const targetWidth = getContainerWidth();
+    buttonRef.current.innerHTML = ''; // clear previous render
+    window.google.accounts.id.renderButton(buttonRef.current, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'continue_with',
+      shape: 'rectangular',
+      logo_alignment: 'center',
+      width: targetWidth,
+    });
+    setGoogleAvailable(true);
+  }, [clientId, getContainerWidth]);
+
   useEffect(() => {
     if (!scriptLoaded || !window.google?.accounts?.id || !clientId) {
       return;
@@ -56,23 +87,50 @@ const GoogleSignInButton = ({ onSuccess, onError, disabled = false, text = 'Cont
         },
       });
 
-      if (buttonRef.current) {
-        buttonRef.current.innerHTML = ''; // clear previous render
-        window.google.accounts.id.renderButton(buttonRef.current, {
-          type: 'standard',
-          theme: 'outline',
-          size: 'large',
-          text: 'continue_with',
-          shape: 'rectangular',
-          logo_alignment: 'left',
-          width: '100%',
-        });
-        setGoogleAvailable(true);
-      }
+      renderGoogleButton();
     } catch (err) {
       console.warn('Failed to initialize Google Sign In button:', err);
     }
-  }, [scriptLoaded, clientId, onSuccess, onError]);
+  }, [scriptLoaded, clientId, onSuccess, onError, renderGoogleButton]);
+
+  // Handle responsive resizing so Google button adapts width to card
+  useEffect(() => {
+    if (!containerRef.current || !window.google?.accounts?.id || !clientId || !scriptLoaded) {
+      return;
+    }
+
+    let timeoutId;
+    let lastWidth = getContainerWidth();
+
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        const currentWidth = getContainerWidth();
+        if (Math.abs(currentWidth - lastWidth) > 8) {
+          lastWidth = currentWidth;
+          renderGoogleButton();
+        }
+      }, 150);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    let resizeObserver;
+    if (typeof ResizeObserver !== 'undefined' && containerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        handleResize();
+      });
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      clearTimeout(timeoutId);
+    };
+  }, [scriptLoaded, clientId, renderGoogleButton, getContainerWidth]);
 
   // Fallback custom button when VITE_GOOGLE_CLIENT_ID is not configured or while loading
   const handleFallbackClick = () => {
@@ -95,11 +153,17 @@ const GoogleSignInButton = ({ onSuccess, onError, disabled = false, text = 'Cont
   };
 
   return (
-    <div className="google-auth-container" style={{ width: '100%', marginBottom: '16px' }}>
-      {/* Hidden container for Google rendered button if client_id exists */}
-      <div 
-        ref={buttonRef} 
-        style={{ display: googleAvailable && clientId ? 'block' : 'none', width: '100%' }} 
+    <div ref={containerRef} className="google-auth-container">
+      {/* Container for Google rendered button if client_id exists */}
+      <div
+        ref={buttonRef}
+        className="google-rendered-button"
+        style={{
+          display: googleAvailable && clientId ? 'flex' : 'none',
+          justifyContent: 'center',
+          width: '100%',
+          minHeight: '44px'
+        }}
       />
 
       {/* Visible styled button when Google GSI button isn't rendered or fallback */}
@@ -109,25 +173,8 @@ const GoogleSignInButton = ({ onSuccess, onError, disabled = false, text = 'Cont
           className="google-custom-auth-btn"
           onClick={handleFallbackClick}
           disabled={disabled}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-            width: '100%',
-            padding: '10px 16px',
-            borderRadius: '8px',
-            border: '1px solid var(--border-color, #cbd5e1)',
-            background: 'var(--surface, #ffffff)',
-            color: 'var(--text-primary, #0f172a)',
-            fontSize: '0.9rem',
-            fontWeight: '600',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            transition: 'background-color 0.2s, border-color 0.2s, box-shadow 0.2s',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-          }}
         >
-          <FcGoogle style={{ fontSize: '1.25rem', flexShrink: 0 }} />
+          <FcGoogle className="google-btn-icon" />
           <span>{text}</span>
         </button>
       )}
