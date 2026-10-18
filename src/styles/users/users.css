@@ -61,7 +61,7 @@
 }
 
 /* KPI Grid */
-.kpi-grid {
+.users-container .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
@@ -69,18 +69,18 @@
 }
 
 @media (max-width: 1024px) {
-  .kpi-grid {
+  .users-container .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 640px) {
-  .kpi-grid {
+  .users-container .kpi-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.kpi-card {
+.users-container .kpi-card {
   background: #1e293b;
   border: 1px solid #334155;
   border-radius: 12px;
@@ -92,12 +92,12 @@
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
-.kpi-card:hover {
+.users-container .kpi-card:hover {
   transform: translateY(-2px);
   border-color: #475569;
 }
 
-.kpi-icon {
+.users-container .kpi-icon {
   width: 48px;
   height: 48px;
   border-radius: 10px;
@@ -106,39 +106,39 @@
   justify-content: center;
 }
 
-.kpi-icon-total {
+.users-container .kpi-icon-total {
   background: rgba(59, 130, 246, 0.15);
   color: #3b82f6;
 }
 
-.kpi-icon-google {
+.users-container .kpi-icon-google {
   background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
 }
 
-.kpi-icon-email {
+.users-container .kpi-icon-email {
   background: rgba(16, 185, 129, 0.15);
   color: #10b981;
 }
 
-.kpi-icon-both {
+.users-container .kpi-icon-both {
   background: rgba(168, 85, 247, 0.15);
   color: #a855f7;
 }
 
-.kpi-content {
+.users-container .kpi-content {
   display: flex;
   flex-direction: column;
 }
 
-.kpi-label {
+.users-container .kpi-label {
   font-size: 13px;
   color: #94a3b8;
   font-weight: 500;
   margin-bottom: 4px;
 }
 
-.kpi-value {
+.users-container .kpi-value {
   font-size: 26px;
   font-weight: 700;
   color: #f8fafc;
